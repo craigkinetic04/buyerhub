@@ -644,8 +644,8 @@ window.addEventListener('load',async()=>{
     // Show onboarding elements
     const ow = document.getElementById('onboardingWrap');
     if (ow) ow.classList.add('show');
-    // Show realtor welcome modal after short delay
-    setTimeout(showRealtorModal, 600);
+    // Show realtor welcome modal
+    setTimeout(function(){ showRealtorModal(); }, 800);
   } else {
     const s=localStorage.getItem('bob_'+RID);
     if(s){buyer=JSON.parse(s);await loadProgress(buyer.email);}
@@ -681,12 +681,12 @@ async function loginBuyer(){
   if(!n||!e){alert('Please enter your name and email.');return;}
   document.getElementById('loginOverlay').classList.remove('show');
   buyer={name:n,email:e,rid:RID};
-  setTimeout(showBuyerWelcome, 400);
+  setTimeout(function(){ showBuyerWelcome(); }, 500);
   localStorage.setItem('bob_'+RID,JSON.stringify(buyer));
   await loadProgress(e);
   await upsertBuyer(n,e);
 }
-function skipLogin(){document.getElementById('loginOverlay').classList.remove('show');}
+function skipLogin(){document.getElementById('loginOverlay').classList.remove('show');setTimeout(function(){ showBuyerWelcome(); }, 400);}
 
 async function loadProgress(email){
   try{
