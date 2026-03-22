@@ -153,6 +153,66 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .footer-links a:hover{color:var(--gold);}
 .footer-disclaimer{max-width:960px;margin:12px auto 0;font-size:11px;color:rgba(240,230,216,0.18);line-height:1.6;padding-top:12px;border-top:0.5px solid rgba(196,154,120,0.1);}
 @media(max-width:600px){.tab-btn{font-size:12px;padding:11px 8px;}.main{padding:16px 12px 40px;}.hub-label,.header-divider{display:none;}.site-btns{grid-template-columns:1fr;}.add-form-grid{grid-template-columns:1fr;}.profile-grid{grid-template-columns:1fr;}}
+
+/* ── WELCOME MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-card{background:var(--white);border-radius:18px;padding:0;width:100%;max-width:480px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.modal-header{background:var(--navy);padding:24px 28px 20px;position:relative;}
+.modal-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--gold);}
+.modal-logo{height:32px;margin-bottom:12px;display:block;}
+.modal-header h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);margin-bottom:4px;}
+.modal-header p{font-size:13px;color:rgba(240,230,216,0.6);line-height:1.5;}
+.modal-steps{padding:20px 28px;}
+.modal-step{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid #f0ede9;}
+.modal-step:last-child{border-bottom:none;}
+.modal-step-icon{width:36px;height:36px;border-radius:10px;background:rgba(196,154,120,0.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.modal-step-body{}
+.modal-step-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.modal-step-desc{font-size:12px;color:var(--gray);line-height:1.5;}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;align-items:center;}
+.modal-got-it{flex:1;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:10px;padding:13px;cursor:pointer;transition:background 0.2s;}
+.modal-got-it:hover{background:var(--gold-light);}
+.modal-skip{font-size:12px;color:var(--gray);cursor:pointer;text-decoration:underline;white-space:nowrap;}
+
+/* ── ONBOARDING COLLAPSIBLE (setup mode) ── */
+.onboarding-wrap{background:var(--white);border-radius:14px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.06);display:none;}
+.onboarding-wrap.show{display:block;}
+.onboarding-head{background:var(--navy);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.onboarding-head-left{display:flex;align-items:center;gap:12px;}
+.onboarding-head-icon{font-size:18px;}
+.onboarding-head-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--white);}
+.onboarding-head-sub{font-size:11px;color:var(--gold);font-style:italic;margin-top:1px;}
+.onboarding-chevron{color:rgba(240,230,216,0.4);font-size:11px;transition:transform 0.3s;}
+.onboarding-wrap.open .onboarding-chevron{transform:rotate(180deg);}
+.onboarding-body{display:none;padding:16px 20px;}
+.onboarding-wrap.open .onboarding-body{display:block;}
+.ob-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid #f5f2ef;}
+.ob-step:last-child{border-bottom:none;}
+.ob-num{min-width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;}
+.ob-body{}
+.ob-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.ob-desc{font-size:12px;color:var(--gray);line-height:1.6;}
+
+/* ── FAQ TAB ── */
+.faq-section{margin-bottom:24px;}
+.faq-section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+.faq-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.faq-item{background:var(--white);border-radius:12px;margin-bottom:8px;overflow:hidden;box-shadow:0 2px 8px rgba(27,42,74,0.05);}
+.faq-q{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:12px;user-select:none;transition:background 0.15s;}
+.faq-q:hover{background:#faf8f5;}
+.faq-q-text{font-size:14px;font-weight:600;color:var(--navy);flex:1;line-height:1.4;}
+.faq-q-icon{color:var(--gold);font-size:18px;font-weight:300;flex-shrink:0;transition:transform 0.3s;}
+.faq-item.open .faq-q-icon{transform:rotate(45deg);}
+.faq-a{display:none;padding:0 18px 16px;font-size:13px;color:var(--gray);line-height:1.75;border-top:0.5px solid #f5f2ef;}
+.faq-item.open .faq-a{display:block;}
+.faq-a strong{color:var(--navy);}
+.faq-brooke-cta{background:var(--navy);border-radius:12px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:8px;}
+.faq-brooke-cta p{font-size:13px;color:rgba(240,230,216,0.7);flex:1;}
+.faq-brooke-cta strong{color:var(--white);}
+.faq-brooke-btn{background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background 0.2s;}
+.faq-brooke-btn:hover{background:var(--gold-light);}
+
 </style>
 
   <!-- Open Graph / Rich Link Preview -->
@@ -169,6 +229,111 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   <meta name="twitter:image" content="https://buyerhub.bankonbrooke.studio/brooke_logo.png">
 </head>
 <body>
+
+
+
+<!-- BUYER WELCOME MODAL -->
+<div class="modal-overlay" id="buyerWelcomeModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <img class="modal-logo" src="brooke_logo.png" alt="Bank on Brooke">
+      <h2>Welcome to Your Buyer Hub!</h2>
+      <p>Here's everything this tool does for you — you're going to love it.</p>
+    </div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <div class="modal-step-icon">✅</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">Your homebuying checklist</div>
+          <div class="modal-step-desc">Work through 7 steps at your own pace — finances, documents, pre-approval, home search, and more. Check items off as you complete them. Your progress saves automatically every time.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">❤️</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">Save properties you love</div>
+          <div class="modal-step-desc">Tap the heart on any of your REALTOR®'s featured listings to save it. Your agent gets notified so they know which homes you're interested in.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🔍</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">Search all of Oklahoma</div>
+          <div class="modal-step-desc">Under the Find Properties tab, search Zillow, Realtor.com, or Redfin with one tap — Oklahoma is pre-filtered so you see only local listings.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">📞</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">Your REALTOR® is always at the top</div>
+          <div class="modal-step-desc">Your agent's name, phone, and email appear at the top of every page. Tap their number to call or tap their email to reach out anytime.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🔑</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">Questions about your mortgage? Talk to Brooke</div>
+          <div class="modal-step-desc">The "Talk to Brooke" button in the top right connects you to Brooke Gagliardi-Young — Oklahoma's concierge mortgage lender — for a free consultation anytime.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-got-it" onclick="closeBuyerWelcome()">Let's go! →</button>
+    </div>
+  </div>
+</div>
+
+<!-- REALTOR® WELCOME MODAL (setup mode only) -->
+<div class="modal-overlay" id="realtorModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <img class="modal-logo" src="brooke_logo.png" alt="Bank on Brooke">
+      <h2>Welcome to Your Buyer Hub</h2>
+      <p>Here's a quick overview of everything you can do — takes 60 seconds to read.</p>
+    </div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <div class="modal-step-icon">👤</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">1. Set up your profile</div>
+          <div class="modal-step-desc">Go to the Properties tab — fill in your name, photo URL, and contact info. Your buyers will see this at the top of their hub so they always know who to call.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🏠</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">2. Add your featured listings</div>
+          <div class="modal-step-desc">Click "+ Add a Featured Listing" to add homes you want your buyers to see. You can add, update, or remove listings anytime — changes appear for all your buyers instantly.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🔗</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">3. Copy your buyer link and send it</div>
+          <div class="modal-step-desc">The green Setup Mode banner has your buyer link. Copy it and text it to every buyer you're working with. One link works for all your buyers — each person's experience is private.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">❤️</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">4. Get notified when a buyer saves a listing</div>
+          <div class="modal-step-desc">When a buyer taps the heart on one of your listings, you'll receive an automatic email with their name and which property they loved. That's your signal to reach out.</div>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-icon">🔖</div>
+        <div class="modal-step-body">
+          <div class="modal-step-title">5. Bookmark this setup link</div>
+          <div class="modal-step-desc">This is your private link. Bookmark it — you'll come back every time you want to add a listing or get your buyer link. Never share this one with buyers.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-got-it" onclick="closeRealtorModal()">Got it — let's get started →</button>
+      <span class="modal-skip" onclick="closeRealtorModal()">Skip</span>
+    </div>
+  </div>
+</div>
 
 <div class="buyer-login-overlay" id="loginOverlay">
   <div class="buyer-login-card">
@@ -197,6 +362,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('checklist',this)">✅ Buyer Checklist</button>
     <button class="tab-btn" onclick="switchTab('properties',this)">🏠 Find Properties</button>
+    <button class="tab-btn" onclick="switchTab('faq',this)">❓ FAQ</button>
   </div>
 </div>
 
@@ -416,6 +582,11 @@ window.addEventListener('load',async()=>{
     if(P.get('email')) document.getElementById('spEmail').value=P.get('email');
     if(P.get('photo')) document.getElementById('spPhoto').value=P.get('photo');
     buildBuyerLink();
+    // Show onboarding elements
+    const ow = document.getElementById('onboardingWrap');
+    if (ow) ow.classList.add('show');
+    // Show realtor welcome modal after short delay
+    setTimeout(showRealtorModal, 600);
   } else {
     const s=localStorage.getItem('bob_'+RID);
     if(s){buyer=JSON.parse(s);await loadProgress(buyer.email);}
@@ -451,6 +622,7 @@ async function loginBuyer(){
   if(!n||!e){alert('Please enter your name and email.');return;}
   document.getElementById('loginOverlay').classList.remove('show');
   buyer={name:n,email:e,rid:RID};
+  setTimeout(showBuyerWelcome, 400);
   localStorage.setItem('bob_'+RID,JSON.stringify(buyer));
   await loadProgress(e);
   await upsertBuyer(n,e);
