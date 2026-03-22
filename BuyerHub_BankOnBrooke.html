@@ -481,6 +481,29 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   </div>
 
   <div class="tab-panel" id="tab-properties">
+
+    <!-- How to Use collapsible — setup mode only -->
+    <div class="onboarding-wrap" id="onboardingWrap">
+      <div class="onboarding-head" onclick="toggleOnboarding()">
+        <div class="onboarding-head-left">
+          <div class="onboarding-head-icon">📖</div>
+          <div>
+            <div class="onboarding-head-title">How to Use Your Buyer Hub</div>
+            <div class="onboarding-head-sub">Tap to expand — reference this anytime</div>
+          </div>
+        </div>
+        <span class="onboarding-chevron">▼</span>
+      </div>
+      <div class="onboarding-body">
+        <div class="ob-step"><div class="ob-num">1</div><div class="ob-body"><div class="ob-title">Set up your profile first</div><div class="ob-desc">Fill in your name, company, phone, email, and paste your headshot URL in the Your Profile section. Click Save Profile — your buyer link updates automatically.</div></div></div>
+        <div class="ob-step"><div class="ob-num">2</div><div class="ob-body"><div class="ob-title">Add your featured listings</div><div class="ob-desc">Click "+ Add a Featured Listing" and fill in the details. Add a Zillow link so buyers can view full photos. Changes save instantly and appear for all your buyers immediately.</div></div></div>
+        <div class="ob-step"><div class="ob-num">3</div><div class="ob-body"><div class="ob-title">Remove a listing anytime</div><div class="ob-desc">Each listing card has a small trash icon in the bottom right. Tap it to remove the listing instantly — useful when a home goes under contract.</div></div></div>
+        <div class="ob-step"><div class="ob-num">4</div><div class="ob-body"><div class="ob-title">Copy your buyer link</div><div class="ob-desc">The Setup Mode banner at the top has your buyer link. Click "Copy Buyer Link" and text it to your buyers. The same link works for every buyer — each person's checklist and favorites are completely private.</div></div></div>
+        <div class="ob-step"><div class="ob-num">5</div><div class="ob-body"><div class="ob-title">You'll get an email when a buyer saves a listing</div><div class="ob-desc">When a buyer taps the heart on one of your listings an automatic email goes to you with their name and the property they saved. No need to check anything — it comes straight to your inbox.</div></div></div>
+        <div class="ob-step"><div class="ob-num">6</div><div class="ob-body"><div class="ob-title">Bookmark this page</div><div class="ob-desc">This is your private setup link. Bookmark it on your phone (tap Share then Add to Home Screen) so you can open it anytime to add listings or grab your buyer link. Never share this link with buyers.</div></div></div>
+      </div>
+    </div>
+
     <div class="setup-banner" id="setupBanner">
       <p><strong>Setup Mode</strong> — Add your listings below. They appear for all your buyers instantly. When ready, copy your buyer link and send it to your buyers.</p>
       <div class="buyer-link-row">
@@ -635,6 +658,7 @@ window.addEventListener('load',async()=>{
     document.getElementById('setupBanner').classList.add('show');
     document.getElementById('setupProfile').classList.add('show');
     document.getElementById('addToggleBtn').classList.add('show');
+    document.getElementById('onboardingWrap').classList.add('show');
     if(P.get('name')) document.getElementById('spName').value=P.get('name');
     if(P.get('company')) document.getElementById('spCompany').value=P.get('company');
     if(P.get('phone')) document.getElementById('spPhone').value=P.get('phone');
@@ -884,6 +908,30 @@ function toggleFaq(item) {
   const isOpen = item.classList.contains('open');
   document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
   if (!isOpen) item.classList.add('open');
+}
+
+
+function showRealtorModal() {
+  var el = document.getElementById('realtorModal');
+  if (el) el.classList.add('show');
+}
+function closeRealtorModal() {
+  var el = document.getElementById('realtorModal');
+  if (el) el.classList.remove('show');
+  var ow = document.getElementById('onboardingWrap');
+  if (ow) { ow.classList.add('show'); ow.classList.add('open'); }
+}
+function showBuyerWelcome() {
+  var el = document.getElementById('buyerWelcomeModal');
+  if (el) el.classList.add('show');
+}
+function closeBuyerWelcome() {
+  var el = document.getElementById('buyerWelcomeModal');
+  if (el) el.classList.remove('show');
+}
+function toggleOnboarding() {
+  var el = document.getElementById('onboardingWrap');
+  if (el) el.classList.toggle('open');
 }
 
 function switchTab(name,btn){
