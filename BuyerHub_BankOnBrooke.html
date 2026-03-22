@@ -7,66 +7,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --navy:#1B2A4A;--navy-light:#243558;--navy-dark:#131f38;
-  --gold:#C49A78;--gold-light:#d4b090;--gold-dim:rgba(196,154,120,0.15);
-  --cream:#F0E6D8;--white:#fff;--gray:#888;--light:#F7F3EE;
-  --border:#e8e2db;
-}
+:root{--navy:#1B2A4A;--navy-light:#243558;--navy-dark:#131f38;--gold:#C49A78;--gold-light:#d4b090;--gold-dim:rgba(196,154,120,0.15);--cream:#F0E6D8;--white:#fff;--gray:#888;--light:#F7F3EE;--border:#e8e2db;}
 body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min-height:100vh;}
-
-/* HEADER */
-.site-header{background:var(--navy);padding:18px 24px 0;border-bottom:3px solid var(--gold);}
-.header-top{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:14px;}
-.brand-block{display:flex;align-items:center;gap:14px;}
-.brand-logo-link{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.brand-icon{width:36px;height:36px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);flex-shrink:0;}
-.brand-text{}
-.brand-eyebrow{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:2px;}
-.brand-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);line-height:1;}
-.header-divider{width:1px;height:32px;background:rgba(196,154,120,0.3);}
-.hub-title{font-size:13px;font-weight:600;color:rgba(240,230,216,0.6);letter-spacing:0.5px;}
-.header-cta{display:flex;align-items:center;gap:10px;}
-.header-cta a.primary{display:inline-block;background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 18px;border-radius:8px;text-decoration:none;transition:background 0.2s;white-space:nowrap;}
-.header-cta a.primary:hover{background:var(--gold-light);}
-.header-cta a.secondary{font-size:12px;color:rgba(240,230,216,0.5);text-decoration:none;transition:color 0.2s;white-space:nowrap;}
-.header-cta a.secondary:hover{color:var(--gold);}
-
-/* TABS */
-.tab-bar{max-width:900px;margin:0 auto;display:flex;}
-.tab-btn{flex:1;padding:13px 12px;background:transparent;border:none;font-family:'Lato',sans-serif;font-size:14px;font-weight:600;color:rgba(240,230,216,0.45);cursor:pointer;border-bottom:3px solid transparent;transition:color 0.2s,border-color 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.site-header{background:var(--navy);padding:14px 24px 0;border-bottom:3px solid var(--gold);}
+.header-top{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:12px;}
+.brand-logo-link{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.brand-logo-img{height:44px;width:auto;object-fit:contain;}
+.header-divider{width:1px;height:30px;background:rgba(196,154,120,0.3);}
+.hub-label{font-size:12px;font-weight:600;color:rgba(240,230,216,0.5);}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.header-right a.site-link{font-size:12px;color:rgba(240,230,216,0.45);text-decoration:none;transition:color 0.2s;}
+.header-right a.site-link:hover{color:var(--gold);}
+.header-right a.cta{display:inline-block;background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;}
+.tab-bar{max-width:960px;margin:0 auto;display:flex;}
+.tab-btn{flex:1;padding:12px;background:transparent;border:none;font-family:'Lato',sans-serif;font-size:14px;font-weight:600;color:rgba(240,230,216,0.45);cursor:pointer;border-bottom:3px solid transparent;transition:color 0.2s,border-color 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .tab-btn.active{color:var(--white);border-bottom-color:var(--gold);}
-.tab-btn:hover:not(.active){color:rgba(240,230,216,0.75);}
-.tab-icon{font-size:15px;}
-
-/* PARTNER BAR */
 .partner-bar{background:var(--white);border-bottom:1px solid var(--border);}
-.partner-inner{max-width:900px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.partner-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);white-space:nowrap;}
-.partner-fields{display:flex;gap:12px;flex:1;flex-wrap:wrap;}
-.pf{display:flex;flex-direction:column;flex:1;min-width:130px;}
-.pf label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:3px;}
-.pf input{border:none;border-bottom:1.5px solid var(--border);padding:4px 0;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:transparent;outline:none;transition:border-color 0.2s;}
-.pf input:focus{border-bottom-color:var(--gold);}
-.pf input::placeholder{color:#ccc;}
-
-/* MAIN */
-.main{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+.partner-inner{max-width:960px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.partner-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0;display:none;}
+.partner-photo.visible{display:block;}
+.partner-name{font-size:14px;font-weight:700;color:var(--navy);}
+.partner-company{font-size:12px;color:var(--gray);}
+.partner-contact{display:flex;gap:14px;flex-wrap:wrap;margin-top:3px;}
+.partner-contact a{font-size:12px;color:var(--gold);text-decoration:none;font-weight:600;}
+.partner-empty{font-size:13px;color:var(--gray);font-style:italic;}
+.buyer-login-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.buyer-login-overlay.show{display:flex;}
+.buyer-login-card{background:var(--white);border-radius:16px;padding:32px;width:100%;max-width:420px;position:relative;}
+.buyer-login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold);border-radius:16px 16px 0 0;}
+.buyer-login-logo{height:36px;margin-bottom:16px;}
+.buyer-login-card h2{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin-bottom:6px;}
+.buyer-login-card p{font-size:13px;color:var(--gray);margin-bottom:20px;line-height:1.6;}
+.login-field{margin-bottom:14px;}
+.login-field label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;}
+.login-field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Lato',sans-serif;font-size:14px;color:var(--navy);outline:none;transition:border-color 0.2s;}
+.login-field input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:13px;cursor:pointer;margin-top:4px;}
+.login-skip{display:block;text-align:center;margin-top:12px;font-size:12px;color:var(--gray);cursor:pointer;text-decoration:underline;}
+.main{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-
-/* PROGRESS */
 .progress-wrap{margin-bottom:20px;}
-.progress-bar-bg{background:#e0d8cf;border-radius:20px;height:8px;margin-bottom:6px;}
-.progress-bar-fill{background:var(--gold);height:8px;border-radius:20px;width:0%;transition:width 0.4s ease;}
-.progress-row{display:flex;justify-content:space-between;align-items:center;}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .progress-text{font-size:12px;color:var(--gray);}
 .progress-text span{color:var(--gold);font-weight:700;}
 .progress-pct{font-size:12px;font-weight:700;color:var(--gold);}
-
-/* CHECKLIST SECTIONS */
+.progress-bar-bg{background:#e0d8cf;border-radius:20px;height:8px;}
+.progress-bar-fill{background:var(--gold);height:8px;border-radius:20px;width:0%;transition:width 0.4s ease;}
+.save-status{font-size:11px;color:var(--gray);text-align:right;margin-top:4px;height:16px;}
+.save-status.saved{color:#3a9e6e;}
+.save-status.saving{color:var(--gold);}
 .section-block{background:var(--white);border-radius:14px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
-.section-head{background:var(--navy);padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none;}
+.section-head{background:var(--navy);padding:13px 20px;display:flex;align-items:center;gap:13px;cursor:pointer;user-select:none;}
 .section-num{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--navy);flex-shrink:0;}
 .section-head-text{flex:1;}
 .section-head-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:1px;}
@@ -77,12 +69,10 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .section-block.open .section-chevron{transform:rotate(180deg);}
 .section-items{display:none;padding:4px 0;}
 .section-block.open .section-items{display:block;}
-
-/* ITEMS */
 .item{display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:0.5px solid #f5f2ef;cursor:pointer;transition:background 0.15s;}
 .item:last-child{border-bottom:none;}
 .item:hover{background:rgba(196,154,120,0.04);}
-.item.checked{background:rgba(196,154,120,0.06);}
+.item.checked{background:rgba(196,154,120,0.07);}
 .checkbox{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:background 0.2s;}
 .item.checked .checkbox{background:var(--gold);border-color:var(--gold);}
 .checkmark{display:none;color:var(--navy);font-size:11px;font-weight:700;}
@@ -91,150 +81,138 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .item-label{font-size:13px;font-weight:500;color:var(--navy);line-height:1.4;transition:color 0.2s;}
 .item.checked .item-label{color:var(--gray);text-decoration:line-through;}
 .item-note{font-size:11px;color:var(--gray);margin-top:3px;font-style:italic;line-height:1.5;}
-
-/* CHECKLIST CTA */
 .cta-strip{background:var(--navy);border-radius:14px;padding:28px;text-align:center;margin-top:20px;}
 .cta-strip h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);margin-bottom:6px;}
 .cta-strip p{font-size:13px;color:rgba(240,230,216,0.55);margin-bottom:18px;font-weight:300;}
-.cta-btn{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;transition:background 0.2s;}
-.cta-btn:hover{background:var(--gold-light);}
-
-/* PROPERTIES TAB */
-.section-divider{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:0 0 14px;display:flex;align-items:center;gap:10px;}
-.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
-/* Featured listings */
-.listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:24px;}
-.listing-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.07);transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;}
-.listing-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(27,42,74,0.12);}
-.listing-img{width:100%;height:160px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);display:flex;align-items:center;justify-content:center;color:rgba(240,230,216,0.2);font-size:36px;overflow:hidden;}
-.listing-img img{width:100%;height:100%;object-fit:cover;}
-.listing-body{padding:14px 16px;}
-.listing-price{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--navy);margin-bottom:3px;}
-.listing-address{font-size:13px;color:var(--navy);font-weight:500;margin-bottom:1px;}
-.listing-city{font-size:11px;color:var(--gray);margin-bottom:8px;}
-.listing-details{display:flex;gap:12px;font-size:11px;color:var(--gray);}
-.listing-tag{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:8px;}
-.listing-view{font-size:11px;color:var(--gold);margin-top:6px;font-weight:600;}
-
-/* Add listing form */
-.add-toggle{background:transparent;border:1.5px dashed var(--gold);color:var(--gold);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;width:100%;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;}
-.add-toggle:hover{background:var(--gold-dim);}
-.add-form{display:none;background:var(--white);border-radius:12px;padding:20px;margin-top:-16px;margin-bottom:24px;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
-.add-form.open{display:block;}
-.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-@media(max-width:500px){.add-form-grid{grid-template-columns:1fr;}}
+.cta-btn{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;}
+.sec-divider{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:0 0 14px;display:flex;align-items:center;gap:10px;}
+.sec-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.setup-banner{background:var(--navy);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:none;flex-direction:column;gap:10px;}
+.setup-banner.show{display:flex;}
+.setup-banner p{font-size:13px;color:rgba(240,230,216,0.7);}
+.setup-banner strong{color:var(--gold);}
+.buyer-link-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.buyer-link-box{background:rgba(0,0,0,0.3);border:1px solid rgba(196,154,120,0.3);border-radius:8px;padding:8px 12px;font-size:11px;color:#3CE8A0;font-family:monospace;word-break:break-all;flex:1;min-width:180px;}
+.copy-link-btn{background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:7px;padding:8px 14px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.copy-link-btn.copied{background:#3a9e6e;color:#fff;}
+.setup-profile{background:var(--white);border-radius:12px;padding:18px;margin-bottom:20px;display:none;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
+.setup-profile.show{display:block;}
+.setup-profile h3{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .form-field{display:flex;flex-direction:column;gap:4px;}
 .form-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);}
 .form-field input,.form-field select{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;transition:border-color 0.2s;}
 .form-field input:focus,.form-field select:focus{border-color:var(--gold);}
 .form-field.full{grid-column:1/-1;}
-.add-submit{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:11px 24px;cursor:pointer;transition:background 0.2s;}
-.add-submit:hover{background:var(--navy-light);}
-
-/* Search launcher */
-.search-launcher{background:var(--white);border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(27,42,74,0.07);margin-bottom:16px;}
+.setup-save-btn{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;margin-top:12px;}
+.listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:20px;}
+.listing-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.07);transition:transform 0.2s;}
+.listing-card:hover{transform:translateY(-3px);}
+.listing-img{width:100%;height:150px;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;color:rgba(240,230,216,0.2);font-size:36px;overflow:hidden;}
+.listing-img img{width:100%;height:100%;object-fit:cover;}
+.listing-body{padding:13px 15px;}
+.listing-price{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.listing-address{font-size:13px;color:var(--navy);font-weight:500;margin-bottom:1px;}
+.listing-city{font-size:11px;color:var(--gray);margin-bottom:7px;}
+.listing-details{display:flex;gap:10px;font-size:11px;color:var(--gray);}
+.listing-tag{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:6px;}
+.listing-actions{display:flex;gap:8px;margin-top:8px;align-items:center;}
+.listing-view{font-size:11px;color:var(--gold);font-weight:600;text-decoration:none;flex:1;}
+.fav-btn{background:transparent;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--gray);cursor:pointer;transition:all 0.2s;}
+.fav-btn.active{background:#fff0f0;border-color:#e07070;color:#e07070;}
+.del-btn{background:transparent;border:none;color:#ccc;font-size:15px;cursor:pointer;padding:2px 6px;display:none;}
+.setup-mode .del-btn{display:block;}
+.no-listings{grid-column:1/-1;text-align:center;padding:32px;color:var(--gray);font-size:14px;background:var(--white);border-radius:12px;}
+.add-toggle{background:transparent;border:1.5px dashed var(--gold);color:var(--gold);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;width:100%;transition:background 0.2s;display:none;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;}
+.add-toggle.show{display:flex;}
+.add-form{display:none;background:var(--white);border-radius:12px;padding:20px;margin-top:-12px;margin-bottom:20px;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
+.add-form.open{display:block;}
+.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.add-submit{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:11px 24px;cursor:pointer;}
+.form-loading{display:none;font-size:13px;color:var(--gold);padding:8px;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.search-launcher{background:var(--white);border-radius:14px;padding:22px;box-shadow:0 2px 12px rgba(27,42,74,0.07);}
 .search-launcher h3{font-family:'Playfair Display',serif;font-size:17px;color:var(--navy);margin-bottom:4px;}
-.search-launcher p{font-size:13px;color:var(--gray);margin-bottom:18px;line-height:1.6;}
-.search-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.search-input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:14px;color:var(--navy);outline:none;transition:border-color 0.2s;}
-.search-input:focus{border-color:var(--gold);}
+.search-launcher p{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;}
+.search-row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:14px;color:var(--navy);outline:none;}
 .price-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.price-select{flex:1;min-width:130px;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:var(--white);outline:none;transition:border-color 0.2s;}
-.price-select:focus{border-color:var(--gold);}
+.price-select{flex:1;min-width:110px;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:var(--white);outline:none;}
 .site-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-@media(max-width:480px){.site-btns{grid-template-columns:1fr;}}
-.site-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;text-decoration:none;transition:border-color 0.2s,transform 0.15s,box-shadow 0.2s;}
-.site-btn:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 16px rgba(27,42,74,0.1);}
+.site-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:16px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;text-decoration:none;transition:border-color 0.2s,transform 0.15s;}
+.site-btn:hover{border-color:var(--gold);transform:translateY(-2px);}
 .site-btn-logo{font-size:22px;}
 .site-btn-name{font-size:13px;font-weight:700;color:var(--navy);}
 .site-btn-sub{font-size:10px;color:var(--gray);text-align:center;}
-
-/* FOOTER */
-.site-footer{background:var(--navy);padding:24px 20px;border-top:1px solid rgba(196,154,120,0.15);}
-.footer-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.footer-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.footer-brand-icon{width:28px;height:28px;border-radius:6px;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--navy);}
-.footer-brand-text{font-size:12px;font-weight:600;color:rgba(240,230,216,0.6);}
-.footer-links{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
-.footer-links a{font-size:11px;color:rgba(196,154,120,0.5);text-decoration:none;transition:color 0.2s;}
+.site-footer{background:var(--navy);padding:20px;border-top:1px solid rgba(196,154,120,0.15);}
+.footer-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+.footer-logo{height:28px;opacity:0.6;}
+.footer-links{display:flex;gap:16px;}
+.footer-links a{font-size:11px;color:rgba(196,154,120,0.5);text-decoration:none;}
 .footer-links a:hover{color:var(--gold);}
-.footer-disclaimer{width:100%;font-size:11px;color:rgba(240,230,216,0.2);line-height:1.6;border-top:0.5px solid rgba(196,154,120,0.1);padding-top:14px;margin-top:4px;}
-
-@media(max-width:600px){
-  .brand-title{font-size:16px;}
-  .tab-btn{font-size:12px;padding:12px 8px;}
-  .main{padding:16px 12px 40px;}
-  .header-divider,.hub-title{display:none;}
-}
+.footer-disclaimer{max-width:960px;margin:12px auto 0;font-size:11px;color:rgba(240,230,216,0.18);line-height:1.6;padding-top:12px;border-top:0.5px solid rgba(196,154,120,0.1);}
+@media(max-width:600px){.tab-btn{font-size:12px;padding:11px 8px;}.main{padding:16px 12px 40px;}.hub-label,.header-divider{display:none;}.site-btns{grid-template-columns:1fr;}.add-form-grid{grid-template-columns:1fr;}.profile-grid{grid-template-columns:1fr;}}
 </style>
+<script src="config.js"></script>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="site-header">
-  <div class="header-top">
-    <div class="brand-block">
-      <a class="brand-logo-link" href="https://bankonbrooke.studio" target="_blank">
-        <div class="brand-icon">B</div>
-        <div class="brand-text">
-          <div class="brand-eyebrow">Bank on Brooke</div>
-          <div class="brand-title">Home Loans</div>
-        </div>
-      </a>
-      <div class="header-divider"></div>
-      <div class="hub-title">First-Time Buyer Hub</div>
-    </div>
-    <div class="header-cta">
-      <a class="secondary" href="https://bankonbrooke.studio" target="_blank">bankonbrooke.studio</a>
-      <a class="primary" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke →</a>
-    </div>
-  </div>
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('checklist',this)">
-      <span class="tab-icon">✅</span> Buyer Checklist
-    </button>
-    <button class="tab-btn" onclick="switchTab('properties',this)">
-      <span class="tab-icon">🏠</span> Find Properties
-    </button>
+<div class="buyer-login-overlay" id="loginOverlay">
+  <div class="buyer-login-card">
+    <img class="buyer-login-logo" src="brooke_logo.png" alt="Bank on Brooke">
+    <h2>Welcome to Your Buyer Hub</h2>
+    <p>Enter your name and email so your checklist progress saves automatically every time you come back.</p>
+    <div class="login-field"><label>Your First Name</label><input type="text" id="buyerName" placeholder="e.g. Sarah"></div>
+    <div class="login-field"><label>Your Email</label><input type="email" id="buyerEmail" placeholder="sarah@email.com"></div>
+    <button class="login-btn" onclick="loginBuyer()">Save My Progress →</button>
+    <span class="login-skip" onclick="skipLogin()">Skip — don't save my progress</span>
   </div>
 </div>
 
-<!-- PARTNER BAR -->
+<div class="site-header">
+  <div class="header-top">
+    <a class="brand-logo-link" href="https://bankonbrooke.studio" target="_blank">
+      <img class="brand-logo-img" src="brooke_logo.png" alt="Bank on Brooke">
+      <div class="header-divider"></div>
+      <div class="hub-label">First-Time Buyer Hub</div>
+    </a>
+    <div class="header-right">
+      <a class="site-link" href="https://bankonbrooke.studio" target="_blank">bankonbrooke.studio</a>
+      <a class="cta" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke →</a>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('checklist',this)">✅ Buyer Checklist</button>
+    <button class="tab-btn" onclick="switchTab('properties',this)">🏠 Find Properties</button>
+  </div>
+</div>
+
 <div class="partner-bar">
   <div class="partner-inner">
-    <div class="partner-label">Your REALTOR®</div>
-    <div class="partner-fields">
-      <div class="pf"><label>Name</label><input type="text" id="rName" placeholder="e.g. Alex Rivera"></div>
-      <div class="pf"><label>Phone</label><input type="text" id="rPhone" placeholder="(405) 555-0199"></div>
-      <div class="pf"><label>Email</label><input type="text" id="rEmail" placeholder="alex@oklahomagroup.com"></div>
-      <div class="pf"><label>Company</label><input type="text" id="rCompany" placeholder="Oklahoma Realty Group"></div>
-    </div>
+    <img class="partner-photo" id="partnerPhoto" src="" alt="REALTOR">
+    <div id="partnerInfo"><div class="partner-empty">Your REALTOR® partner information will appear here.</div></div>
   </div>
 </div>
 
 <div class="main">
 
-  <!-- CHECKLIST TAB -->
   <div class="tab-panel active" id="tab-checklist">
     <div class="progress-wrap">
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
-      <div class="progress-row">
+      <div class="progress-top">
         <div class="progress-text"><span id="progressCount">0</span> of <span id="totalCount">0</span> steps completed</div>
         <div class="progress-pct" id="progressPct">0%</div>
       </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="save-status" id="saveStatus"></div>
     </div>
 
     <div class="section-block open">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">1</div>
-        <div class="section-head-text"><div class="section-head-title">Get Your Finances in Order</div><div class="section-head-sub">Before you start house hunting, know where you stand</div></div>
-        <div class="section-head-right"><span class="section-count" id="s1count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">1</div><div class="section-head-text"><div class="section-head-title">Get Your Finances in Order</div><div class="section-head-sub">Before you start house hunting, know where you stand</div></div><div class="section-head-right"><span class="section-count" id="s1count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Check your credit score</div><div class="item-note">Aim for 620+ for most programs. 680+ opens more options and better rates.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Pull your full credit report</div><div class="item-note">Get your free report at annualcreditreport.com — check all three bureaus.</div></div></div>
-        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Dispute any errors on your credit report</div><div class="item-note">Errors are more common than you think and can drag your score down.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Dispute any errors on your credit report</div><div class="item-note">Errors drag your score down — fix them before applying.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Calculate your monthly debt payments</div><div class="item-note">Add up car payments, student loans, credit cards, and any other monthly obligations.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Estimate your monthly gross income</div><div class="item-note">Lenders look at your gross (pre-tax) income, not your take-home pay.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Set a realistic monthly housing budget</div><div class="item-note">A common guideline is no more than 28–31% of your gross monthly income.</div></div></div>
@@ -243,11 +221,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">2</div>
-        <div class="section-head-text"><div class="section-head-title">Gather Your Documents</div><div class="section-head-sub">Have these ready before you talk to a lender</div></div>
-        <div class="section-head-right"><span class="section-count" id="s2count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">2</div><div class="section-head-text"><div class="section-head-title">Gather Your Documents</div><div class="section-head-sub">Have these ready before you talk to a lender</div></div><div class="section-head-right"><span class="section-count" id="s2count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 2 years of W-2s or 1099s</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 2 years of federal tax returns (all pages)</div></div></div>
@@ -261,11 +235,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">3</div>
-        <div class="section-head-text"><div class="section-head-title">Explore Down Payment Assistance</div><div class="section-head-sub">You may qualify for programs that reduce your down payment</div></div>
-        <div class="section-head-right"><span class="section-count" id="s3count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">3</div><div class="section-head-text"><div class="section-head-title">Explore Down Payment Assistance</div><div class="section-head-sub">You may qualify for programs that reduce your down payment</div></div><div class="section-head-right"><span class="section-count" id="s3count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Ask your lender about OHFA programs</div><div class="item-note">Oklahoma Housing Finance Agency offers programs for qualifying buyers.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Check income eligibility for DPA programs</div><div class="item-note">Limits vary by program and county — your lender can run this for you.</div></div></div>
@@ -277,11 +247,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">4</div>
-        <div class="section-head-text"><div class="section-head-title">Get Pre-Approved</div><div class="section-head-sub">Pre-approval is not the same as pre-qualification</div></div>
-        <div class="section-head-right"><span class="section-count" id="s4count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">4</div><div class="section-head-text"><div class="section-head-title">Get Pre-Approved</div><div class="section-head-sub">Pre-approval is not the same as pre-qualification</div></div><div class="section-head-right"><span class="section-count" id="s4count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Contact a trusted mortgage lender</div><div class="item-note">Work with someone who knows Oklahoma programs — like Brooke.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Submit your full application and documents</div><div class="item-note">A real pre-approval requires a full credit pull and document review.</div></div></div>
@@ -293,11 +259,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">5</div>
-        <div class="section-head-text"><div class="section-head-title">Start Your Home Search</div><div class="section-head-sub">Now the fun part — stay disciplined</div></div>
-        <div class="section-head-right"><span class="section-count" id="s5count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">5</div><div class="section-head-text"><div class="section-head-title">Start Your Home Search</div><div class="section-head-sub">Now the fun part — stay disciplined</div></div><div class="section-head-right"><span class="section-count" id="s5count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Partner with a trusted REALTOR®</div><div class="item-note">Your REALTOR® is paid by the seller — their expertise costs you nothing.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Make a must-have vs nice-to-have list</div><div class="item-note">Bedrooms, location, school district, garage — know what matters most.</div></div></div>
@@ -309,11 +271,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">6</div>
-        <div class="section-head-text"><div class="section-head-title">Make an Offer & Go Under Contract</div><div class="section-head-sub">Moving fast and strategically wins homes</div></div>
-        <div class="section-head-right"><span class="section-count" id="s6count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">6</div><div class="section-head-text"><div class="section-head-title">Make an Offer & Go Under Contract</div><div class="section-head-sub">Moving fast and strategically wins homes</div></div><div class="section-head-right"><span class="section-count" id="s6count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Work with your REALTOR® on offer price</div><div class="item-note">Your REALTOR® will pull comps to help you offer competitively.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Understand earnest money</div><div class="item-note">A good-faith deposit — typically 1% of the purchase price.</div></div></div>
@@ -325,11 +283,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="section-block">
-      <div class="section-head" onclick="toggleSection(this.parentElement)">
-        <div class="section-num">7</div>
-        <div class="section-head-text"><div class="section-head-title">Closing Time</div><div class="section-head-sub">The finish line — stay responsive</div></div>
-        <div class="section-head-right"><span class="section-count" id="s7count"></span><span class="section-chevron">▼</span></div>
-      </div>
+      <div class="section-head" onclick="toggleSection(this.parentElement)"><div class="section-num">7</div><div class="section-head-text"><div class="section-head-title">Closing Time</div><div class="section-head-sub">The finish line — stay responsive</div></div><div class="section-head-right"><span class="section-count" id="s7count"></span><span class="section-chevron">▼</span></div></div>
       <div class="section-items">
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Respond quickly to all lender requests</div><div class="item-note">A delayed document can delay your closing date.</div></div></div>
         <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Lock your interest rate</div><div class="item-note">Ask your lender when to lock and what your lock period covers.</div></div></div>
@@ -348,240 +302,345 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
   </div>
 
-  <!-- PROPERTIES TAB -->
   <div class="tab-panel" id="tab-properties">
-
-    <!-- Featured listings from REALTOR® -->
-    <div class="section-divider">Featured Listings from Your REALTOR®</div>
-    <div class="listings-grid" id="listingsGrid">
-      <div id="noListings" style="grid-column:1/-1;text-align:center;padding:32px 20px;color:var(--gray);font-size:14px;background:var(--white);border-radius:12px;">
-        No featured listings yet.<br>
-        <span style="font-size:12px;display:block;margin-top:6px;">Your REALTOR® can add homes using the button below.</span>
+    <div class="setup-banner" id="setupBanner">
+      <p><strong>Setup Mode</strong> — Add your listings below. They appear for all your buyers instantly. When ready, copy your buyer link and send it to your buyers.</p>
+      <div class="buyer-link-row">
+        <div class="buyer-link-box" id="buyerLinkDisplay">Building your link...</div>
+        <button class="copy-link-btn" id="copyLinkBtn" onclick="copyBuyerLink()">Copy Buyer Link</button>
       </div>
     </div>
 
-    <button class="add-toggle" onclick="toggleAddForm()">+ Add a Featured Listing</button>
+    <div class="setup-profile" id="setupProfile">
+      <h3>Your Profile — buyers will see this at the top of their hub</h3>
+      <div class="profile-grid">
+        <div class="form-field"><label>Your Name</label><input type="text" id="spName" placeholder="Your full name"></div>
+        <div class="form-field"><label>Your Company</label><input type="text" id="spCompany" placeholder="Your brokerage"></div>
+        <div class="form-field"><label>Your Phone</label><input type="text" id="spPhone" placeholder="(405) 555-0100"></div>
+        <div class="form-field"><label>Your Email</label><input type="text" id="spEmail" placeholder="you@brokerage.com"></div>
+        <div class="form-field full"><label>Your Headshot or Logo URL — paste a direct image link</label><input type="text" id="spPhoto" placeholder="https://...your-photo-url..."></div>
+      </div>
+      <button class="setup-save-btn" onclick="saveProfile()">Save Profile & Update Buyer Link</button>
+      <span id="profileSaved" style="font-size:12px;color:#3a9e6e;margin-left:12px;display:none;">✓ Saved</span>
+    </div>
+
+    <div class="sec-divider">Featured Listings</div>
+    <div class="listings-grid" id="listingsGrid">
+      <div class="no-listings"><span class="spinner"></span> Loading listings...</div>
+    </div>
+
+    <button class="add-toggle" id="addToggleBtn" onclick="toggleAddForm()">+ Add a Featured Listing</button>
     <div class="add-form" id="addForm">
       <div class="add-form-grid">
         <div class="form-field"><label>Address</label><input type="text" id="fAddress" placeholder="123 Main St"></div>
         <div class="form-field"><label>City</label><input type="text" id="fCity" placeholder="Oklahoma City, OK"></div>
         <div class="form-field"><label>Price</label><input type="text" id="fPrice" placeholder="$285,000"></div>
-        <div class="form-field"><label>Bedrooms</label><input type="number" id="fBeds" placeholder="3" min="1" max="10"></div>
-        <div class="form-field"><label>Bathrooms</label><input type="number" id="fBaths" placeholder="2" min="1" max="10" step="0.5"></div>
+        <div class="form-field"><label>Beds</label><input type="number" id="fBeds" placeholder="3" min="1" max="10"></div>
+        <div class="form-field"><label>Baths</label><input type="number" id="fBaths" placeholder="2" min="1" max="10" step="0.5"></div>
         <div class="form-field"><label>Sq Ft</label><input type="text" id="fSqft" placeholder="1,450"></div>
-        <div class="form-field"><label>Status</label>
-          <select id="fStatus"><option>For Sale</option><option>Coming Soon</option><option>Under Contract</option><option>New Listing</option></select>
-        </div>
+        <div class="form-field"><label>Status</label><select id="fStatus"><option>For Sale</option><option>Coming Soon</option><option>Under Contract</option><option>New Listing</option></select></div>
         <div class="form-field"><label>Zillow / MLS Link</label><input type="text" id="fLink" placeholder="https://zillow.com/..."></div>
         <div class="form-field full"><label>Photo URL (optional)</label><input type="text" id="fPhoto" placeholder="Paste a direct image URL"></div>
       </div>
       <button class="add-submit" onclick="addListing()">Add This Listing</button>
+      <div class="form-loading" id="formLoading"><span class="spinner"></span> Saving...</div>
     </div>
 
-    <!-- Search Launcher -->
-    <div class="section-divider">Search All Oklahoma Properties</div>
+    <div class="sec-divider" style="margin-top:8px;">Search All Oklahoma Properties</div>
     <div class="search-launcher">
       <h3>Find Your Perfect Oklahoma Home</h3>
-      <p>Enter a city, neighborhood, or zip code and choose where to search. All links open real live listings — updated daily.</p>
+      <p>Enter a city, neighborhood, or zip code and choose where to search — real live listings updated daily.</p>
       <div class="search-row">
-        <input class="search-input" type="text" id="searchCity" placeholder="City, neighborhood, or zip code (e.g. Edmond, OK)" value="Oklahoma City, OK">
+        <input class="search-input" type="text" id="searchCity" placeholder="City, neighborhood, or zip code" value="Oklahoma City, OK">
       </div>
       <div class="price-row">
-        <select class="price-select" id="minPrice">
-          <option value="">Min Price</option>
-          <option value="100000">$100,000</option>
-          <option value="150000">$150,000</option>
-          <option value="200000">$200,000</option>
-          <option value="250000">$250,000</option>
-          <option value="300000">$300,000</option>
-          <option value="350000">$350,000</option>
-          <option value="400000">$400,000</option>
-          <option value="500000">$500,000</option>
-        </select>
-        <select class="price-select" id="maxPrice">
-          <option value="">Max Price</option>
-          <option value="150000">$150,000</option>
-          <option value="200000">$200,000</option>
-          <option value="250000">$250,000</option>
-          <option value="300000">$300,000</option>
-          <option value="350000">$350,000</option>
-          <option value="400000">$400,000</option>
-          <option value="500000">$500,000</option>
-          <option value="600000">$600,000</option>
-          <option value="750000">$750,000+</option>
-        </select>
-        <select class="price-select" id="minBeds">
-          <option value="">Any Beds</option>
-          <option value="1">1+ bed</option>
-          <option value="2">2+ beds</option>
-          <option value="3">3+ beds</option>
-          <option value="4">4+ beds</option>
-        </select>
+        <select class="price-select" id="minPrice"><option value="">Min Price</option><option value="100000">$100k</option><option value="150000">$150k</option><option value="200000">$200k</option><option value="250000">$250k</option><option value="300000">$300k</option><option value="400000">$400k</option></select>
+        <select class="price-select" id="maxPrice"><option value="">Max Price</option><option value="200000">$200k</option><option value="250000">$250k</option><option value="300000">$300k</option><option value="400000">$400k</option><option value="500000">$500k</option><option value="750000">$750k+</option></select>
+        <select class="price-select" id="minBeds"><option value="">Any Beds</option><option value="1">1+ bd</option><option value="2">2+ bd</option><option value="3">3+ bd</option><option value="4">4+ bd</option></select>
       </div>
       <div class="site-btns">
-        <a class="site-btn" onclick="openSearch('zillow')" href="#">
-          <div class="site-btn-logo">🏠</div>
-          <div class="site-btn-name">Zillow</div>
-          <div class="site-btn-sub">Largest listing database</div>
-        </a>
-        <a class="site-btn" onclick="openSearch('realtor')" href="#">
-          <div class="site-btn-logo">🔑</div>
-          <div class="site-btn-name">Realtor.com</div>
-          <div class="site-btn-sub">Direct MLS data</div>
-        </a>
-        <a class="site-btn" onclick="openSearch('redfin')" href="#">
-          <div class="site-btn-logo">📍</div>
-          <div class="site-btn-name">Redfin</div>
-          <div class="site-btn-sub">Fast & map-based</div>
-        </a>
+        <a class="site-btn" onclick="openSearch('zillow');return false;" href="#"><div class="site-btn-logo">🏠</div><div class="site-btn-name">Zillow</div><div class="site-btn-sub">Largest database</div></a>
+        <a class="site-btn" onclick="openSearch('realtor');return false;" href="#"><div class="site-btn-logo">🔑</div><div class="site-btn-name">Realtor.com</div><div class="site-btn-sub">Direct MLS data</div></a>
+        <a class="site-btn" onclick="openSearch('redfin');return false;" href="#"><div class="site-btn-logo">📍</div><div class="site-btn-name">Redfin</div><div class="site-btn-sub">Fast & map-based</div></a>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- FOOTER -->
 <div class="site-footer">
   <div class="footer-inner">
-    <a class="footer-brand" href="https://bankonbrooke.studio" target="_blank">
-      <div class="footer-brand-icon">B</div>
-      <div class="footer-brand-text">Bank on Brooke Home Loans</div>
-    </a>
+    <a href="https://bankonbrooke.studio" target="_blank"><img class="footer-logo" src="brooke_logo.png" alt="Bank on Brooke"></a>
     <div class="footer-links">
       <a href="https://bankonbrooke.studio" target="_blank">Website</a>
       <a href="https://bankonbrooke.studio/contact" target="_blank">Free Consultation</a>
     </div>
   </div>
-  <div class="footer-inner">
-    <div class="footer-disclaimer">Information is for educational purposes only and does not constitute financial or legal advice. Property searches are powered by Zillow, Realtor.com, and Redfin — Bank on Brooke is not affiliated with these platforms.</div>
-  </div>
+  <div class="footer-disclaimer">Information is for educational purposes only and does not constitute financial or legal advice. Property searches powered by Zillow, Realtor.com, and Redfin — Bank on Brooke is not affiliated with these platforms.</div>
 </div>
 
 <script>
-// TAB SWITCHING
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+// Token loaded from config.js (excluded from GitHub via .gitignore)
+const AT_TOKEN = (window.BOB_CONFIG && window.BOB_CONFIG.token) || '';
+const AT_BASE  = (window.BOB_CONFIG && window.BOB_CONFIG.base)  || 'appFiDdP7ZrfTi5Nx';
+const AT_URL='https://api.airtable.com/v0/'+AT_BASE;
+const AT_H={'Authorization':'Bearer '+AT_TOKEN,'Content-Type':'application/json'};
+const HUB='https://craigkinetic04.github.io/buyerhub/BuyerHub_BankOnBrooke.html';
+const P=new URLSearchParams(window.location.search);
+const MODE=P.get('mode')||'buyer';
+const RID=P.get('rid')||'';
+const IS_SETUP=MODE==='setup';
+let buyer=null,favs=new Set(),saveTimer=null;
+
+window.addEventListener('load',async()=>{
+  updateProgress();updateSectionCounts();renderPartnerBar();
+  if(IS_SETUP){
+    document.getElementById('setupBanner').classList.add('show');
+    document.getElementById('setupProfile').classList.add('show');
+    document.getElementById('addToggleBtn').classList.add('show');
+    if(P.get('name')) document.getElementById('spName').value=P.get('name');
+    if(P.get('company')) document.getElementById('spCompany').value=P.get('company');
+    if(P.get('phone')) document.getElementById('spPhone').value=P.get('phone');
+    if(P.get('email')) document.getElementById('spEmail').value=P.get('email');
+    if(P.get('photo')) document.getElementById('spPhoto').value=P.get('photo');
+    buildBuyerLink();
+  } else {
+    const s=localStorage.getItem('bob_'+RID);
+    if(s){buyer=JSON.parse(s);await loadProgress(buyer.email);}
+    else{document.getElementById('loginOverlay').classList.add('show');}
+  }
+  await loadListings();
+});
+
+function buildBuyerLink(){
+  const q=new URLSearchParams();q.set('mode','buyer');if(RID)q.set('rid',RID);
+  ['name','company','phone','email','photo'].forEach(k=>{if(P.get(k))q.set(k,P.get(k));});
+  const l=HUB+'?'+q.toString();
+  document.getElementById('buyerLinkDisplay').textContent=l;
+  document.getElementById('buyerLinkDisplay').dataset.link=l;
+}
+
+function renderPartnerBar(){
+  const name=P.get('name'),co=P.get('company'),ph=P.get('phone'),em=P.get('email'),pic=P.get('photo');
+  if(!name)return;
+  let h=`<div class="partner-name">${name}</div>`;
+  if(co)h+=`<div class="partner-company">${co}</div>`;
+  h+='<div class="partner-contact">';
+  if(ph)h+=`<a href="tel:${ph}">${ph}</a>`;
+  if(em)h+=`<a href="mailto:${em}">${em}</a>`;
+  h+='</div>';
+  document.getElementById('partnerInfo').innerHTML=h;
+  if(pic){const i=document.getElementById('partnerPhoto');i.src=pic;i.classList.add('visible');}
+}
+
+async function loginBuyer(){
+  const n=document.getElementById('buyerName').value.trim();
+  const e=document.getElementById('buyerEmail').value.trim();
+  if(!n||!e){alert('Please enter your name and email.');return;}
+  document.getElementById('loginOverlay').classList.remove('show');
+  buyer={name:n,email:e,rid:RID};
+  localStorage.setItem('bob_'+RID,JSON.stringify(buyer));
+  await loadProgress(e);
+  await upsertBuyer(n,e);
+}
+function skipLogin(){document.getElementById('loginOverlay').classList.remove('show');}
+
+async function loadProgress(email){
+  try{
+    const f=encodeURIComponent(`AND({Email}="${email}",{RealtorID}="${RID}")`);
+    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}`,{headers:AT_H});
+    const d=await r.json();
+    if(d.records&&d.records.length>0){
+      const rec=d.records[0];buyer.atId=rec.id;
+      if(rec.fields.ChecklistProgress){
+        const c=JSON.parse(rec.fields.ChecklistProgress);
+        document.querySelectorAll('.item').forEach((el,i)=>{if(c.includes(i))el.classList.add('checked');});
+        updateProgress();updateSectionCounts();
+      }
+      if(rec.fields.Favorites)JSON.parse(rec.fields.Favorites).forEach(f=>favs.add(f));
+    }
+  }catch(e){console.log('load err',e);}
+}
+
+async function upsertBuyer(name,email){
+  try{
+    const f=encodeURIComponent(`AND({Email}="${email}",{RealtorID}="${RID}")`);
+    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}`,{headers:AT_H});
+    const d=await r.json();
+    if(d.records&&d.records.length>0){buyer.atId=d.records[0].id;}
+    else{
+      const cr=await fetch(`${AT_URL}/Buyers`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{Name:name,Email:email,RealtorID:RID,ChecklistProgress:'[]',Favorites:'[]',CompletedCount:0}}]})});
+      const cd=await cr.json();
+      if(cd.records)buyer.atId=cd.records[0].id;
+    }
+  }catch(e){console.log('upsert err',e);}
+}
+
+async function saveProgress(){
+  if(!buyer||!buyer.atId)return;
+  setSS('saving');
+  try{
+    const items=document.querySelectorAll('.item');
+    const c=[];items.forEach((el,i)=>{if(el.classList.contains('checked'))c.push(i);});
+    await fetch(`${AT_URL}/Buyers/${buyer.atId}`,{method:'PATCH',headers:AT_H,body:JSON.stringify({fields:{ChecklistProgress:JSON.stringify(c),CompletedCount:c.length,Favorites:JSON.stringify([...favs])}})});
+    setSS('saved');
+  }catch(e){setSS('error');}
+}
+
+function setSS(s){
+  const el=document.getElementById('saveStatus');
+  el.className='save-status '+s;
+  if(s==='saving')el.textContent='Saving...';
+  else if(s==='saved'){el.textContent='✓ Progress saved';setTimeout(()=>{el.textContent='';el.className='save-status';},3000);}
+  else if(s==='error')el.textContent='Could not save — check your connection';
+}
+
+function toggle(el){
+  el.classList.toggle('checked');updateProgress();updateSectionCounts();
+  clearTimeout(saveTimer);saveTimer=setTimeout(saveProgress,1500);
+}
+function toggleSection(b){b.classList.toggle('open');}
+function updateProgress(){
+  const items=document.querySelectorAll('.item');
+  const done=document.querySelectorAll('.item.checked').length;
+  const total=items.length,pct=total?Math.round(done/total*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('totalCount').textContent=total;
+  document.getElementById('progressPct').textContent=pct+'%';
+}
+function updateSectionCounts(){
+  document.querySelectorAll('.section-block').forEach((b,i)=>{
+    const el=document.getElementById('s'+(i+1)+'count');
+    if(el)el.textContent=b.querySelectorAll('.item.checked').length+'/'+b.querySelectorAll('.item').length;
+  });
+}
+
+async function loadListings(){
+  const grid=document.getElementById('listingsGrid');
+  try{
+    const f=RID?encodeURIComponent(`{RealtorID}="${RID}"`):'';
+    const r=await fetch(`${AT_URL}/Listings${f?'?filterByFormula='+f:''}`,{headers:AT_H});
+    const d=await r.json();
+    if(!d.records||d.records.length===0){
+      grid.innerHTML=`<div class="no-listings">${IS_SETUP?'No listings yet — add your first one below.':'Your REALTOR® hasn\'t added any featured listings yet.'}</div>`;
+      return;
+    }
+    grid.innerHTML='';
+    d.records.forEach(rec=>renderCard(rec,grid));
+  }catch(e){grid.innerHTML='<div class="no-listings">Could not load listings.</div>';}
+}
+
+function renderCard(rec,grid){
+  const f=rec.fields,isFav=favs.has(rec.id);
+  const card=document.createElement('div');
+  card.className='listing-card'+(IS_SETUP?' setup-mode':'');
+  card.dataset.id=rec.id;
+  card.innerHTML=`
+    <div class="listing-img">${f.Photo?`<img src="${f.Photo}" alt="${f.Address||''}" onerror="this.parentElement.innerHTML='🏠'">`: '🏠'}</div>
+    <div class="listing-body">
+      <div class="listing-price">${f.Price||''}</div>
+      <div class="listing-address">${f.Address||''}</div>
+      <div class="listing-city">${f.City||''}</div>
+      <div class="listing-details">${f.Beds?`<span>🛏 ${f.Beds} bd</span>`:''}${f.Baths?`<span>🚿 ${f.Baths} ba</span>`:''}${f.SqFt?`<span>📐 ${f.SqFt} sqft</span>`:''}</div>
+      ${f.Status?`<div class="listing-tag">${f.Status}</div>`:''}
+      <div class="listing-actions">
+        ${f.Link?`<a class="listing-view" href="${f.Link}" target="_blank">View listing →</a>`:'<span></span>'}
+        ${!IS_SETUP?`<button class="fav-btn ${isFav?'active':''}" onclick="toggleFav(event,'${rec.id}','${(f.Address||'').replace(/'/g,"\\'")}')">
+          ${isFav?'❤️ Saved':'🤍 Save'}
+        </button>`:''}
+        ${IS_SETUP?`<button class="del-btn" onclick="deleteListing(event,'${rec.id}')">🗑</button>`:''}
+      </div>
+    </div>`;
+  grid.appendChild(card);
+}
+
+function toggleAddForm(){document.getElementById('addForm').classList.toggle('open');}
+async function addListing(){
+  const addr=document.getElementById('fAddress').value.trim();
+  const price=document.getElementById('fPrice').value.trim();
+  if(!addr||!price){alert('Please enter at least an address and price.');return;}
+  document.getElementById('formLoading').style.display='block';
+  document.querySelector('.add-submit').disabled=true;
+  try{
+    const body={records:[{fields:{Address:addr,City:document.getElementById('fCity').value.trim(),Price:price,Beds:parseFloat(document.getElementById('fBeds').value)||null,Baths:parseFloat(document.getElementById('fBaths').value)||null,SqFt:document.getElementById('fSqft').value.trim(),Status:document.getElementById('fStatus').value,Link:document.getElementById('fLink').value.trim(),Photo:document.getElementById('fPhoto').value.trim(),RealtorID:RID}}]};
+    const r=await fetch(`${AT_URL}/Listings`,{method:'POST',headers:AT_H,body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.records){
+      const grid=document.getElementById('listingsGrid');
+      const none=grid.querySelector('.no-listings');if(none)none.remove();
+      renderCard(d.records[0],grid);
+      ['fAddress','fCity','fPrice','fBeds','fBaths','fSqft','fLink','fPhoto'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('fStatus').selectedIndex=0;
+      document.getElementById('addForm').classList.remove('open');
+    }
+  }catch(e){alert('Could not save listing.');}
+  finally{document.getElementById('formLoading').style.display='none';document.querySelector('.add-submit').disabled=false;}
+}
+
+async function deleteListing(e,id){
+  e.stopPropagation();
+  if(!confirm('Remove this listing?'))return;
+  try{
+    await fetch(`${AT_URL}/Listings/${id}`,{method:'DELETE',headers:AT_H});
+    const card=document.querySelector(`.listing-card[data-id="${id}"]`);
+    if(card)card.remove();
+    if(!document.querySelector('.listing-card'))document.getElementById('listingsGrid').innerHTML='<div class="no-listings">No listings yet — add your first one below.</div>';
+  }catch(e){alert('Could not delete.');}
+}
+
+async function toggleFav(e,id,addr){
+  e.stopPropagation();
+  if(!buyer){document.getElementById('loginOverlay').classList.add('show');return;}
+  const btn=e.currentTarget,was=favs.has(id);
+  if(was){favs.delete(id);btn.innerHTML='🤍 Save';btn.classList.remove('active');}
+  else{
+    favs.add(id);btn.innerHTML='❤️ Saved';btn.classList.add('active');
+    try{await fetch(`${AT_URL}/Favorites`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{BuyerName:buyer.name,BuyerEmail:buyer.email,Property:addr,RealtorID:RID,Date:new Date().toISOString().split('T')[0]}}]})});}catch(e){}
+  }
+  clearTimeout(saveTimer);saveTimer=setTimeout(saveProgress,1500);
+}
+
+function saveProfile(){
+  const q=new URLSearchParams(window.location.search);
+  q.set('mode','buyer');
+  ['name','company','phone','email'].forEach(k=>{
+    const v=document.getElementById('sp'+k.charAt(0).toUpperCase()+k.slice(1)).value.trim();
+    if(v)q.set(k,v);
+  });
+  const photo=document.getElementById('spPhoto').value.trim();
+  if(photo)q.set('photo',photo);
+  const link=HUB+'?'+q.toString();
+  document.getElementById('buyerLinkDisplay').textContent=link;
+  document.getElementById('buyerLinkDisplay').dataset.link=link;
+  const s=document.getElementById('profileSaved');s.style.display='inline';
+  setTimeout(()=>s.style.display='none',3000);
+}
+
+function copyBuyerLink(){
+  const link=document.getElementById('buyerLinkDisplay').dataset.link||document.getElementById('buyerLinkDisplay').textContent;
+  navigator.clipboard.writeText(link).then(()=>{
+    const btn=document.getElementById('copyLinkBtn');
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy Buyer Link';btn.classList.remove('copied');},3000);
+  });
+}
+
+function openSearch(site){
+  const city=document.getElementById('searchCity').value.trim()||'Oklahoma';
+  const minP=document.getElementById('minPrice').value;
+  const q=encodeURIComponent(city);let url='';
+  if(site==='zillow'){url=`https://www.zillow.com/homes/for_sale/${q}/`;if(minP)url+=`?price=${minP}-`;}
+  else if(site==='realtor'){url=`https://www.realtor.com/realestateandhomes-search/${city.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'')}`;}
+  else if(site==='redfin'){url=`https://www.redfin.com/city/state/OK?q=${q}`;}
+  window.open(url,'_blank');
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
 }
-
-// SECTION ACCORDION
-function toggleSection(block) { block.classList.toggle('open'); }
-
-// CHECKLIST
-function toggle(el) {
-  el.classList.toggle('checked');
-  updateProgress();
-  updateSectionCounts();
-}
-function updateProgress() {
-  const items = document.querySelectorAll('.item');
-  const done  = document.querySelectorAll('.item.checked').length;
-  const total = items.length;
-  const pct   = total ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressCount').textContent = done;
-  document.getElementById('totalCount').textContent    = total;
-  document.getElementById('progressPct').textContent   = pct + '%';
-}
-function updateSectionCounts() {
-  document.querySelectorAll('.section-block').forEach((block, i) => {
-    const all  = block.querySelectorAll('.item').length;
-    const done = block.querySelectorAll('.item.checked').length;
-    const el   = document.getElementById('s' + (i+1) + 'count');
-    if (el) el.textContent = done + '/' + all;
-  });
-}
-
-// FEATURED LISTINGS
-let listings = [];
-function toggleAddForm() { document.getElementById('addForm').classList.toggle('open'); }
-function addListing() {
-  const address = document.getElementById('fAddress').value.trim();
-  const price   = document.getElementById('fPrice').value.trim();
-  if (!address || !price) { alert('Please enter at least an address and price.'); return; }
-  listings.push({
-    address, price,
-    city:   document.getElementById('fCity').value.trim(),
-    beds:   document.getElementById('fBeds').value.trim(),
-    baths:  document.getElementById('fBaths').value.trim(),
-    sqft:   document.getElementById('fSqft').value.trim(),
-    status: document.getElementById('fStatus').value,
-    link:   document.getElementById('fLink').value.trim(),
-    photo:  document.getElementById('fPhoto').value.trim()
-  });
-  renderListings();
-  ['fAddress','fCity','fPrice','fBeds','fBaths','fSqft','fLink','fPhoto'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('fStatus').selectedIndex = 0;
-  document.getElementById('addForm').classList.remove('open');
-}
-function renderListings() {
-  const grid = document.getElementById('listingsGrid');
-  const none = document.getElementById('noListings');
-  if (listings.length === 0) { if(none) none.style.display='block'; return; }
-  if (none) none.style.display = 'none';
-  grid.querySelectorAll('.listing-card').forEach(c => c.remove());
-  listings.forEach(l => {
-    const card = document.createElement('div');
-    card.className = 'listing-card';
-    card.onclick = () => { if (l.link) window.open(l.link, '_blank'); };
-    card.innerHTML = `
-      <div class="listing-img">${l.photo ? `<img src="${l.photo}" alt="${l.address}" onerror="this.parentElement.innerHTML='🏠'">` : '🏠'}</div>
-      <div class="listing-body">
-        <div class="listing-price">${l.price}</div>
-        <div class="listing-address">${l.address}</div>
-        <div class="listing-city">${l.city}</div>
-        <div class="listing-details">
-          ${l.beds  ? `<span>🛏 ${l.beds} bd</span>` : ''}
-          ${l.baths ? `<span>🚿 ${l.baths} ba</span>` : ''}
-          ${l.sqft  ? `<span>📐 ${l.sqft} sqft</span>` : ''}
-        </div>
-        <div class="listing-tag">${l.status}</div>
-        ${l.link ? '<div class="listing-view">View listing →</div>' : ''}
-      </div>`;
-    grid.appendChild(card);
-  });
-}
-
-// PROPERTY SEARCH LAUNCHER
-function openSearch(site) {
-  const city = document.getElementById('searchCity').value.trim() || 'Oklahoma';
-  const minP = document.getElementById('minPrice').value;
-  const maxP = document.getElementById('maxPrice').value;
-  const beds = document.getElementById('minBeds').value;
-  const q    = encodeURIComponent(city);
-  let url    = '';
-
-  if (site === 'zillow') {
-    url = `https://www.zillow.com/homes/for_sale/${q}/`;
-    if (minP || maxP) url += `?price=${minP||0}-${maxP||''}`;
-  } else if (site === 'realtor') {
-    const slug = city.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'');
-    url = `https://www.realtor.com/realestateandhomes-search/${slug}`;
-    if (beds) url += `/beds-${beds}`;
-  } else if (site === 'redfin') {
-    url = `https://www.redfin.com/city/state/OK?q=${q}`;
-  }
-  window.open(url, '_blank');
-  return false;
-}
-
-// Prevent default on search buttons
-document.querySelectorAll('.site-btn').forEach(btn => {
-  btn.addEventListener('click', function(e) { e.preventDefault(); });
-});
-
-// AUTO-FILL FROM URL PARAMS
-window.addEventListener('load', () => {
-  const p = new URLSearchParams(window.location.search);
-  if (p.get('name'))    document.getElementById('rName').value    = p.get('name');
-  if (p.get('company')) document.getElementById('rCompany').value = p.get('company');
-  if (p.get('phone'))   document.getElementById('rPhone').value   = p.get('phone');
-  if (p.get('email'))   document.getElementById('rEmail').value   = p.get('email');
-  updateProgress();
-  updateSectionCounts();
-});
 </script>
 </body>
 </html>
