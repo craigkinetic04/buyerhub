@@ -543,6 +543,65 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
       </div>
     </div>
   </div>
+  <!-- FAQ TAB -->
+  <div class="tab-panel" id="tab-faq">
+
+    <div class="faq-section">
+      <div class="faq-section-title">How to Use This Hub</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How does the checklist work?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">The checklist guides you through all 7 stages of buying a home — from getting your finances in order all the way to closing day. Tap any item to check it off. Your progress saves automatically every time you check something so you can close the page and come back right where you left off. Your completion percentage shows at the top.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How do I save a property I like?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Go to the Find Properties tab. Under your REALTOR's featured listings tap the Save button on any home you love. It turns red and your agent gets an automatic email letting them know you're interested in that property. This is one of the best ways to communicate with your REALTOR without having to send an awkward text.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How do I search for homes in Oklahoma?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Go to the Find Properties tab and scroll down to the Search All Oklahoma Properties section. Type a city, neighborhood, or zip code, set a price range, then click Zillow, Realtor.com, or Redfin. The search opens in a new tab with Oklahoma already filtered so you only see local listings.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How do I contact my REALTOR?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Your REALTOR's name, phone number, and email are always at the top of every page in the partner bar. On your phone tap their number to call directly or tap their email to send a message. They are always one tap away no matter which tab you are on.</div>
+      </div>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-section-title">Real Estate and Mortgage Questions</div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">What is pre-approval and why do I need it?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Pre-approval is a formal review by a lender of your income, credit, and finances to determine how much home you can borrow. Unlike a pre-qualification which is just a quick estimate, a real pre-approval requires a full credit pull and document review.<br><br><strong>Why you need it:</strong> Most sellers will not even look at an offer without a pre-approval letter. It shows you are a serious, qualified buyer and tells you your real budget so you are not falling in love with homes you cannot afford.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">What is earnest money?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Earnest money is a good-faith deposit you pay when your offer on a home is accepted. It shows the seller you are serious. It is typically 1% of the purchase price — so on a $300,000 home that is around $3,000.<br><br><strong>The good news:</strong> Earnest money is not an extra cost — it gets credited toward your down payment or closing costs at the end. If the deal falls through because of an inspection or financing issue you typically get it back. Your REALTOR will walk you through when and how it is paid.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How much do I need saved to buy a home?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">This depends on the loan program but here are realistic numbers for Oklahoma buyers:<br><br><strong>Down payment:</strong> As little as $0 with USDA or VA loans. 3 to 3.5% with FHA or Conventional loans. Down payment assistance programs can cover this entirely for qualifying buyers.<br><br><strong>Closing costs:</strong> Typically 2 to 4% of the loan amount covering lender fees, title insurance, appraisal, and other costs. Sometimes sellers contribute to these.<br><br><strong>The bottom line:</strong> You may need much less than you think. Book a free call with Brooke to get real numbers for your specific situation.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this.parentElement)"><span class="faq-q-text">How does down payment assistance work?</span><span class="faq-q-icon">+</span></div>
+        <div class="faq-a">Down payment assistance programs help qualifying buyers cover their down payment and sometimes closing costs. In Oklahoma the primary source is the Oklahoma Housing Finance Agency (OHFA) which offers several programs including the Oklahoma Dream program.<br><br><strong>How it works:</strong> You apply through an approved lender like Brooke. If you qualify based on income limits, credit score, and loan type, the assistance is applied at closing — either as a grant you never repay or a second loan that may be forgivable after a set number of years.<br><br>Brooke works with OHFA programs every day. A free 15-minute call can tell you exactly what you qualify for.</div>
+      </div>
+    </div>
+
+    <div class="faq-brooke-cta">
+      <p><strong>Still have questions?</strong> Brooke answers mortgage questions every day — free, no obligation.</p>
+      <a class="faq-brooke-btn" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke</a>
+    </div>
+
+  </div>
+
+
 </div>
 
 <div class="site-footer">
@@ -818,6 +877,13 @@ function openSearch(site){
   else if(site==='realtor'){url=`https://www.realtor.com/realestateandhomes-search/${city.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'')}`;}
   else if(site==='redfin'){url=`https://www.redfin.com/city/state/OK?q=${q}`;}
   window.open(url,'_blank');
+}
+
+
+function toggleFaq(item) {
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
 }
 
 function switchTab(name,btn){
