@@ -154,7 +154,6 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .footer-disclaimer{max-width:960px;margin:12px auto 0;font-size:11px;color:rgba(240,230,216,0.18);line-height:1.6;padding-top:12px;border-top:0.5px solid rgba(196,154,120,0.1);}
 @media(max-width:600px){.tab-btn{font-size:12px;padding:11px 8px;}.main{padding:16px 12px 40px;}.hub-label,.header-divider{display:none;}.site-btns{grid-template-columns:1fr;}.add-form-grid{grid-template-columns:1fr;}.profile-grid{grid-template-columns:1fr;}}
 </style>
-<script src="config.js"></script>
 </head>
 <body>
 
@@ -379,11 +378,12 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 </div>
 
 <script>
-// Token loaded from config.js (excluded from GitHub via .gitignore)
-const AT_TOKEN = (window.BOB_CONFIG && window.BOB_CONFIG.token) || '';
-const AT_BASE  = (window.BOB_CONFIG && window.BOB_CONFIG.base)  || 'appFiDdP7ZrfTi5Nx';
-const AT_URL='https://api.airtable.com/v0/'+AT_BASE;
-const AT_H={'Authorization':'Bearer '+AT_TOKEN,'Content-Type':'application/json'};
+// All Airtable requests go through the secure Cloudflare Worker
+// No token stored here — buyer data is fully protected
+const AT_TOKEN = '';
+const AT_BASE  = '';
+const AT_URL='https://buyerhub-proxy.craig-6da.workers.dev';
+const AT_H={'Content-Type':'application/json'};
 const HUB='https://craigkinetic04.github.io/buyerhub/BuyerHub_BankOnBrooke.html';
 const P=new URLSearchParams(window.location.search);
 const MODE=P.get('mode')||'buyer';
