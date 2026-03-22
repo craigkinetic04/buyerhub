@@ -102,7 +102,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 <script>
   // The Buyer Hub page must be hosted at the same location.
   // Update this base URL to wherever you host BuyerHub_BankOnBrooke.html
-  const HUB_BASE = 'https://craigkinetic04.github.io/buyerhub/BuyerHub_BankOnBrooke.html';
+  const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
 
   let generatedURL = '';
 
@@ -114,15 +114,18 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     if (!name) { alert('Please enter the REALTOR®\'s name.'); return; }
 
+    // Generate unique REALTOR ID from name + timestamp
+    const rid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '-' + Date.now().toString(36);
+
     const params = new URLSearchParams();
+    params.set('mode',    'setup');
+    params.set('rid',     rid);
     if (name)    params.set('name',    name);
     if (company) params.set('company', company);
     if (phone)   params.set('phone',   phone);
     if (email)   params.set('email',   email);
 
-    // Build full URL (works locally and hosted)
-    const base = window.location.href.replace(/[^/]*$/, '') + HUB_BASE;
-    generatedURL = base + '?' + params.toString();
+    generatedURL = HUB_BASE + '?' + params.toString();
 
     document.getElementById('generatedLink').textContent = generatedURL;
     document.getElementById('previewLink').href = generatedURL;

@@ -154,6 +154,19 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .footer-disclaimer{max-width:960px;margin:12px auto 0;font-size:11px;color:rgba(240,230,216,0.18);line-height:1.6;padding-top:12px;border-top:0.5px solid rgba(196,154,120,0.1);}
 @media(max-width:600px){.tab-btn{font-size:12px;padding:11px 8px;}.main{padding:16px 12px 40px;}.hub-label,.header-divider{display:none;}.site-btns{grid-template-columns:1fr;}.add-form-grid{grid-template-columns:1fr;}.profile-grid{grid-template-columns:1fr;}}
 </style>
+
+  <!-- Open Graph / Rich Link Preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://buyerhub.bankonbrooke.studio/">
+  <meta property="og:title" content="First-Time Buyer Hub — Bank on Brooke">
+  <meta property="og:description" content="Your complete Oklahoma homebuying toolkit. Step-by-step checklist, down payment assistance guide, and property search — all in one place.">
+  <meta property="og:image" content="https://buyerhub.bankonbrooke.studio/brooke_logo.png">
+  <meta property="og:image:width" content="1376">
+  <meta property="og:image:height" content="768">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="First-Time Buyer Hub — Bank on Brooke">
+  <meta name="twitter:description" content="Your complete Oklahoma homebuying toolkit. Step-by-step checklist, down payment assistance guide, and property search.">
+  <meta name="twitter:image" content="https://buyerhub.bankonbrooke.studio/brooke_logo.png">
 </head>
 <body>
 
@@ -384,7 +397,7 @@ const AT_TOKEN = '';
 const AT_BASE  = '';
 const AT_URL='https://buyerhub-proxy.craig-6da.workers.dev';
 const AT_H={'Content-Type':'application/json'};
-const HUB='https://craigkinetic04.github.io/buyerhub/BuyerHub_BankOnBrooke.html';
+const HUB='https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
 const P=new URLSearchParams(window.location.search);
 const MODE=P.get('mode')||'buyer';
 const RID=P.get('rid')||'';
