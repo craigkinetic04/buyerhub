@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Link Generator — Bank on Brooke</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2A4A;--navy-light:#243558;--navy-dark:#131f38;
+  --gold:#C49A78;--gold-light:#d4b090;--gold-dim:rgba(196,154,120,0.15);
+  --cream:#F0E6D8;--white:#fff;--gray:#888;--light:#F7F3EE;--border:#e8e2db;
+}
+body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+
+.card{background:var(--navy-light);border:1px solid rgba(196,154,120,0.25);border-radius:18px;padding:40px;width:100%;max-width:560px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);}
+
+.brand{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.card h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.card .sub{font-size:13px;color:rgba(240,230,216,0.5);margin-bottom:32px;line-height:1.6;}
+
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+.field input{width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(196,154,120,0.2);border-radius:10px;padding:12px 16px;font-family:'Lato',sans-serif;font-size:14px;color:var(--white);outline:none;transition:border-color 0.2s;}
+.field input:focus{border-color:var(--gold);}
+.field input::placeholder{color:rgba(240,230,216,0.2);}
+
+.gen-btn{width:100%;background:var(--gold);color:var(--navy-dark);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:10px;padding:16px;cursor:pointer;margin-top:8px;transition:background 0.2s,transform 0.15s;}
+.gen-btn:hover{background:var(--gold-light);transform:translateY(-1px);}
+.gen-btn:active{transform:translateY(0);}
+
+.result{display:none;margin-top:28px;padding-top:28px;border-top:1px solid rgba(196,154,120,0.15);}
+.result.show{display:block;}
+.result-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.link-box{display:flex;gap:8px;align-items:center;}
+.link-text{flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(196,154,120,0.2);border-radius:8px;padding:11px 14px;font-size:12px;color:rgba(240,230,216,0.8);word-break:break-all;line-height:1.5;font-family:monospace;}
+.copy-btn{background:var(--navy-dark);border:1px solid rgba(196,154,120,0.3);border-radius:8px;padding:11px 16px;color:var(--gold);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.copy-btn:hover{background:rgba(196,154,120,0.1);}
+.copy-btn.copied{color:#3CE8A0;border-color:rgba(60,232,160,0.3);}
+
+.share-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.share-btn{flex:1;min-width:100px;padding:10px 14px;border-radius:8px;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity 0.2s;}
+.share-btn:hover{opacity:0.85;}
+.share-sms{background:#3CE8A0;color:#000;border:none;}
+.share-email{background:var(--navy-dark);color:var(--gold);border:1px solid rgba(196,154,120,0.3);}
+
+.preview-link{display:block;text-align:center;margin-top:14px;font-size:12px;color:rgba(196,154,120,0.6);text-decoration:none;}
+.preview-link:hover{color:var(--gold);}
+
+.footer-note{margin-top:32px;font-size:11px;color:rgba(240,230,216,0.2);text-align:center;line-height:1.7;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">Bank on Brooke · Private Tool</div>
+  <h1>Partner Link Generator</h1>
+  <p class="sub">Fill in your REALTOR® partner's info and generate their personalized Buyer Hub link in one click. Send the link directly — their info will be pre-filled when they open it.</p>
+
+  <div class="field">
+    <label>REALTOR® Full Name</label>
+    <input type="text" id="rName" placeholder="Jane Smith">
+  </div>
+  <div class="field">
+    <label>Company / Brokerage</label>
+    <input type="text" id="rCompany" placeholder="Smith Realty Group">
+  </div>
+  <div class="field">
+    <label>Phone Number</label>
+    <input type="text" id="rPhone" placeholder="(405) 555-0100">
+  </div>
+  <div class="field">
+    <label>Email Address</label>
+    <input type="text" id="rEmail" placeholder="jane@smithrealty.com">
+  </div>
+
+  <button class="gen-btn" onclick="generate()">Generate Partner Link →</button>
+
+  <div class="result" id="result">
+    <div class="result-label">Partner's Personalized Link</div>
+    <div class="link-box">
+      <div class="link-text" id="generatedLink">—</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy</button>
+    </div>
+
+    <div class="share-btns">
+      <a class="share-btn share-sms" id="smsBtn" href="#">💬 Send via Text</a>
+      <a class="share-btn share-email" id="emailBtn" href="#">✉️ Send via Email</a>
+    </div>
+
+    <a class="preview-link" id="previewLink" href="#" target="_blank">Preview this link as your partner will see it →</a>
+  </div>
+</div>
+
+<div class="footer-note">
+  This page is private — only share it with people you trust.<br>
+  Bank on Brooke Home Loans · bankonbrooke.studio
+</div>
+
+<script>
+  // The Buyer Hub page must be hosted at the same location.
+  // Update this base URL to wherever you host BuyerHub_BankOnBrooke.html
+  const HUB_BASE = 'BuyerHub_BankOnBrooke.html';
+
+  let generatedURL = '';
+
+  function generate() {
+    const name    = document.getElementById('rName').value.trim();
+    const company = document.getElementById('rCompany').value.trim();
+    const phone   = document.getElementById('rPhone').value.trim();
+    const email   = document.getElementById('rEmail').value.trim();
+
+    if (!name) { alert('Please enter the REALTOR®\'s name.'); return; }
+
+    const params = new URLSearchParams();
+    if (name)    params.set('name',    name);
+    if (company) params.set('company', company);
+    if (phone)   params.set('phone',   phone);
+    if (email)   params.set('email',   email);
+
+    // Build full URL (works locally and hosted)
+    const base = window.location.href.replace(/[^/]*$/, '') + HUB_BASE;
+    generatedURL = base + '?' + params.toString();
+
+    document.getElementById('generatedLink').textContent = generatedURL;
+    document.getElementById('previewLink').href = generatedURL;
+
+    // SMS
+    const smsBody = encodeURIComponent(
+      `Hi ${name}! Brooke here. I've set up your personalized Buyer Hub — it has the first-time buyer checklist and Oklahoma property search all in one place, pre-loaded with your info. Share it with your buyers:\n\n${generatedURL}`
+    );
+    document.getElementById('smsBtn').href = `sms:?body=${smsBody}`;
+
+    // Email
+    const emailSubject = encodeURIComponent('Your Personalized Buyer Hub — Bank on Brooke');
+    const emailBody = encodeURIComponent(
+      `Hi ${name},\n\nI've created your personalized Buyer Hub! It includes the first-time buyer checklist and Oklahoma property search — already loaded with your contact info so your buyers know exactly who to call.\n\nYour link:\n${generatedURL}\n\nHow to use it:\n1. Open the link and go to the Properties tab\n2. Click "+ Add a Featured Listing" to add any homes you want to highlight\n3. Share the link with your buyers — their checklist and property search are ready to go\n\nLet me know if you have any questions!\n\nBrooke Gagliardi-Young\nBank on Brooke Home Loans\nbankonbrooke.studio/contact`
+    );
+    document.getElementById('emailBtn').href = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
+
+    // Show result
+    document.getElementById('result').classList.add('show');
+    document.getElementById('copyBtn').textContent = 'Copy';
+    document.getElementById('copyBtn').classList.remove('copied');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(generatedURL).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2500);
+    });
+  }
+</script>
+</body>
+</html>

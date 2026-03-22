@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First-Time Buyer Hub — Bank on Brooke</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2A4A;--navy-light:#243558;--navy-dark:#131f38;
+  --gold:#C49A78;--gold-light:#d4b090;--gold-dim:rgba(196,154,120,0.15);
+  --cream:#F0E6D8;--white:#fff;--gray:#888;--light:#F7F3EE;
+  --border:#e8e2db;
+}
+body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min-height:100vh;}
+
+/* ── HEADER ── */
+.site-header{background:var(--navy);padding:22px 24px 0;border-bottom:3px solid var(--gold);}
+.header-top{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-bottom:16px;}
+.brand-block{}
+.brand-eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.brand-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--white);}
+.brand-sub{font-size:12px;color:rgba(240,230,216,0.55);margin-top:2px;}
+.header-cta a{display:inline-block;background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px 20px;border-radius:8px;text-decoration:none;transition:background 0.2s;}
+.header-cta a:hover{background:var(--gold-light);}
+
+/* ── TABS ── */
+.tab-bar{max-width:900px;margin:0 auto;display:flex;gap:0;}
+.tab-btn{flex:1;padding:14px 12px;background:transparent;border:none;font-family:'Lato',sans-serif;font-size:14px;font-weight:600;color:rgba(240,230,216,0.5);cursor:pointer;border-bottom:3px solid transparent;transition:color 0.2s,border-color 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.tab-btn.active{color:var(--white);border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:rgba(240,230,216,0.8);}
+.tab-icon{font-size:16px;}
+.tab-badge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center;}
+
+/* ── PARTNER BAR ── */
+.partner-bar{background:var(--white);border-bottom:1px solid var(--border);}
+.partner-inner{max-width:900px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.partner-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);white-space:nowrap;}
+.partner-fields{display:flex;gap:12px;flex:1;flex-wrap:wrap;}
+.pf{display:flex;flex-direction:column;flex:1;min-width:140px;}
+.pf label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:3px;}
+.pf input{border:none;border-bottom:1.5px solid var(--border);padding:4px 0;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:transparent;outline:none;transition:border-color 0.2s;}
+.pf input:focus{border-bottom-color:var(--gold);}
+.pf input::placeholder{color:#ccc;}
+
+/* ── MAIN AREA ── */
+.main{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+
+/* ── TAB PANELS ── */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ══════════════════════════════════════════════════
+   CHECKLIST TAB
+══════════════════════════════════════════════════ */
+
+/* Progress */
+.progress-wrap{margin-bottom:20px;}
+.progress-bar-bg{background:#e0d8cf;border-radius:20px;height:8px;margin-bottom:6px;}
+.progress-bar-fill{background:var(--gold);height:8px;border-radius:20px;width:0%;transition:width 0.4s ease;}
+.progress-row{display:flex;justify-content:space-between;align-items:center;}
+.progress-text{font-size:12px;color:var(--gray);}
+.progress-text span{color:var(--gold);font-weight:700;}
+.progress-pct{font-size:12px;font-weight:700;color:var(--gold);}
+
+/* Section block */
+.section-block{background:var(--white);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
+.section-head{background:var(--navy);padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none;}
+.section-num{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--navy);flex-shrink:0;}
+.section-head-text{flex:1;}
+.section-head-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--white);margin-bottom:1px;}
+.section-head-sub{font-size:11px;color:var(--gold);font-style:italic;}
+.section-head-right{display:flex;align-items:center;gap:10px;}
+.section-count{font-size:11px;color:rgba(240,230,216,0.5);}
+.section-chevron{color:rgba(240,230,216,0.4);font-size:12px;transition:transform 0.3s;}
+.section-block.open .section-chevron{transform:rotate(180deg);}
+.section-items{display:none;padding:4px 0;}
+.section-block.open .section-items{display:block;}
+
+/* Item */
+.item{display:flex;align-items:flex-start;gap:12px;padding:11px 20px;border-bottom:0.5px solid #f5f2ef;cursor:pointer;transition:background 0.15s;}
+.item:last-child{border-bottom:none;}
+.item:hover{background:rgba(196,154,120,0.04);}
+.item.checked{background:rgba(196,154,120,0.06);}
+.checkbox{width:19px;height:19px;border-radius:4px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:background 0.2s;}
+.item.checked .checkbox{background:var(--gold);border-color:var(--gold);}
+.checkmark{display:none;color:var(--navy);font-size:11px;font-weight:700;}
+.item.checked .checkmark{display:block;}
+.item-body{flex:1;}
+.item-label{font-size:13.5px;font-weight:500;color:var(--navy);line-height:1.4;transition:color 0.2s;}
+.item.checked .item-label{color:var(--gray);text-decoration:line-through;}
+.item-note{font-size:11.5px;color:var(--gray);margin-top:3px;font-style:italic;line-height:1.5;}
+
+/* CTA */
+.cta-strip{background:var(--navy);border-radius:14px;padding:28px;text-align:center;margin-top:20px;}
+.cta-strip h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);margin-bottom:6px;}
+.cta-strip p{font-size:13px;color:rgba(240,230,216,0.55);margin-bottom:18px;font-weight:300;}
+.cta-btn{display:inline-block;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:13px 28px;border-radius:8px;text-decoration:none;transition:background 0.2s;}
+.cta-btn:hover{background:var(--gold-light);}
+
+/* ══════════════════════════════════════════════════
+   PROPERTIES TAB
+══════════════════════════════════════════════════ */
+.prop-toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:flex-end;}
+.prop-toolbar .tf{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px;}
+.prop-toolbar .tf label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);}
+.prop-toolbar .tf input,
+.prop-toolbar .tf select{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:var(--white);outline:none;transition:border-color 0.2s;}
+.prop-toolbar .tf input:focus,
+.prop-toolbar .tf select:focus{border-color:var(--gold);}
+.search-btn{background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;border:none;border-radius:8px;padding:10px 22px;cursor:pointer;white-space:nowrap;transition:background 0.2s;align-self:flex-end;}
+.search-btn:hover{background:var(--gold-light);}
+
+/* Featured listings */
+.featured-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.featured-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.listings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:28px;}
+.listing-card{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.07);transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;}
+.listing-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(27,42,74,0.12);}
+.listing-img{width:100%;height:170px;object-fit:cover;background:linear-gradient(135deg,#1B2A4A 0%,#243558 100%);display:flex;align-items:center;justify-content:center;color:rgba(240,230,216,0.3);font-size:32px;}
+.listing-img img{width:100%;height:100%;object-fit:cover;}
+.listing-body{padding:14px 16px;}
+.listing-price{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.listing-address{font-size:13px;color:var(--navy);font-weight:500;margin-bottom:2px;}
+.listing-city{font-size:12px;color:var(--gray);margin-bottom:10px;}
+.listing-details{display:flex;gap:14px;font-size:12px;color:var(--gray);}
+.listing-detail{display:flex;align-items:center;gap:4px;}
+.listing-tag{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:8px;}
+
+/* Add listing form */
+.add-listing-wrap{margin-bottom:28px;}
+.add-toggle{background:transparent;border:1.5px dashed var(--gold);color:var(--gold);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border-radius:8px;cursor:pointer;width:100%;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.add-toggle:hover{background:var(--gold-dim);}
+.add-form{display:none;background:var(--white);border-radius:12px;padding:20px;margin-top:12px;box-shadow:0 2px 12px rgba(27,42,74,0.06);}
+.add-form.open{display:block;}
+.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:500px){.add-form-grid{grid-template-columns:1fr;}}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);}
+.form-field input,.form-field select{border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;transition:border-color 0.2s;}
+.form-field input:focus,.form-field select:focus{border-color:var(--gold);}
+.form-field.full{grid-column:1/-1;}
+.add-submit{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:11px 24px;cursor:pointer;transition:background 0.2s;}
+.add-submit:hover{background:var(--navy-light);}
+
+/* Zillow embed */
+.zillow-section{}
+.zillow-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.zillow-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.zillow-wrap{background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.07);}
+.zillow-toolbar{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.zillow-toolbar p{font-size:12px;color:rgba(240,230,216,0.6);}
+.zillow-toolbar a{color:var(--gold);font-size:12px;font-weight:600;text-decoration:none;}
+.zillow-toolbar a:hover{text-decoration:underline;}
+.zillow-frame{width:100%;height:700px;border:none;display:block;}
+
+/* ── FOOTER ── */
+.site-footer{background:var(--navy);text-align:center;padding:18px;font-size:11px;color:rgba(240,230,216,0.3);border-top:1px solid rgba(196,154,120,0.15);}
+.site-footer a{color:rgba(196,154,120,0.5);text-decoration:none;}
+.site-footer a:hover{color:var(--gold);}
+
+@media(max-width:600px){
+  .brand-title{font-size:18px;}
+  .tab-btn{font-size:12px;padding:12px 8px;}
+  .main{padding:16px 12px 40px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="site-header">
+  <div class="header-top">
+    <div class="brand-block">
+      <div class="brand-eyebrow">Bank on Brooke · Home Loans</div>
+      <div class="brand-title">First-Time Buyer Hub</div>
+      <div class="brand-sub">Your complete Oklahoma homebuying toolkit</div>
+    </div>
+    <div class="header-cta">
+      <a href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke →</a>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('checklist',this)">
+      <span class="tab-icon">✅</span> Buyer Checklist
+    </button>
+    <button class="tab-btn" onclick="switchTab('properties',this)">
+      <span class="tab-icon">🏠</span> Search Properties
+    </button>
+  </div>
+</div>
+
+<!-- ── PARTNER BAR ── -->
+<div class="partner-bar">
+  <div class="partner-inner">
+    <div class="partner-label">Your REALTOR®</div>
+    <div class="partner-fields">
+      <div class="pf"><label>Name</label><input type="text" id="rName" placeholder="e.g. Alex Rivera" oninput="updateZillow()"></div>
+      <div class="pf"><label>Phone</label><input type="text" id="rPhone" placeholder="(405) 555-0199"></div>
+      <div class="pf"><label>Email</label><input type="text" id="rEmail" placeholder="alex@oklahomagroup.com"></div>
+      <div class="pf"><label>Company</label><input type="text" id="rCompany" placeholder="Oklahoma Realty Group"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ══════════════════════════════════════════════
+       CHECKLIST TAB
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-checklist">
+
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <div class="progress-row">
+        <div class="progress-text"><span id="progressCount">0</span> of <span id="totalCount">0</span> steps completed</div>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <div class="section-block open">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">1</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Get Your Finances in Order</div>
+          <div class="section-head-sub">Before you start house hunting, know where you stand</div>
+        </div>
+        <div class="section-head-right">
+          <span class="section-count" id="s1count"></span>
+          <span class="section-chevron">▼</span>
+        </div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Check your credit score</div><div class="item-note">Aim for 620+ for most programs. 680+ opens more options and better rates.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Pull your full credit report</div><div class="item-note">Get your free report at annualcreditreport.com — check all three bureaus.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Dispute any errors on your credit report</div><div class="item-note">Errors are more common than you think and can drag your score down.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Calculate your monthly debt payments</div><div class="item-note">Add up car payments, student loans, credit cards, and any other monthly obligations.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Estimate your monthly gross income</div><div class="item-note">Lenders look at your gross (pre-tax) income, not your take-home pay.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Set a realistic monthly housing budget</div><div class="item-note">A common guideline is no more than 28–31% of your gross monthly income.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Start or review your savings</div><div class="item-note">Even with DPA programs, you may need funds for closing costs and reserves.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">2</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Gather Your Documents</div>
+          <div class="section-head-sub">Have these ready before you talk to a lender</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s2count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 2 years of W-2s or 1099s</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 2 years of federal tax returns (all pages)</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 30 days of pay stubs</div><div class="item-note">Self-employed? Gather your year-to-date profit & loss statement instead.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Last 2–3 months of bank statements (all pages)</div><div class="item-note">All accounts — checking, savings, investment. Every page, even blank ones.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Government-issued photo ID</div><div class="item-note">Driver's license or passport.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Social Security number</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">12 months of rent payment history</div><div class="item-note">Some loan programs use rental history to strengthen your application.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Documentation for any large bank deposits</div><div class="item-note">Lenders will ask where large deposits came from — have a paper trail ready.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">3</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Explore Down Payment Assistance</div>
+          <div class="section-head-sub">You may qualify for programs that reduce your down payment</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s3count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Ask your lender about OHFA programs</div><div class="item-note">Oklahoma Housing Finance Agency offers programs for qualifying buyers.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Check income eligibility for DPA programs</div><div class="item-note">Limits vary by program and county — your lender can run this for you.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Ask about the Oklahoma Dream program</div><div class="item-note">OHFA's flagship DPA program for first-time buyers.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Ask if you qualify for USDA, FHA, VA, or Conventional loan</div><div class="item-note">Each loan type has different down payment and credit requirements.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Understand forgivable vs repayable assistance</div><div class="item-note">Some DPA programs are grants. Others must be repaid if you sell.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Ask about first-generation homebuyer programs</div><div class="item-note">Extra assistance may be available if neither parent has ever owned a home.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 4 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">4</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Get Pre-Approved</div>
+          <div class="section-head-sub">Pre-approval is not the same as pre-qualification</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s4count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Contact a trusted mortgage lender</div><div class="item-note">Work with someone who knows Oklahoma programs — like Brooke.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Submit your full application and documents</div><div class="item-note">A real pre-approval requires a full credit pull and document review.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Receive your pre-approval letter</div><div class="item-note">This letter tells sellers you are a serious, qualified buyer.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Understand exactly how much you are approved for</div><div class="item-note">Approved for does not mean you have to spend that much.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Know your estimated monthly payment</div><div class="item-note">Use Brooke's mortgage calculator at bankonbrooke.studio to run scenarios.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Understand your interest rate and loan type</div><div class="item-note">Ask your lender to explain every number before you sign anything.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">5</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Start Your Home Search</div>
+          <div class="section-head-sub">Now the fun part — stay disciplined</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s5count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Partner with a trusted REALTOR®</div><div class="item-note">Your REALTOR® is paid by the seller — their expertise costs you nothing.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Make a must-have vs nice-to-have list</div><div class="item-note">Bedrooms, location, school district, garage — know what matters most.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Search within your pre-approved budget</div><div class="item-note">Looking above your budget leads to disappointment. Stay in your lane.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Attend showings with a critical eye</div><div class="item-note">Look at roof, windows, HVAC, water heater, and foundation — not just the decor.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Research neighborhoods thoroughly</div><div class="item-note">Drive the area at different times of day. Check schools, commute, and amenities.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Keep your finances completely stable</div><div class="item-note">Do NOT open new credit cards, buy a car, or make large purchases.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">6</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Make an Offer & Go Under Contract</div>
+          <div class="section-head-sub">Moving fast and strategically wins homes</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s6count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Work with your REALTOR® on offer price</div><div class="item-note">Your REALTOR® will pull comps to help you offer competitively.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Understand earnest money</div><div class="item-note">A good-faith deposit — typically 1% of the purchase price.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Include appropriate contingencies</div><div class="item-note">Inspection, financing, and appraisal contingencies protect you.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Review the seller's disclosures</div><div class="item-note">Sellers must disclose known issues — read every word.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Get the home professionally inspected</div><div class="item-note">Never skip the inspection. Budget $300–$500 for a professional inspector.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Negotiate repairs or credits from inspection</div><div class="item-note">Your REALTOR® will guide you through this conversation.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Section 7 -->
+    <div class="section-block">
+      <div class="section-head" onclick="toggleSection(this.parentElement)">
+        <div class="section-num">7</div>
+        <div class="section-head-text">
+          <div class="section-head-title">Closing Time</div>
+          <div class="section-head-sub">The finish line — stay responsive</div>
+        </div>
+        <div class="section-head-right"><span class="section-count" id="s7count"></span><span class="section-chevron">▼</span></div>
+      </div>
+      <div class="section-items">
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Respond quickly to all lender requests</div><div class="item-note">A delayed document can delay your closing date.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Lock your interest rate</div><div class="item-note">Ask your lender when to lock and what your lock period covers.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Review the Closing Disclosure carefully</div><div class="item-note">You receive this 3 days before closing. Compare it to your Loan Estimate.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Do a final walk-through of the home</div><div class="item-note">Confirm the home is in the agreed-upon condition before you sign.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Bring a cashier's check or wire closing costs</div><div class="item-note">Confirm the exact amount with your title company in advance.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Sign all closing documents</div><div class="item-note">This typically takes 1–2 hours. Read before you sign.</div></div></div>
+        <div class="item" onclick="toggle(this)"><div class="checkbox"><span class="checkmark">✓</span></div><div class="item-body"><div class="item-label">Get your keys! 🎉</div><div class="item-note">You are officially a homeowner. Welcome home.</div></div></div>
+      </div>
+    </div>
+
+    <div class="cta-strip">
+      <h3>Ready to take your first step?</h3>
+      <p>Book a free consultation with Brooke — Oklahoma's concierge mortgage lender.<br>No pressure, no obligation, just real answers.</p>
+      <a class="cta-btn" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke →</a>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PROPERTIES TAB
+  ══════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-properties">
+
+    <!-- Featured Listings (REALTOR® adds these) -->
+    <div class="featured-label">Featured Listings from Your REALTOR®</div>
+
+    <div class="listings-grid" id="listingsGrid">
+      <div id="noListings" style="grid-column:1/-1;text-align:center;padding:32px;color:var(--gray);font-size:14px;">
+        Your REALTOR® hasn't added any featured listings yet.<br>
+        <span style="font-size:12px;margin-top:6px;display:block;">Ask them to add properties using the button below.</span>
+      </div>
+    </div>
+
+    <!-- Add listing form -->
+    <div class="add-listing-wrap">
+      <button class="add-toggle" onclick="toggleAddForm()">
+        + Add a Featured Listing
+      </button>
+      <div class="add-form" id="addForm">
+        <div class="add-form-grid">
+          <div class="form-field"><label>Address</label><input type="text" id="fAddress" placeholder="123 Main St"></div>
+          <div class="form-field"><label>City</label><input type="text" id="fCity" placeholder="Oklahoma City, OK"></div>
+          <div class="form-field"><label>Price</label><input type="text" id="fPrice" placeholder="$285,000"></div>
+          <div class="form-field"><label>Bedrooms</label><input type="number" id="fBeds" placeholder="3" min="1" max="10"></div>
+          <div class="form-field"><label>Bathrooms</label><input type="number" id="fBaths" placeholder="2" min="1" max="10" step="0.5"></div>
+          <div class="form-field"><label>Sq Ft</label><input type="text" id="fSqft" placeholder="1,450"></div>
+          <div class="form-field"><label>Status</label>
+            <select id="fStatus">
+              <option>For Sale</option>
+              <option>Coming Soon</option>
+              <option>Under Contract</option>
+              <option>New Listing</option>
+            </select>
+          </div>
+          <div class="form-field"><label>Zillow / MLS Link</label><input type="text" id="fLink" placeholder="https://zillow.com/..."></div>
+          <div class="form-field full"><label>Photo URL (optional)</label><input type="text" id="fPhoto" placeholder="Paste a direct image URL"></div>
+        </div>
+        <button class="add-submit" onclick="addListing()">Add This Listing</button>
+      </div>
+    </div>
+
+    <!-- Zillow search embed -->
+    <div class="zillow-section">
+      <div class="zillow-label">Search All Oklahoma Properties on Zillow</div>
+      <div class="zillow-wrap">
+        <div class="zillow-toolbar">
+          <p>Powered by Zillow · All of Oklahoma · Updated daily</p>
+          <a href="https://www.zillow.com/ok/" target="_blank">Open full Zillow search →</a>
+        </div>
+        <iframe
+          class="zillow-frame"
+          id="zillowFrame"
+          src="https://www.zillow.com/ok/?searchQueryState=%7B%22pagination%22%3A%7B%7D%2C%22isMapVisible%22%3Atrue%2C%22mapBounds%22%3A%7B%22west%22%3A-103.002565%2C%22east%22%3A-94.431416%2C%22south%22%3A33.615819%2C%22north%22%3A37.002206%7D%2C%22regionSelection%22%3A%5B%7B%22regionId%22%3A32%2C%22regionType%22%3A2%7D%5D%2C%22filterState%22%3A%7B%22sort%22%3A%7B%22value%22%3A%22globalrelevanceex%22%7D%2C%22ah%22%3A%7B%22value%22%3Atrue%7D%7D%7D"
+          title="Search Oklahoma Properties on Zillow"
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation">
+        </iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="site-footer">
+  Information is for educational purposes only and does not constitute financial or legal advice.<br>
+  <a href="https://bankonbrooke.studio/contact" target="_blank">Bank on Brooke Home Loans</a> · bankonbrooke.studio ·
+  Property data powered by Zillow
+</div>
+
+<script>
+// ── TAB SWITCHING ──────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── SECTION ACCORDION ──────────────────────────────────────────────────────
+function toggleSection(block) {
+  block.classList.toggle('open');
+}
+
+// ── CHECKLIST LOGIC ────────────────────────────────────────────────────────
+const allItems = () => document.querySelectorAll('.item');
+document.getElementById('totalCount').textContent = 0;
+
+function toggle(el) {
+  el.classList.toggle('checked');
+  updateProgress();
+  updateSectionCounts();
+}
+
+function updateProgress() {
+  const items = allItems();
+  const done  = document.querySelectorAll('.item.checked').length;
+  const total = items.length;
+  const pct   = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = done;
+  document.getElementById('totalCount').textContent    = total;
+  document.getElementById('progressPct').textContent   = pct + '%';
+}
+
+function updateSectionCounts() {
+  document.querySelectorAll('.section-block').forEach((block, i) => {
+    const all   = block.querySelectorAll('.item').length;
+    const done  = block.querySelectorAll('.item.checked').length;
+    const el    = document.getElementById('s' + (i+1) + 'count');
+    if (el) el.textContent = done + '/' + all;
+  });
+}
+
+window.addEventListener('load', () => {
+  updateProgress();
+  updateSectionCounts();
+});
+
+// ── FEATURED LISTINGS ──────────────────────────────────────────────────────
+let listings = [];
+
+function toggleAddForm() {
+  const f = document.getElementById('addForm');
+  f.classList.toggle('open');
+}
+
+function addListing() {
+  const address = document.getElementById('fAddress').value.trim();
+  const city    = document.getElementById('fCity').value.trim();
+  const price   = document.getElementById('fPrice').value.trim();
+  const beds    = document.getElementById('fBeds').value.trim();
+  const baths   = document.getElementById('fBaths').value.trim();
+  const sqft    = document.getElementById('fSqft').value.trim();
+  const status  = document.getElementById('fStatus').value;
+  const link    = document.getElementById('fLink').value.trim();
+  const photo   = document.getElementById('fPhoto').value.trim();
+
+  if (!address || !price) {
+    alert('Please enter at least an address and price.');
+    return;
+  }
+
+  listings.push({ address, city, price, beds, baths, sqft, status, link, photo });
+  renderListings();
+
+  // Clear form
+  ['fAddress','fCity','fPrice','fBeds','fBaths','fSqft','fLink','fPhoto']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fStatus').selectedIndex = 0;
+  document.getElementById('addForm').classList.remove('open');
+}
+
+function renderListings() {
+  const grid = document.getElementById('listingsGrid');
+  const none = document.getElementById('noListings');
+
+  if (listings.length === 0) {
+    if (none) none.style.display = 'block';
+    return;
+  }
+  if (none) none.style.display = 'none';
+
+  // Remove existing cards (keep noListings div)
+  grid.querySelectorAll('.listing-card').forEach(c => c.remove());
+
+  listings.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.onclick = () => { if (l.link) window.open(l.link, '_blank'); };
+
+    const imgHTML = l.photo
+      ? `<div class="listing-img"><img src="${l.photo}" alt="${l.address}" onerror="this.parentElement.innerHTML='🏠'"></div>`
+      : `<div class="listing-img">🏠</div>`;
+
+    card.innerHTML = `
+      ${imgHTML}
+      <div class="listing-body">
+        <div class="listing-price">${l.price}</div>
+        <div class="listing-address">${l.address}</div>
+        <div class="listing-city">${l.city}</div>
+        <div class="listing-details">
+          ${l.beds ? `<div class="listing-detail">🛏 ${l.beds} bd</div>` : ''}
+          ${l.baths ? `<div class="listing-detail">🚿 ${l.baths} ba</div>` : ''}
+          ${l.sqft ? `<div class="listing-detail">📐 ${l.sqft} sqft</div>` : ''}
+        </div>
+        <div class="listing-tag">${l.status}</div>
+        ${l.link ? '<div style="font-size:11px;color:var(--gold);margin-top:8px;font-weight:600;">View on Zillow →</div>' : ''}
+      </div>`;
+
+    grid.appendChild(card);
+  });
+}
+
+// ── AUTO-FILL FROM URL PARAMS (set by Brooke's generator) ──────────────────
+window.addEventListener('load', () => {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('name'))    { document.getElementById('rName').value    = p.get('name'); }
+  if (p.get('company')) { document.getElementById('rCompany').value = p.get('company'); }
+  if (p.get('phone'))   { document.getElementById('rPhone').value   = p.get('phone'); }
+  if (p.get('email'))   { document.getElementById('rEmail').value   = p.get('email'); }
+  updateProgress();
+  updateSectionCounts();
+});
+
+function updateZillow() {
+  // Updates the tab badge with REALTOR® name when entered
+  const name = document.getElementById('rName').value.trim();
+  if (name) {
+    document.querySelectorAll('.tab-btn')[1].innerHTML =
+      `<span class="tab-icon">🏠</span> Search Properties`;
+  }
+}
+</script>
+</body>
+</html>
