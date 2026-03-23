@@ -76,7 +76,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
     <input type="text" id="rEmail" placeholder="jane@smithrealty.com">
   </div>
 
-  <button class="gen-btn" class="generate-btn" onclick="generate()">Generate Partner Link →</button>
+  <button class="gen-btn generate-btn" onclick="generate()">Generate Partner Link →</button>
 
   <div class="result" id="result">
     <div class="result-label">Partner's Personalized Link</div>
@@ -133,7 +133,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     if (!name) { alert('Please enter the REALTOR®\'s name.'); return; }
 
-    const btn = document.querySelector('.generate-btn');
+    const btn = document.querySelector('.gen-btn');
     btn.textContent = 'Generating links...';
     btn.disabled = true;
 
