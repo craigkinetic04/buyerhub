@@ -113,29 +113,15 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
   const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
 
   let generatedURL = '';
-  let shortHubURL  = '';
-  let shortCrmURL  = '';
+  let crmURL       = '';
 
-  async function shortenURL(longURL) {
-    try {
-      const res = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longURL));
-      const short = await res.text();
-      if (short.trim().startsWith('https://tinyurl.com')) return short.trim();
-    } catch(e) {}
-    return longURL;
-  }
-
-  async function generate() {
+  function generate() {
     const name    = document.getElementById('rName').value.trim();
     const company = document.getElementById('rCompany').value.trim();
     const phone   = document.getElementById('rPhone').value.trim();
     const email   = document.getElementById('rEmail').value.trim();
 
     if (!name) { alert('Please enter the REALTOR®\'s name.'); return; }
-
-    const btn = document.querySelector('.gen-btn');
-    btn.textContent = 'Generating links...';
-    btn.disabled = true;
 
     const rid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '-' + Date.now().toString(36);
 
@@ -157,30 +143,21 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
     if (email)   crmParams.set('email',   email);
     const crmURL = 'https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html?' + crmParams.toString();
 
-    // Shorten both links simultaneously
-    [shortHubURL, shortCrmURL] = await Promise.all([
-      shortenURL(generatedURL),
-      shortenURL(crmURL)
-    ]);
-
-    btn.textContent = 'Generate Partner Link →';
-    btn.disabled = false;
-
-    document.getElementById('crmLinkDisplay').textContent = shortCrmURL;
+    document.getElementById('crmLinkDisplay').textContent = crmURL;
     document.getElementById('crmSection').style.display = 'block';
-    document.getElementById('generatedLink').textContent = shortHubURL;
+    document.getElementById('generatedLink').textContent = generatedURL;
     document.getElementById('previewLink').href = generatedURL;
 
     // SMS
     const smsBody = encodeURIComponent(
       `Hi ${name}! Brooke here from Bank on Brooke. I've set up two tools for you — both are ready to go and pre-loaded with your info.\n\n` +
-      `🏠 BUYER HUB (share with your buyers)\n` +
-      `This has the first-time buyer checklist, your featured listings, and an Oklahoma property search. Send this link to every buyer you're working with.\n` +
-      `${shortHubURL}\n\n` +
-      `📋 YOUR CLIENT CRM (private — just for you)\n` +
-      `Use this to manage all your clients, track where they are in the process, and send follow-up emails with one click.\n` +
-      `${shortCrmURL}\n\n` +
-      `Open the Buyer Hub link first and check out the Properties tab — that's where you set up your profile and add listings before sharing with buyers. Let me know if you have any questions!\n\n` +
+      `🏠 BUYER HUB\n` +
+      `Share this link with your buyers:\n` +
+      `${generatedURL}\n\n` +
+      `📋 YOUR CLIENT CRM\n` +
+      `Your private client management dashboard:\n` +
+      `${crmURL}\n\n` +
+      `Open the Buyer Hub first — go to the Properties tab to set up your profile and add listings before sharing with buyers.\n\n` +
       `— Brooke\nThe Residential Lending Studio`
     );
     document.getElementById('smsBtn').href = `sms:?body=${smsBody}`;
@@ -193,7 +170,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `🏠 YOUR BUYER HUB — Share this with your buyers\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `${shortHubURL}\n\n` +
+      `${generatedURL}\n\n` +
       `This is what your buyers will use. It includes:\n` +
       `• A 7-step homebuying checklist with saved progress\n` +
       `• Your featured listings (you add these from your setup link)\n` +
@@ -208,7 +185,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `📋 YOUR CLIENT CRM — Private, just for you\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `${shortCrmURL}\n\n` +
+      `${crmURL}\n\n` +
       `This is your private client management dashboard. Use it to:\n` +
       `• Add and track all your buyers and sellers\n` +
       `• See where each client is in the process at a glance\n` +
