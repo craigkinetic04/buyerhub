@@ -153,6 +153,29 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .test-banner{background:#f0a020;padding:8px 20px;text-align:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px;display:none;}
 .test-banner.show{display:block;}
 .test-banner a{color:#fff;text-decoration:underline;cursor:pointer;margin-left:12px;}
+
+/* WORKFLOWS */
+.wf-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(60,232,160,0.12);color:#2a9e6e;margin-left:8px;}
+.wf-notification{background:#fff8e6;border:1px solid #f0a020;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:none;}
+.wf-notification.show{display:block;}
+.wf-notification h4{font-size:13px;font-weight:700;color:#c07000;margin-bottom:6px;}
+.wf-notif-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:0.5px solid #fde9b0;font-size:13px;color:var(--navy);}
+.wf-notif-item:last-child{border-bottom:none;}
+.wf-notif-action{background:#f0a020;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.wf-assign-wrap{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.wf-assign-wrap h4{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.wf-select{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);background:var(--white);outline:none;margin-bottom:8px;}
+.wf-assign-btn{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;transition:background 0.2s;}
+.wf-assign-btn:hover{background:var(--navy-light);}
+.wf-active{background:rgba(60,232,160,0.06);border:1px solid rgba(60,232,160,0.2);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:12px;color:var(--gray);}
+.wf-active strong{color:var(--navy);}
+.wf-steps-preview{margin-top:8px;}
+.wf-step-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--gray);}
+.wf-step-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.wf-step-dot.email{background:var(--gold);}
+.wf-step-dot.reminder{background:#4a90d9;}
+.wf-step-dot.done{background:#3CE8A0;}
+.wf-step-dot.pending{background:#ddd;}
 </style>
 </head>
 <body>
@@ -185,6 +208,21 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
       <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--gray);">New here? <span style="color:var(--gold);cursor:pointer;font-weight:700;" onclick="showSetupScreen()">Create an account</span></p>
     </div>
 
+  </div>
+</div>
+
+
+<!-- TEMPLATES MODAL -->
+<div class="modal-overlay" id="templatesModal">
+  <div class="modal-card" style="max-width:640px;">
+    <div class="modal-header" style="padding:20px 24px 16px;">
+      <h2>Email Templates</h2>
+      <button class="modal-close" onclick="closeTemplatesModal()">×</button>
+    </div>
+    <div class="modal-body" style="padding:0 24px 24px;">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;">These are the pre-written follow-up emails available in every client profile. Click Preview to see the full email content.</p>
+      <div id="allTemplatesList"></div>
+    </div>
   </div>
 </div>
 
@@ -283,6 +321,11 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
 
     <div class="detail-section">
+      <h3>Workflow</h3>
+      <div id="wfAssignWrap"></div>
+    </div>
+
+    <div class="detail-section">
       <h3>Follow-Up Templates</h3>
       <p style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.6;">Click Send to email this template to your client from your email address. Templates auto-suggest based on the client's current stage.</p>
       <div class="template-list" id="templateList"></div>
@@ -313,6 +356,13 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 
 
 <!-- MAIN -->
+
+<!-- WORKFLOW DUE NOTIFICATION -->
+<div class="wf-notification" id="wfNotification">
+  <h4>📅 Follow-ups due today</h4>
+  <div id="wfNotifList"></div>
+</div>
+
 <div class="main">
 
   <!-- SIDEBAR -->
@@ -337,6 +387,13 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="stat-box"><span class="stat-num" id="stat-closed">0</span><div class="stat-label">Closed</div></div>
         <div class="stat-box"><span class="stat-num" id="stat-followup">0</span><div class="stat-label">Follow-Ups</div></div>
       </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>Quick Actions</h3>
+      <button onclick="openTemplatesModal()" style="width:100%;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--gold-dim)'" onmouseout="this.style.background='var(--light)'">
+        ✉️ View All Email Templates
+      </button>
     </div>
   </div>
 
@@ -566,6 +623,7 @@ function enterCRM(rid, name, email) {
   document.getElementById('loginOverlay').classList.remove('show');
   document.getElementById('headerPartner').textContent = name;
   loadClients();
+  setTimeout(checkWorkflowsDue, 1000);
 }
 
 function logout() {
@@ -700,6 +758,51 @@ function genId() { return 'c' + Date.now().toString(36) + Math.random().toString
 // ═══════════════════════════════════════════════════════════
 // ADD / EDIT / DELETE
 // ═══════════════════════════════════════════════════════════
+
+function openTemplatesModal() {
+  const list = document.getElementById('allTemplatesList');
+  const dummyClient = { id:'preview', name:'[Client Name]', Name:'[Client Name]', email:'client@email.com', Email:'client@email.com' };
+  const dummyRealtor = { name: REALTOR_NAME || 'Your Name', email: 'your@email.com' };
+
+  list.innerHTML = TEMPLATES.map(t => {
+    const subject = t.subject(dummyClient);
+    const body    = t.body(dummyClient, dummyRealtor);
+    const stageMap = {lead:'Buyer Lead',preapproval:'Pre-Approval',searching:'Home Search',contract:'Under Contract',closed:'Closed',seller:'Seller Lead',all:'All Stages'};
+    return `
+      <div style="background:var(--light);border-radius:10px;margin-bottom:10px;overflow:hidden;border:1px solid var(--border);">
+        <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:10px;" onclick="toggleTemplatePreview('tprev-${t.id}')">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--navy);">${t.name}</div>
+            <div style="font-size:11px;color:var(--gold);margin-top:2px;">Stage: ${stageMap[t.stage] || t.stage}</div>
+          </div>
+          <span style="font-size:18px;color:var(--gold);font-weight:300;transition:transform 0.2s;" id="tarrow-${t.id}">+</span>
+        </div>
+        <div id="tprev-${t.id}" style="display:none;padding:0 16px 16px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;">Subject</div>
+          <div style="font-size:13px;color:var(--navy);font-weight:600;background:var(--white);padding:8px 12px;border-radius:6px;margin-bottom:10px;">${subject}</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);margin-bottom:6px;">Body</div>
+          <div style="font-size:12px;color:var(--gray);background:var(--white);padding:12px;border-radius:6px;white-space:pre-wrap;line-height:1.7;">${body}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('templatesModal').classList.add('show');
+}
+
+function closeTemplatesModal() {
+  document.getElementById('templatesModal').classList.remove('show');
+}
+
+function toggleTemplatePreview(id) {
+  const el    = document.getElementById(id);
+  const tid   = id.replace('tprev-','');
+  const arrow = document.getElementById('tarrow-' + tid);
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'block';
+  if (arrow) arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(45deg)';
+}
+
 function openAddModal(id) {
   editingId = id || null;
   const modal = document.getElementById('addModal');
@@ -799,6 +902,7 @@ function openDetail(id) {
   document.getElementById('dNotes').value            = c.Notes||c.notes||'';
 
   renderTemplates(c);
+  renderWorkflowPanel(c);
 
   document.getElementById('detailOverlay').classList.add('show');
   document.getElementById('detailPanel').classList.add('open');
@@ -946,6 +1050,320 @@ async function sendStageChangeNotification(client, newStage) {
 
   // Open mailto — REALTOR sends from their own email
   window.open(`mailto:${realtorEmail}?subject=${subject}&body=${body}`, '_blank');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// WORKFLOWS
+// ═══════════════════════════════════════════════════════════
+const WORKFLOWS = {
+
+  'ftb-6-12': {
+    name: 'First-Time Buyer — Buying in 6–12 Months',
+    steps: [
+      { day:0,  type:'email',    id:'wf-ftb-welcome',      name:'Welcome & Getting Started' },
+      { day:3,  type:'email',    id:'wf-ftb-credit',       name:'Credit Score Tips' },
+      { day:14, type:'reminder', id:'wf-ftb-checkin-1',    name:'Text client — check in on their goals' },
+      { day:30, type:'email',    id:'wf-ftb-dpa',          name:'Down Payment Assistance Overview' },
+      { day:60, type:'reminder', id:'wf-ftb-call-1',       name:'Call client — are they ready to get pre-approved?' },
+      { day:90, type:'email',    id:'wf-ftb-preapproval',  name:'Pre-Approval Process Explained' },
+      { day:120,type:'reminder', id:'wf-ftb-checkin-2',    name:'Text client — update on timeline?' },
+    ]
+  },
+
+  'ready-now': {
+    name: 'Ready to Buy Now — Pre-Approval Needed',
+    steps: [
+      { day:0,  type:'email',    id:'wf-rn-welcome',       name:'Welcome + Urgent Next Steps' },
+      { day:1,  type:'reminder', id:'wf-rn-call-docs',     name:'Call client — submit pre-approval documents' },
+      { day:3,  type:'email',    id:'wf-rn-doclist',       name:'Document Checklist for Pre-Approval' },
+      { day:7,  type:'reminder', id:'wf-rn-followup',      name:'Follow up on pre-approval status' },
+      { day:14, type:'email',    id:'wf-rn-homesearch',    name:'What to Expect During Home Search' },
+    ]
+  },
+
+  'past-client': {
+    name: 'Past Client — Nurture & Referral',
+    steps: [
+      { day:0,   type:'email',    id:'wf-pc-congrats',     name:'Closing Day Congratulations' },
+      { day:30,  type:'email',    id:'wf-pc-30day',        name:'30-Day Check-In' },
+      { day:90,  type:'reminder', id:'wf-pc-text-1',       name:'Text client — how is the new home?' },
+      { day:180, type:'email',    id:'wf-pc-equity',       name:'Home Equity Update + Referral Ask' },
+      { day:365, type:'email',    id:'wf-pc-anniversary',  name:'1-Year Home Anniversary' },
+    ]
+  },
+
+  'seller-lead': {
+    name: 'Seller Lead — Listing Prospect',
+    steps: [
+      { day:0,  type:'email',    id:'wf-sl-welcome',       name:'Welcome + What to Expect Selling Your Home' },
+      { day:2,  type:'reminder', id:'wf-sl-call-listing',  name:'Call — schedule listing presentation' },
+      { day:7,  type:'email',    id:'wf-sl-homeprep',      name:'Home Prep Tips Before Listing' },
+      { day:14, type:'reminder', id:'wf-sl-followup',      name:'Follow up — ready to list?' },
+      { day:30, type:'email',    id:'wf-sl-marketupdate',  name:'Market Update for Your Area' },
+    ]
+  },
+
+  'not-ready': {
+    name: 'Not Ready — Buying in 12+ Months',
+    steps: [
+      { day:0,   type:'email',    id:'wf-nr-welcome',      name:'Long-Term Homebuying Roadmap' },
+      { day:30,  type:'email',    id:'wf-nr-credit',       name:'Credit Building Tips' },
+      { day:60,  type:'reminder', id:'wf-nr-checkin-1',    name:'Check in — any change in timeline?' },
+      { day:90,  type:'email',    id:'wf-nr-savings',      name:'Savings Strategy for Down Payment' },
+      { day:180, type:'reminder', id:'wf-nr-call-1',       name:'Call client — are they getting closer?' },
+      { day:270, type:'email',    id:'wf-nr-preapproval',  name:'Pre-Approval Process Overview' },
+      { day:365, type:'reminder', id:'wf-nr-annual',       name:'Annual check-in call' },
+    ]
+  },
+
+  'holiday': {
+    name: 'Holiday Touch-Base',
+    steps: [
+      { day:0,   type:'email',    id:'wf-hol-welcome',     name:'Initial Holiday Greeting' },
+      { day:30,  type:'reminder', id:'wf-hol-checkin',     name:'Post-holiday check-in text' },
+    ]
+  },
+};
+
+// ── WORKFLOW EMAIL CONTENT ──────────────────────────────────────────────────
+const WF_EMAILS = {
+
+  'wf-ftb-welcome': {
+    subject: (c,r) => `Welcome, ${c.Name||c.name}! Let's get you on the path to homeownership`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI'm so excited to start working with you on your homebuying journey! The fact that you're planning ahead 6–12 months puts you in a fantastic position — most buyers wish they had started earlier.\n\nHere's what I'd love for you to focus on right now:\n\n1. Check your credit score — aim for 620+ to qualify for most programs. 680+ opens up even better options.\n2. Start saving — even a small amount consistently each month adds up fast.\n3. Stop opening new credit cards or taking on new debt — your debt-to-income ratio matters.\n\nI've also connected you with my preferred lender, Brooke Gagliardi-Young at Bank on Brooke Home Loans. She specializes in first-time buyers and knows every down payment assistance program available in Oklahoma. A free 15-minute call with her could save you thousands.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nI'll be in touch regularly as we get closer to your buying window. In the meantime — don't hesitate to reach out with any questions!\n\n${r.name}\n${r.phone||''}`,
+  },
+
+  'wf-ftb-credit': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, here are your credit score tips`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI wanted to share some quick tips to help you build your credit score before we start the homebuying process. Your credit score is one of the most important factors in qualifying for a great loan.\n\nHere's what moves the needle the most:\n\n• Pay every bill on time — even one late payment can drop your score significantly\n• Keep your credit card balances below 30% of the limit (below 10% is even better)\n• Don't close old credit cards — length of credit history matters\n• Don't open any new credit accounts until after we close on your home\n• If you have any errors on your credit report, dispute them at annualcreditreport.com\n\nYou can check your score for free at annualcreditreport.com — I recommend checking all three bureaus.\n\nIf you're not sure where your score stands or what loan programs you'll qualify for, Brooke at Bank on Brooke can pull a soft credit check and give you a real picture — no impact to your score.\n\nBook a free call: bankonbrooke.studio/contact\n\n${r.name}`,
+  },
+
+  'wf-ftb-dpa': {
+    subject: (c,r) => `Did you know you might not need a full down payment, ${(c.Name||c.name).split(' ')[0]}?`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nOne of the biggest myths in homebuying is that you need 20% down. You don't — and in Oklahoma there are programs that can cover your down payment entirely.\n\nThe Oklahoma Housing Finance Agency (OHFA) offers down payment assistance programs for qualifying buyers. Here's how it generally works:\n\n• You apply through an approved lender (like Brooke)\n• If you qualify based on income and credit, the assistance is applied at closing\n• Some programs are grants — meaning you never have to pay it back\n• Others are forgivable loans that go away after a set number of years\n\nWho might qualify:\n• First-time homebuyers (or those who haven't owned in 3+ years)\n• Buyers within certain income limits for their county\n• Buyers using FHA, USDA, VA, or Conventional loan programs\n\nThe best way to find out if you qualify is a quick call with Brooke — she works with OHFA programs every single day and can tell you exactly what's available for your situation.\n\nBook a free call: bankonbrooke.studio/contact\n\n${r.name}`,
+  },
+
+  'wf-ftb-preapproval': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, it's almost time to get pre-approved`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nYou're getting closer to your buying window and I want to make sure you're ready. One of the most important things you can do right now is get pre-approved.\n\nHere's the difference between pre-qualification and pre-approval:\n\nPre-qualification = a quick estimate based on what you tell a lender. Takes 5 minutes. Not taken seriously by sellers.\n\nPre-approval = a full review of your income, credit, and finances. Takes 1–2 days. Required to make a competitive offer.\n\nTo get pre-approved you'll need:\n• Last 2 years of W-2s or tax returns\n• Last 30 days of pay stubs\n• Last 2–3 months of bank statements\n• Government-issued ID\n\nBrooke at Bank on Brooke makes this process incredibly easy and will walk you through every step. She'll also make sure you're taking advantage of any down payment assistance you qualify for.\n\nBook your free pre-approval consultation: bankonbrooke.studio/contact\n\n${r.name}`,
+  },
+
+  'wf-rn-welcome': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, let's get you moving — here's what to do right now`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nWelcome — I'm thrilled to be working with you and I can tell you're ready to make this happen. Since you're looking to buy now, we need to move with purpose.\n\nHere's your action plan for the next 7 days:\n\n1. Get pre-approved — this is the single most important thing. Without a pre-approval letter, sellers won't consider your offer.\n2. Gather your documents — W-2s, pay stubs, bank statements, and ID.\n3. Know your budget — your pre-approval will confirm the number, but have a ballpark in mind.\n\nI've connected you with Brooke Gagliardi-Young at Bank on Brooke Home Loans. She moves fast, knows Oklahoma programs inside and out, and will make the financing side of this stress-free. Reach out to her today.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nOnce you're pre-approved, we'll start looking at homes immediately. Exciting times ahead!\n\n${r.name}`,
+  },
+
+  'wf-rn-doclist': {
+    subject: (c,r) => `Your pre-approval document checklist, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nHere's exactly what you'll need to gather for your pre-approval. Having these ready will speed up the process significantly.\n\n📋 DOCUMENTS NEEDED:\n\nIncome:\n• Last 2 years of W-2s\n• Last 2 years of federal tax returns (all pages)\n• Last 30 days of pay stubs\n• If self-employed: year-to-date profit & loss statement\n\nAssets:\n• Last 2–3 months of bank statements (all pages, even blank ones)\n• Any investment or retirement account statements\n\nIdentity:\n• Government-issued photo ID (driver's license or passport)\n• Social Security number\n\nOther:\n• 12 months of rent payment history if available\n• Documentation for any large deposits in your bank account\n\nSend these to Brooke at Bank on Brooke and she'll get your pre-approval moving right away.\n\nBrooke's contact: bankonbrooke.studio/contact\n\nLet me know when you've connected with her so we can start scheduling showings!\n\n${r.name}`,
+  },
+
+  'wf-rn-homesearch': {
+    subject: (c,r) => `What to expect during your home search, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nNow that we're getting close to starting your home search, I want to set some expectations so you're fully prepared.\n\nHere's what the search process looks like:\n\n🔍 SEARCHING\n• I'll set up a custom search sending you listings that match your criteria\n• When something catches your eye, let me know immediately — good homes move fast\n• We'll schedule showings and I'll guide you through each one\n\n🏠 MAKING AN OFFER\n• When we find the right home, we'll move quickly\n• I'll pull comparable sales to make sure we offer the right price\n• Your pre-approval letter goes with the offer — sellers take you seriously\n\n⚠️ IMPORTANT — DO NOT DO THESE DURING YOUR SEARCH:\n• Open new credit cards\n• Buy a car or take on new debt\n• Make large cash deposits without documentation\n• Change jobs if possible\n\nAny of these can affect your loan approval. I know it seems like a lot — but once you have keys in hand it's all worth it!\n\nI'm here every step of the way. Let's find your home.\n\n${r.name}`,
+  },
+
+  'wf-pc-congrats': {
+    subject: (c,r) => `Welcome home, ${(c.Name||c.name).split(' ')[0]}! 🎉🔑`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nWELCOME HOME! Today is a day you'll remember for the rest of your life and I am so honored I got to be part of it.\n\nA few things for your first week:\n\n🔐 Change your locks — always a smart move with a new home\n💡 Set up your utilities if you haven't already\n📁 Keep all your closing documents somewhere safe — you'll need them for taxes\n🏡 Introduce yourself to your neighbors — great communities start with great neighbors\n\nHere's something to remember: every single mortgage payment you make is building equity. You're no longer paying someone else's mortgage — you're investing in your own future. That's a big deal.\n\nIt was truly a pleasure working with you. If you ever need anything — a contractor recommendation, a home valuation, or help for a friend or family member looking to buy or sell — I'm always just a call away.\n\nNow go enjoy your home. You earned it! 🏠\n\n${r.name}`,
+  },
+
+  'wf-pc-30day': {
+    subject: (c,r) => `One month in your new home, ${(c.Name||c.name).split(' ')[0]}! How's everything?`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nCan you believe it's already been a month? I hope you're settling in and the house is starting to feel like home.\n\nA few things worth thinking about at the one-month mark:\n\n• Did everything come through from inspection as expected? If any repairs weren't completed, now is the time to follow up\n• Make sure your homeowner's insurance is active and you have the policy information somewhere accessible\n• If anything needs attention around the house, I have great referrals for contractors, plumbers, and electricians — just ask\n\nAlso — if you had a great experience working with me, I would absolutely love a review on Google or Zillow. It truly makes a difference and takes less than 2 minutes. Just reply to this email and I'll send you the direct link.\n\nAnd of course — if you have any friends or family thinking about buying or selling, I'd love an introduction. Referrals are the best compliment I can receive.\n\nTalk soon!\n\n${r.name}`,
+  },
+
+  'wf-pc-equity': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, your home may be worth more than you think`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI hope you're loving your home! I wanted to reach out because the Oklahoma real estate market has been moving and your home's value may have increased since you bought it.\n\nBuilding equity is one of the greatest benefits of homeownership. Here's what that might mean for you:\n\n📈 Your net worth has likely grown since closing\n💰 You may be able to refinance to a lower rate or tap into equity for renovations\n🏡 If you're thinking about upsizing or downsizing in the next year or two, now is a great time to start planning\n\nWould you like a free home valuation? I can put together a comparative market analysis that shows you what your home would sell for in today's market — completely free and no obligation.\n\nAlso — do you know anyone who's thinking about buying or selling? I'd love the introduction. Referrals from past clients like you are the foundation of my business.\n\nLet me know how you're doing!\n\n${r.name}`,
+  },
+
+  'wf-pc-anniversary': {
+    subject: (c,r) => `Happy 1-Year Home Anniversary, ${(c.Name||c.name).split(' ')[0]}! 🏠🎉`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nHappy Home Anniversary! One year ago today you got the keys to your home and I still smile thinking about that day.\n\nA few things worth reviewing at the one-year mark:\n\n🏠 Home value: The market has likely moved. Curious what your home is worth today? Reply and I'll run a free comparative market analysis for you.\n\n💰 Mortgage rate: If rates have dropped since you purchased, refinancing might make sense. I can connect you with Brooke at Bank on Brooke — she can run the numbers and tell you if it's worth it.\n\n🔧 Home maintenance: Year one is a great time to schedule an HVAC service, check your roof, and make sure your gutters are clear heading into the seasons ahead.\n\n🎁 And if you know anyone looking to buy or sell — I would love the introduction. Referrals mean the world to me.\n\nHere's to many more years of building memories in your home. Cheers!\n\n${r.name}`,
+  },
+
+  'wf-sl-welcome': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, here's what to expect when selling your home`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nThank you so much for considering me to help you sell your home. Selling is a big decision and I want to make sure you feel confident and informed every step of the way.\n\nHere's a high-level overview of the selling process:\n\n1. Listing consultation — we meet, tour your home, and I put together a pricing strategy based on current market data\n2. Home prep — we identify what to fix, clean, or stage to maximize your sale price\n3. Professional photography — great photos are non-negotiable in today's market\n4. List & market — your home goes live on MLS, Zillow, Realtor.com, and more\n5. Showings & offers — I handle all showing coordination and present every offer to you\n6. Under contract — we negotiate the best terms and navigate inspection and appraisal\n7. Closing — you hand over the keys and collect your proceeds\n\nI'll be in touch shortly to schedule a time to walk through your home and put together your personalized market analysis.\n\n${r.name}`,
+  },
+
+  'wf-sl-homeprep': {
+    subject: (c,r) => `How to prepare your home for maximum sale price, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nHomes that are well-prepared before listing sell faster and for more money — it's that simple. Here are the things that make the biggest difference:\n\n🧹 CLEAN & DECLUTTER\n• Deep clean every room including baseboards, windows, and appliances\n• Remove personal photos and excessive decorations — buyers need to picture themselves living there\n• Clear out closets so they look spacious\n\n🎨 QUICK UPDATES WITH HIGH ROI\n• Fresh neutral paint — one of the highest-return investments before a sale\n• Replace outdated light fixtures and hardware on cabinets\n• New caulk in bathrooms and kitchens looks like new construction\n• Power wash the driveway and exterior\n\n🌿 CURB APPEAL\n• Mow the lawn and trim hedges\n• Add a fresh doormat and potted plants by the front door\n• Replace your house numbers if they're old\n\n📸 REMEMBER: Professional photos are what get buyers in the door. Everything you do now shows up beautifully in the listing photos and that's what drives showings.\n\nI'll be sending over my full pre-listing checklist soon. Talk to you shortly!\n\n${r.name}`,
+  },
+
+  'wf-sl-marketupdate': {
+    subject: (c,r) => `Market update — here's what's happening in your area, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI wanted to send over a quick market update for your area so you have the full picture as you think about your selling timeline.\n\nA few things I'm watching:\n\n📊 Inventory: The number of homes currently for sale affects how quickly homes are moving and at what price. I'll share the current numbers for your specific neighborhood when we connect.\n\n⏱️ Days on market: Well-priced, well-prepared homes in your area are moving quickly. Overpriced homes are sitting.\n\n💰 List-to-sale ratio: This tells us how close to asking price homes are actually selling for — and it's important context for pricing your home right from day one.\n\nI'd love to put together a full comparative market analysis for your home so you have real data to make decisions from. It's completely free and takes about 24 hours for me to prepare.\n\nShall I go ahead and put that together for you? Just reply to this email.\n\n${r.name}`,
+  },
+
+  'wf-nr-welcome': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, your homebuying roadmap starts here`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI'm so glad you reached out — and the fact that you're thinking about this 12+ months ahead puts you in a great position. The buyers who are most prepared are the ones who have the smoothest experience.\n\nHere's your roadmap for the next year:\n\n📍 RIGHT NOW (Months 1–3)\n• Check your credit score and start building it if needed\n• Open a dedicated savings account for your down payment\n• Research neighborhoods and get a feel for what homes cost in your target area\n\n📍 GETTING CLOSER (Months 4–9)\n• Connect with a lender to understand what you'll qualify for\n• Start gathering your financial documents\n• Get serious about your savings\n\n📍 ALMOST THERE (Months 10–12)\n• Get formally pre-approved\n• Start attending open houses to sharpen your sense of what you want\n• Be ready to move when the right home comes along\n\nI'll be checking in with helpful information along the way. And when you're ready, I'll be here.\n\n${r.name}`,
+  },
+
+  'wf-nr-credit': {
+    subject: (c,r) => `Building your credit for homeownership, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nThis month I wanted to focus on credit — because over the next year, improving your credit score is one of the most powerful things you can do to prepare for homeownership.\n\nHere's what determines your credit score:\n\n• 35% — Payment history (pay on time, every time)\n• 30% — Credit utilization (keep balances below 30% of your limit)\n• 15% — Length of credit history (don't close old accounts)\n• 10% — Credit mix (having different types of credit helps)\n• 10% — New credit (don't open new accounts right before applying)\n\nGoals to aim for:\n• 620+ to qualify for most loan programs\n• 680+ for better interest rates\n• 720+ for the best rates available\n\nYou can check your score for free at annualcreditreport.com — I recommend doing this quarterly so you can track your progress.\n\nIf you have questions about where you stand or what loan you'd likely qualify for, Brooke at Bank on Brooke is incredible at this and offers free consultations.\n\nBook a free call: bankonbrooke.studio/contact\n\n${r.name}`,
+  },
+
+  'wf-nr-savings': {
+    subject: (c,r) => `Let's talk about saving for your down payment, ${(c.Name||c.name).split(' ')[0]}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nYou're at the halfway point of your 12-month journey and I wanted to touch base on savings. How's the down payment fund coming?\n\nHere's some encouraging news — you may need less than you think:\n\n💰 DOWN PAYMENT OPTIONS\n• 0% down — VA loans (for veterans) or USDA loans (for rural/suburban areas)\n• 3% down — Conventional loans for qualifying buyers\n• 3.5% down — FHA loans\n• Down payment assistance — OHFA programs in Oklahoma can cover your down payment entirely for qualifying buyers\n\nOn a $280,000 home, 3.5% down is $9,800. With down payment assistance that could be $0.\n\n📈 SAVINGS STRATEGY\n• Open a high-yield savings account specifically for your home fund\n• Set up an automatic transfer the day after payday so it happens before you can spend it\n• Track your progress monthly — watching the number grow is motivating\n\nWhen you're ready to find out exactly what you'd need saved, Brooke at Bank on Brooke can give you a real number based on your specific situation.\n\nBook a free call: bankonbrooke.studio/contact\n\n${r.name}`,
+  },
+
+  'wf-nr-preapproval': {
+    subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, you're getting close — here's what pre-approval looks like`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nYou're in the home stretch of your 12-month preparation and I want to make sure you know exactly what's coming next — pre-approval.\n\nGetting pre-approved is the official starting gun for your home search. Here's what the process looks like:\n\n📋 WHAT YOU'LL NEED\n• Last 2 years of W-2s or tax returns\n• Last 30 days of pay stubs\n• Last 2–3 months of bank statements\n• Government-issued photo ID\n\n⏱️ HOW LONG IT TAKES\n• Submitting your application: 30–60 minutes\n• Lender review: 1–3 business days\n• Pre-approval letter in hand: 3–5 days typically\n\n✅ WHAT YOU GET\n• A pre-approval letter stating the maximum amount you're approved to borrow\n• Confidence walking into any home knowing you can make a real offer\n• Access to the full MLS with your agent\n\nI'd love for you to connect with Brooke at Bank on Brooke — she's been my go-to lender recommendation for a reason. She makes this process smooth, fast, and stress-free.\n\nBook your pre-approval consultation: bankonbrooke.studio/contact\n\nWe're almost there — I can't wait to start showing you homes!\n\n${r.name}`,
+  },
+
+  'wf-hol-welcome': {
+    subject: (c,r) => `Happy Holidays from ${r.name}! 🎄`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nWishing you and your family a wonderful holiday season filled with warmth, joy, and all the things that make your house a home.\n\nIt's been such a pleasure getting to know you and I'm grateful for the trust you've placed in me. Whether we've already worked together or are just getting started — thank you for allowing me to be part of your homeownership journey.\n\nHere's to a happy, healthy, and prosperous new year ahead. May 2026 bring you everything you're hoping for — including the perfect home if that's still on your list!\n\nDon't hesitate to reach out anytime. I'm always here.\n\nHappy Holidays,\n${r.name}`,
+  },
+
+};
+
+// ── WORKFLOW LOGIC ──────────────────────────────────────────────────────────
+function assignWorkflow(clientId, workflowKey) {
+  if (!workflowKey) return;
+  const wf = WORKFLOWS[workflowKey];
+  if (!wf) return;
+
+  const startDate = new Date();
+  startDate.setHours(0,0,0,0);
+
+  const schedule = wf.steps.map(step => ({
+    ...step,
+    dueDate: new Date(startDate.getTime() + step.day * 86400000).toISOString().split('T')[0],
+    done: false,
+  }));
+
+  const idx = clients.findIndex(x => x.id === clientId);
+  if (idx < 0) return;
+  clients[idx].workflow     = workflowKey;
+  clients[idx].wfSchedule  = schedule;
+  clients[idx].wfStartDate = startDate.toISOString().split('T')[0];
+
+  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
+  saveClients();
+  showToast(`Workflow "${wf.name}" assigned!`, 'success');
+  openDetail(clientId); // refresh panel
+}
+
+function checkWorkflowsDue() {
+  const today = new Date().toISOString().split('T')[0];
+  const due = [];
+
+  clients.forEach(c => {
+    if (!c.wfSchedule) return;
+    c.wfSchedule.forEach((step, idx) => {
+      if (!step.done && step.dueDate === today) {
+        due.push({ client: c, step, stepIdx: idx });
+      }
+    });
+  });
+
+  const notif = document.getElementById('wfNotification');
+  const list  = document.getElementById('wfNotifList');
+  if (due.length === 0) { notif.classList.remove('show'); return; }
+
+  notif.classList.add('show');
+  list.innerHTML = due.map(d => `
+    <div class="wf-notif-item">
+      <span><b>${d.client.Name||d.client.name}</b> — ${d.step.name}</span>
+      <button class="wf-notif-action" onclick="fireWorkflowStep('${d.client.id}',${d.stepIdx})">
+        ${d.step.type === 'email' ? '✉️ Send Email' : '📱 Remind Me'}
+      </button>
+    </div>
+  `).join('');
+}
+
+function fireWorkflowStep(clientId, stepIdx) {
+  const c    = clients.find(x => x.id === clientId);
+  if (!c || !c.wfSchedule) return;
+  const step = c.wfSchedule[stepIdx];
+  if (!step) return;
+
+  if (step.type === 'email') {
+    const tpl = WF_EMAILS[step.id];
+    if (!tpl) { showToast('Email template not found.','error'); return; }
+    const r = { name: REALTOR_NAME, phone: '' };
+    const subject = encodeURIComponent(tpl.subject(c, r));
+    const body    = encodeURIComponent(tpl.body(c, r));
+    const email   = c.Email || c.email || '';
+    if (!email) { showToast('No email address for this client.','error'); return; }
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+  } else {
+    // Reminder — show an alert with the client's phone
+    const phone = c.Phone || c.phone || 'no phone saved';
+    alert(`REMINDER: ${step.name}\nClient: ${c.Name||c.name}\nPhone: ${phone}`);
+  }
+
+  // Mark step as done
+  c.wfSchedule[stepIdx].done = true;
+  if (!IS_TEST_MODE) saveClientToAirtable(c, clientId);
+  saveClients();
+
+  // Remove from notification list
+  const item = document.querySelector(`[onclick="fireWorkflowStep('${clientId}',${stepIdx})"]`);
+  if (item) item.closest('.wf-notif-item').remove();
+  if (!document.querySelector('.wf-notif-item')) {
+    document.getElementById('wfNotification').classList.remove('show');
+  }
+  showToast('Step completed!','success');
+}
+
+function renderWorkflowPanel(client) {
+  const container = document.getElementById('wfAssignWrap');
+  if (!container) return;
+  const activeWfKey = client.workflow || client.Workflow || '';
+  const activeWf    = activeWfKey ? WORKFLOWS[activeWfKey] : null;
+  const schedule    = client.wfSchedule || [];
+  const today       = new Date().toISOString().split('T')[0];
+
+  let html = '<div class="wf-assign-wrap">';
+  html += '<h4>Workflow</h4>';
+
+  if (activeWf) {
+    const done    = schedule.filter(s=>s.done).length;
+    const total   = schedule.length;
+    html += `<div class="wf-active"><strong>${activeWf.name}</strong><br>Progress: ${done} of ${total} steps completed`;
+    html += '<div class="wf-steps-preview">';
+    schedule.forEach(s => {
+      const isPast = s.dueDate < today;
+      const dotClass = s.done ? 'done' : s.type === 'email' ? 'email' : 'reminder';
+      html += `<div class="wf-step-row">
+        <div class="wf-step-dot ${dotClass}"></div>
+        <span>Day ${s.day} — ${s.name} <span style="color:#bbb;">(${s.dueDate})</span></span>
+      </div>`;
+    });
+    html += '</div></div>';
+    html += `<button class="wf-assign-btn" style="margin-top:10px;background:#e07070;" onclick="removeWorkflow('${client.id}')">Remove Workflow</button>`;
+  } else {
+    html += `<select class="wf-select" id="wfSelectFor-${client.id}">
+      <option value="">— Assign a workflow —</option>
+      ${Object.entries(WORKFLOWS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('')}
+    </select>`;
+    html += `<button class="wf-assign-btn" onclick="assignWorkflow('${client.id}', document.getElementById('wfSelectFor-${client.id}').value)">Assign Workflow</button>`;
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function removeWorkflow(clientId) {
+  const idx = clients.findIndex(x => x.id === clientId);
+  if (idx < 0) return;
+  delete clients[idx].workflow;
+  delete clients[idx].wfSchedule;
+  delete clients[idx].wfStartDate;
+  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
+  saveClients();
+  openDetail(clientId);
+  showToast('Workflow removed.','success');
 }
 
 // ═══════════════════════════════════════════════════════════
