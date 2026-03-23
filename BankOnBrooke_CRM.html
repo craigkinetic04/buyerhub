@@ -325,11 +325,10 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// CONFIG — Update with your Airtable CRM base details
+// CONFIG — Connected to Airtable CRM base via Cloudflare Worker
 // ═══════════════════════════════════════════════════════════
 const WORKER_URL = 'https://buyerhub-proxy.craig-6da.workers.dev';
-// Note: CRM uses a separate Airtable base — update worker to include CRM base
-// For now uses localStorage as fallback until CRM Airtable base is connected
+const AT_URL     = WORKER_URL; // ?db=crm routes to CRM base
 
 // ═══════════════════════════════════════════════════════════
 // STATE
@@ -446,15 +445,84 @@ window.addEventListener('load', () => {
 // ═══════════════════════════════════════════════════════════
 // CLIENTS — localStorage (swap for Airtable when CRM base ready)
 // ═══════════════════════════════════════════════════════════
-function loadClients() {
-  const stored = localStorage.getItem('crm_clients_' + REALTOR_ID);
-  clients = stored ? JSON.parse(stored) : [];
+async function loadClients() {
+  showLoading(true);
+  try {
+    const filter = encodeURIComponent(`{RealtorID}="${REALTOR_ID}"`);
+    const res  = await fetch(`${AT_URL}/Clients?filterByFormula=${filter}&sort[0][field]=Created&sort[0][direction]=desc&db=crm`);
+    const data = await res.json();
+    if (data.records) {
+      clients = data.records.map(r => ({ id: r.id, ...r.fields }));
+    } else {
+      clients = [];
+    }
+  } catch(e) {
+    console.error('Load error:', e);
+    // Fallback to localStorage if Airtable unreachable
+    const stored = localStorage.getItem('crm_clients_' + REALTOR_ID);
+    clients = stored ? JSON.parse(stored) : [];
+  }
   renderClients();
   updateCounts();
+  showLoading(false);
 }
 
-function saveClients() {
-  localStorage.setItem('crm_clients_' + REALTOR_ID, JSON.stringify(clients));
+async function saveClientToAirtable(data, existingId) {
+  const fields = {
+    Name:         data.name,
+    Phone:        data.phone,
+    Email:        data.email,
+    Stage:        stageLabel(data.stage),
+    Budget:       data.budget,
+    PreApproval:  data.preapproval,
+    LoanType:     data.loan,
+    Address:      data.address,
+    Referral:     data.referral,
+    ContractDate: data.contractDate || null,
+    CloseDate:    data.closeDate || null,
+    Notes:        data.notes,
+    RealtorID:    REALTOR_ID,
+    RealtorName:  REALTOR_NAME,
+    RealtorEmail: data.realtorEmail || '',
+  };
+  // Remove empty fields
+  Object.keys(fields).forEach(k => { if (!fields[k]) delete fields[k]; });
+
+  if (existingId) {
+    const res = await fetch(`${AT_URL}/Clients/${existingId}?db=crm`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ fields })
+    });
+    return await res.json();
+  } else {
+    const res = await fetch(`${AT_URL}/Clients?db=crm`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ records: [{ fields }] })
+    });
+    const d = await res.json();
+    return d.records ? d.records[0] : null;
+  }
+}
+
+async function deleteClientFromAirtable(airtableId) {
+  await fetch(`${AT_URL}/Clients/${airtableId}?db=crm`, { method: 'DELETE' });
+}
+
+function stageLabel(stage) {
+  const map = {lead:'Lead',preapproval:'Pre-Approval',searching:'Searching',contract:'Under Contract',closed:'Closed',seller:'Seller Lead'};
+  return map[stage] || stage;
+}
+
+function stageKey(label) {
+  const map = {'Lead':'lead','Pre-Approval':'preapproval','Searching':'searching','Under Contract':'contract','Closed':'closed','Seller Lead':'seller'};
+  return map[label] || 'lead';
+}
+
+function showLoading(show) {
+  const grid = document.getElementById('clientsGrid');
+  if (show) grid.innerHTML = '<div class="empty-state"><span style="color:var(--gold)">Loading clients...</span></div>';
 }
 
 function genId() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -495,7 +563,7 @@ function openAddModal(id) {
 
 function closeAddModal() { document.getElementById('addModal').classList.remove('show'); editingId = null; }
 
-function saveClient() {
+async function saveClient() {
   const name = document.getElementById('mName').value.trim();
   if (!name) { showToast('Please enter a client name.','error'); return; }
 
@@ -518,18 +586,23 @@ function saveClient() {
     updated:      new Date().toISOString(),
   };
 
-  if (editingId) {
-    const idx = clients.findIndex(x => x.id === editingId);
-    if (idx > -1) clients[idx] = data;
-  } else {
-    clients.unshift(data);
+  // Save to Airtable
+  try {
+    const result = await saveClientToAirtable(data, editingId);
+    if (editingId) {
+      const idx = clients.findIndex(x => x.id === editingId);
+      if (idx > -1) clients[idx] = { ...data, id: editingId };
+    } else {
+      if (result && result.id) data.id = result.id;
+      clients.unshift(data);
+    }
+    renderClients();
+    updateCounts();
+    closeAddModal();
+    showToast(editingId ? 'Client updated.' : 'Client added!','success');
+  } catch(e) {
+    showToast('Could not save — check your connection.','error');
   }
-
-  saveClients();
-  renderClients();
-  updateCounts();
-  closeAddModal();
-  showToast(editingId ? 'Client updated.' : 'Client added!','success');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -540,19 +613,20 @@ function openDetail(id) {
   if (!c) return;
   editingId = id;
 
-  document.getElementById('detailName').textContent  = c.name;
-  document.getElementById('dName').value             = c.name || '';
-  document.getElementById('dPhone').value            = c.phone || '';
-  document.getElementById('dEmail').value            = c.email || '';
-  document.getElementById('dStage').value            = c.stage || 'lead';
-  document.getElementById('dBudget').value           = c.budget || '';
-  document.getElementById('dPreapproval').value      = c.preapproval || '';
-  document.getElementById('dLoan').value             = c.loan || '';
-  document.getElementById('dReferral').value         = c.referral || '';
-  document.getElementById('dAddress').value          = c.address || '';
-  document.getElementById('dContractDate').value     = c.contractDate || '';
-  document.getElementById('dCloseDate').value        = c.closeDate || '';
-  document.getElementById('dNotes').value            = c.notes || '';
+  const nm = c.Name||c.name||'';
+  document.getElementById('detailName').textContent  = nm;
+  document.getElementById('dName').value             = nm;
+  document.getElementById('dPhone').value            = c.Phone||c.phone||'';
+  document.getElementById('dEmail').value            = c.Email||c.email||'';
+  document.getElementById('dStage').value            = stageKey(c.Stage||c.stage||'lead');
+  document.getElementById('dBudget').value           = c.Budget||c.budget||'';
+  document.getElementById('dPreapproval').value      = c.PreApproval||c.preapproval||'';
+  document.getElementById('dLoan').value             = c.LoanType||c.loan||'';
+  document.getElementById('dReferral').value         = c.Referral||c.referral||'';
+  document.getElementById('dAddress').value          = c.Address||c.address||'';
+  document.getElementById('dContractDate').value     = c.ContractDate||c.contractDate||'';
+  document.getElementById('dCloseDate').value        = c.CloseDate||c.closeDate||'';
+  document.getElementById('dNotes').value            = c.Notes||c.notes||'';
 
   renderTemplates(c);
 
@@ -566,7 +640,7 @@ function closeDetail() {
   editingId = null;
 }
 
-function updateClient() {
+async function updateClient() {
   if (!editingId) return;
   const idx = clients.findIndex(x => x.id === editingId);
   if (idx < 0) return;
@@ -586,28 +660,36 @@ function updateClient() {
     notes:        document.getElementById('dNotes').value.trim(),
     updated:      new Date().toISOString(),
   };
-  saveClients();
-  renderClients();
-  updateCounts();
-  document.getElementById('detailName').textContent = clients[idx].name;
-  showToast('Client saved.','success');
+  try {
+    await saveClientToAirtable(clients[idx], editingId);
+    renderClients();
+    updateCounts();
+    document.getElementById('detailName').textContent = clients[idx].name;
+    showToast('Client saved.','success');
+  } catch(e) {
+    showToast('Could not save — check your connection.','error');
+  }
 }
 
-function deleteClient() {
+async function deleteClient() {
   if (!editingId) return;
   if (!confirm('Remove this client? This cannot be undone.')) return;
-  clients = clients.filter(x => x.id !== editingId);
-  saveClients();
-  renderClients();
-  updateCounts();
-  closeDetail();
-  showToast('Client removed.','success');
+  try {
+    await deleteClientFromAirtable(editingId);
+    clients = clients.filter(x => x.id !== editingId);
+    renderClients();
+    updateCounts();
+    closeDetail();
+    showToast('Client removed.','success');
+  } catch(e) {
+    showToast('Could not delete — check your connection.','error');
+  }
 }
 
 function onStageChange() {
   if (!editingId) return;
   const c = clients.find(x => x.id === editingId);
-  if (c) renderTemplates({...c, stage: document.getElementById('dStage').value});
+  if (c) renderTemplates({...c, Stage: document.getElementById('dStage').value, stage: document.getElementById('dStage').value});
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -615,15 +697,16 @@ function onStageChange() {
 // ═══════════════════════════════════════════════════════════
 function renderTemplates(client) {
   const list = document.getElementById('templateList');
-  const relevant = TEMPLATES.filter(t => t.stage === 'all' || t.stage === client.stage);
-  const others   = TEMPLATES.filter(t => t.stage !== 'all' && t.stage !== client.stage);
+  const cs = stageKey(client.Stage||client.stage||'lead');
+  const relevant = TEMPLATES.filter(t => t.stage === 'all' || t.stage === cs);
+  const others   = TEMPLATES.filter(t => t.stage !== 'all' && t.stage !== cs);
   const all = [...relevant, ...others];
 
   list.innerHTML = all.map(t => `
     <div class="template-item">
       <div>
         <div class="template-name">${t.name}</div>
-        <div class="template-stage">${t.stage === client.stage || t.stage === 'all' ? '✓ Suggested for this stage' : 'Other stage'}</div>
+        <div class="template-stage">${t.stage === cs || t.stage === 'all' ? '✓ Suggested for this stage' : 'Other stage'}</div>
       </div>
       <button class="send-btn" id="sbtn-${t.id}" onclick="sendTemplate('${t.id}','${client.id}')">Send</button>
     </div>
@@ -661,7 +744,8 @@ function renderClients() {
   const query = document.getElementById('searchBar').value.toLowerCase();
 
   let filtered = clients.filter(c => {
-    const matchStage = currentFilter === 'all' || c.stage === currentFilter;
+    const cStage = stageKey(c.Stage || c.stage || 'lead');
+    const matchStage = currentFilter === 'all' || cStage === currentFilter;
     const matchSearch = !query || c.name.toLowerCase().includes(query) || (c.email||'').toLowerCase().includes(query) || (c.phone||'').includes(query);
     return matchStage && matchSearch;
   });
@@ -675,17 +759,23 @@ function renderClients() {
   }
 
   grid.innerHTML = filtered.map(c => {
-    const initials = c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const meta = c.closeDate ? `Close: ${new Date(c.closeDate).toLocaleDateString()}` : c.budget ? c.budget : '';
+    const name    = c.Name  || c.name  || 'Unknown';
+    const phone   = c.Phone || c.phone || '';
+    const email   = c.Email || c.email || '';
+    const stage   = stageKey(c.Stage || c.stage || 'lead');
+    const budget  = c.Budget || c.budget || '';
+    const closeDate = c.CloseDate || c.closeDate || '';
+    const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const meta = closeDate ? `Close: ${new Date(closeDate).toLocaleDateString()}` : budget ? budget : '';
     return `
-      <div class="client-card stage-${c.stage}" onclick="openDetail('${c.id}')">
+      <div class="client-card stage-${stage}" onclick="openDetail('${c.id}')">
         <div class="client-row">
           <div class="client-avatar">${initials}</div>
           <div class="client-info">
-            <div class="client-name">${c.name}</div>
-            <div class="client-contact">${c.phone || c.email || 'No contact info'}</div>
+            <div class="client-name">${name}</div>
+            <div class="client-contact">${phone || email || 'No contact info'}</div>
           </div>
-          <span class="client-stage-badge ${STAGE_BADGES[c.stage]}">${STAGE_LABELS[c.stage]}</span>
+          <span class="client-stage-badge ${STAGE_BADGES[stage]}">${STAGE_LABELS[stage]}</span>
           ${meta ? `<div class="client-meta">${meta}</div>` : ''}
         </div>
       </div>
@@ -695,15 +785,16 @@ function renderClients() {
 
 function updateCounts() {
   const stages = ['lead','preapproval','searching','contract','closed','seller'];
+  const getStage = c => stageKey(c.Stage || c.stage || 'lead');
   document.getElementById('cnt-all').textContent = clients.length;
   stages.forEach(s => {
     const el = document.getElementById('cnt-' + s);
-    if (el) el.textContent = clients.filter(c=>c.stage===s).length;
+    if (el) el.textContent = clients.filter(c=>getStage(c)===s).length;
   });
-  document.getElementById('stat-total').textContent   = clients.length;
-  document.getElementById('stat-active').textContent  = clients.filter(c=>!['closed'].includes(c.stage)).length;
-  document.getElementById('stat-closed').textContent  = clients.filter(c=>c.stage==='closed').length;
-  document.getElementById('stat-followup').textContent = clients.filter(c=>['contract','preapproval'].includes(c.stage)).length;
+  document.getElementById('stat-total').textContent    = clients.length;
+  document.getElementById('stat-active').textContent   = clients.filter(c=>getStage(c)!=='closed').length;
+  document.getElementById('stat-closed').textContent   = clients.filter(c=>getStage(c)==='closed').length;
+  document.getElementById('stat-followup').textContent = clients.filter(c=>['contract','preapproval'].includes(getStage(c))).length;
 }
 
 function filterStage(stage, btn) {
