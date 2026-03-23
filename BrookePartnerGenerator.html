@@ -127,6 +127,17 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     generatedURL = HUB_BASE + '?' + params.toString();
 
+    // Also build CRM link
+    const crmParams = new URLSearchParams();
+    crmParams.set('rid',  rid);
+    crmParams.set('name', name);
+    if (company) crmParams.set('company', company);
+    if (phone)   crmParams.set('phone',   phone);
+    if (email)   crmParams.set('email',   email);
+    const crmURL = 'https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html?' + crmParams.toString();
+    document.getElementById('crmLinkDisplay').textContent = crmURL;
+    document.getElementById('crmSection').style.display = 'block';
+
     document.getElementById('generatedLink').textContent = generatedURL;
     document.getElementById('previewLink').href = generatedURL;
 
@@ -160,6 +171,13 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       }, 2500);
     });
   }
+
+function copyCRMLink() {
+  const link = document.getElementById('crmLinkDisplay').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    showToast('CRM link copied!');
+  });
+}
 </script>
 </body>
 </html>
