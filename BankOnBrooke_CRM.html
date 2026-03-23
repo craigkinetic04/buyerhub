@@ -1323,35 +1323,99 @@ function renderWorkflowPanel(client) {
   const activeWf    = activeWfKey ? WORKFLOWS[activeWfKey] : null;
   const schedule    = client.wfSchedule || [];
   const today       = new Date().toISOString().split('T')[0];
+  const cid         = client.id;
 
-  let html = '<div class="wf-assign-wrap">';
-  html += '<h4>Workflow</h4>';
-
-  if (activeWf) {
-    const done    = schedule.filter(s=>s.done).length;
-    const total   = schedule.length;
-    html += `<div class="wf-active"><strong>${activeWf.name}</strong><br>Progress: ${done} of ${total} steps completed`;
-    html += '<div class="wf-steps-preview">';
-    schedule.forEach(s => {
-      const isPast = s.dueDate < today;
-      const dotClass = s.done ? 'done' : s.type === 'email' ? 'email' : 'reminder';
-      html += `<div class="wf-step-row">
-        <div class="wf-step-dot ${dotClass}"></div>
-        <span>Day ${s.day} — ${s.name} <span style="color:#bbb;">(${s.dueDate})</span></span>
-      </div>`;
-    });
-    html += '</div></div>';
-    html += `<button class="wf-assign-btn" style="margin-top:10px;background:#e07070;" onclick="removeWorkflow('${client.id}')">Remove Workflow</button>`;
-  } else {
-    html += `<select class="wf-select" id="wfSelectFor-${client.id}">
-      <option value="">— Assign a workflow —</option>
-      ${Object.entries(WORKFLOWS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('')}
-    </select>`;
-    html += `<button class="wf-assign-btn" onclick="assignWorkflow('${client.id}', document.getElementById('wfSelectFor-${client.id}').value)">Assign Workflow</button>`;
+  if (!activeWf) {
+    container.innerHTML = `
+      <p style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.6;">Assign a workflow to automatically schedule follow-up emails and reminders for this client.</p>
+      <select class="wf-select" id="wfSelectFor-${cid}">
+        <option value="">— Choose a workflow —</option>
+        ${Object.entries(WORKFLOWS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('')}
+      </select>
+      <button class="wf-assign-btn" onclick="assignWorkflow('${cid}', document.getElementById('wfSelectFor-${cid}').value)">Assign Workflow</button>
+    `;
+    return;
   }
 
-  html += '</div>';
-  container.innerHTML = html;
+  const done  = schedule.filter(s=>s.done).length;
+  const total = schedule.length;
+  const pct   = total ? Math.round(done/total*100) : 0;
+
+  let stepsHTML = schedule.map((s, idx) => {
+    const isToday   = s.dueDate === today;
+    const isPast    = s.dueDate < today && !s.done;
+    const isDone    = s.done;
+    const dotClass  = isDone ? 'done' : isToday ? 'email' : isPast ? 'reminder' : 'pending';
+    const rowBg     = isDone ? 'background:rgba(60,232,160,0.05);' : isToday ? 'background:#fff8e6;border:1px solid #fde9b0;' : isPast ? 'background:#fff5f5;' : '';
+    const typeIcon  = s.type === 'email' ? '✉️' : '📱';
+    const typeLabel = s.type === 'email' ? 'Email' : 'Reminder';
+    const dueLabel  = isDone ? '<span style="color:#3CE8A0;font-weight:700;">✓ Done</span>' :
+                      isToday ? '<span style="color:#f0a020;font-weight:700;">Due Today</span>' :
+                      isPast  ? '<span style="color:#e07070;font-weight:700;">Overdue</span>' :
+                      `<span style="color:#aaa;">Due ${s.dueDate}</span>`;
+
+    let actionBtns = '';
+    if (!isDone) {
+      if (s.type === 'email') {
+        actionBtns += `<button onclick="fireWorkflowStep('${cid}',${idx})" style="background:var(--gold);color:var(--navy);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">✉️ Send Email</button> `;
+      } else {
+        actionBtns += `<button onclick="fireWorkflowStep('${cid}',${idx})" style="background:#4a90d9;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">📱 Remind Me</button> `;
+      }
+      actionBtns += `<button onclick="markStepDone('${cid}',${idx})" style="background:transparent;color:#aaa;border:1px solid #ddd;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;white-space:nowrap;">✓ Mark Done</button>`;
+    } else {
+      actionBtns = `<button onclick="markStepUndone('${cid}',${idx})" style="background:transparent;color:#aaa;border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:10px;cursor:pointer;">Undo</button>`;
+    }
+
+    return `
+      <div style="border-radius:8px;padding:10px 12px;margin-bottom:6px;${rowBg}border:1px solid #f0ede9;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:150px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+              <div class="wf-step-dot ${dotClass}"></div>
+              <span style="font-size:11px;font-weight:700;color:var(--navy);">Day ${s.day} — ${typeIcon} ${typeLabel}</span>
+              ${dueLabel}
+            </div>
+            <div style="font-size:12px;color:var(--gray);margin-left:14px;">${s.name}</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;flex-shrink:0;">
+            ${actionBtns}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;">${activeWf.name}</div>
+      <div style="background:#e0d8cf;border-radius:20px;height:6px;margin-bottom:4px;">
+        <div style="background:var(--gold);height:6px;border-radius:20px;width:${pct}%;transition:width 0.4s;"></div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">${done} of ${total} steps completed (${pct}%)</div>
+    </div>
+    <div>${stepsHTML}</div>
+    <button class="wf-assign-btn" style="margin-top:8px;background:#e07070;width:100%;" onclick="removeWorkflow('${cid}')">Remove This Workflow</button>
+  `;
+}
+
+function markStepDone(clientId, stepIdx) {
+  const idx = clients.findIndex(x => x.id === clientId);
+  if (idx < 0 || !clients[idx].wfSchedule) return;
+  clients[idx].wfSchedule[stepIdx].done = true;
+  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
+  saveClients();
+  renderWorkflowPanel(clients[idx]);
+  showToast('Step marked complete.','success');
+}
+
+function markStepUndone(clientId, stepIdx) {
+  const idx = clients.findIndex(x => x.id === clientId);
+  if (idx < 0 || !clients[idx].wfSchedule) return;
+  clients[idx].wfSchedule[stepIdx].done = false;
+  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
+  saveClients();
+  renderWorkflowPanel(clients[idx]);
+  showToast('Step marked incomplete.','success');
 }
 
 function removeWorkflow(clientId) {
