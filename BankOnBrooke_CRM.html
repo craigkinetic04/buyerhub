@@ -1249,8 +1249,8 @@ function assignWorkflow(clientId, workflowKey) {
 
   if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
   saveClients();
+  renderWorkflowPanel(clients[idx]);
   showToast(`Workflow "${wf.name}" assigned!`, 'success');
-  openDetail(clientId); // refresh panel
 }
 
 function checkWorkflowsDue() {
