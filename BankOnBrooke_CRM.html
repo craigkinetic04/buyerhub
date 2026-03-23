@@ -1326,13 +1326,33 @@ function renderWorkflowPanel(client) {
   const cid         = client.id;
 
   if (!activeWf) {
+    const wfOptions = Object.entries(WORKFLOWS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('');
+    const previewRows = Object.entries(WORKFLOWS).map(([k,wf]) => {
+      const rows = wf.steps.map(s => {
+        const icon = s.type === 'email' ? '✉️' : '📱';
+        const color = s.type === 'email' ? 'var(--gold)' : '#4a90d9';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid #f5f2ef;font-size:12px;color:var(--gray);">
+          <span style="min-width:50px;color:var(--navy);font-weight:600;">Day ${s.day}</span>
+          <span style="font-size:13px;">${icon}</span>
+          <span>${s.name}</span>
+        </div>`;
+      }).join('');
+      return `<div id="wfpreview-${k}-${cid}" style="display:none;background:var(--light);border-radius:8px;padding:12px;margin-bottom:10px;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">${wf.steps.length} steps over ${wf.steps[wf.steps.length-1].day} days</div>
+        ${rows}
+      </div>`;
+    }).join('');
+
     container.innerHTML = `
-      <p style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.6;">Assign a workflow to automatically schedule follow-up emails and reminders for this client.</p>
-      <select class="wf-select" id="wfSelectFor-${cid}">
-        <option value="">— Choose a workflow —</option>
-        ${Object.entries(WORKFLOWS).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('')}
+      <p style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.6;">Select a workflow to preview its steps, then click Assign to activate it for this client.</p>
+      <select class="wf-select" id="wfSelectFor-${cid}" onchange="previewWorkflow('${cid}', this.value)">
+        <option value="">— Choose a workflow to preview —</option>
+        ${wfOptions}
       </select>
-      <button class="wf-assign-btn" onclick="assignWorkflow('${cid}', document.getElementById('wfSelectFor-${cid}').value)">Assign Workflow</button>
+      ${previewRows}
+      <div id="wfAssignBtnWrap-${cid}" style="display:none;">
+        <button class="wf-assign-btn" style="width:100%;" onclick="assignWorkflow('${cid}', document.getElementById('wfSelectFor-${cid}').value)">✓ Assign This Workflow</button>
+      </div>
     `;
     return;
   }
@@ -1396,6 +1416,23 @@ function renderWorkflowPanel(client) {
     <div>${stepsHTML}</div>
     <button class="wf-assign-btn" style="margin-top:8px;background:#e07070;width:100%;" onclick="removeWorkflow('${cid}')">Remove This Workflow</button>
   `;
+}
+
+
+function previewWorkflow(clientId, key) {
+  // Hide all previews for this client
+  document.querySelectorAll(`[id^="wfpreview-"][id$="-${clientId}"]`).forEach(el => {
+    el.style.display = 'none';
+  });
+  const btnWrap = document.getElementById(`wfAssignBtnWrap-${clientId}`);
+  if (!key) {
+    if (btnWrap) btnWrap.style.display = 'none';
+    return;
+  }
+  // Show selected preview
+  const preview = document.getElementById(`wfpreview-${key}-${clientId}`);
+  if (preview) preview.style.display = 'block';
+  if (btnWrap) btnWrap.style.display = 'block';
 }
 
 function markStepDone(clientId, stepIdx) {
