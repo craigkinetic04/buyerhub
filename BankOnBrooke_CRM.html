@@ -1227,21 +1227,26 @@ const WF_EMAILS = {
 };
 
 // ── WORKFLOW LOGIC ──────────────────────────────────────────────────────────
+function saveClients() {
+  try { localStorage.setItem('crm_clients_' + REALTOR_ID, JSON.stringify(clients)); } catch(e) {}
+}
+
 function assignWorkflow(clientId, workflowKey) {
-  if (!workflowKey) return;
+  if (!workflowKey) { showToast('Please select a workflow first.','error'); return; }
   const wf = WORKFLOWS[workflowKey];
   if (!wf) return;
 
   const startDate = new Date();
   startDate.setHours(0,0,0,0);
 
-  const schedule = wf.steps.map(step => ({
-    ...step,
-    dueDate: new Date(startDate.getTime() + step.day * 86400000).toISOString().split('T')[0],
-    done: false,
-  }));
+  const schedule = wf.steps.map(function(step) {
+    return Object.assign({}, step, {
+      dueDate: new Date(startDate.getTime() + step.day * 86400000).toISOString().split('T')[0],
+      done: false,
+    });
+  });
 
-  const idx = clients.findIndex(x => x.id === clientId);
+  const idx = clients.findIndex(function(x){ return x.id === clientId; });
   if (idx < 0) return;
   clients[idx].workflow     = workflowKey;
   clients[idx].wfSchedule  = schedule;
@@ -1250,7 +1255,7 @@ function assignWorkflow(clientId, workflowKey) {
   if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
   saveClients();
   renderWorkflowPanel(clients[idx]);
-  showToast(`Workflow "${wf.name}" assigned!`, 'success');
+  showToast('Workflow assigned!', 'success');
 }
 
 function checkWorkflowsDue() {
