@@ -152,15 +152,34 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN / SETUP OVERLAY -->
 <div class="login-overlay show" id="loginOverlay">
   <div class="login-card">
     <img class="login-logo" src="brooke_logo.png" alt="Bank on Brooke">
-    <h2>Partner CRM</h2>
-    <p>Enter your REALTOR® ID to access your client dashboard. Your ID was provided by Brooke when you were set up as a partner.</p>
-    <div class="login-field"><label>Your REALTOR® ID</label><input type="text" id="loginId" placeholder="e.g. trish-king-abc123" onkeydown="if(event.key==='Enter')loginCRM()"></div>
-    <div class="login-field"><label>Your Name</label><input type="text" id="loginName" placeholder="e.g. Trish King" onkeydown="if(event.key==='Enter')loginCRM()"></div>
-    <button class="login-btn" onclick="loginCRM()">Access My Dashboard →</button>
+
+    <!-- SETUP SCREEN (first time) -->
+    <div id="setupScreen">
+      <h2>Set Up Your Account</h2>
+      <p>Create a password to secure your CRM. You'll use your email and this password to log in from any device.</p>
+      <div class="login-field"><label>Your Name</label><input type="text" id="setupName" placeholder="Your full name"></div>
+      <div class="login-field"><label>Your Email</label><input type="email" id="setupEmail" placeholder="you@email.com"></div>
+      <div class="login-field"><label>Create a Password</label><input type="password" id="setupPassword" placeholder="At least 6 characters"></div>
+      <div class="login-field"><label>Confirm Password</label><input type="password" id="setupConfirm" placeholder="Re-enter your password"></div>
+      <button class="login-btn" onclick="setupAccount()">Set Up My Account →</button>
+      <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--gray);">Already have an account? <span style="color:var(--gold);cursor:pointer;font-weight:700;" onclick="showLoginScreen()">Log in</span></p>
+    </div>
+
+    <!-- LOGIN SCREEN (returning) -->
+    <div id="loginScreen" style="display:none;">
+      <h2>Welcome Back</h2>
+      <p>Log in to access your client dashboard.</p>
+      <div class="login-field"><label>Your Email</label><input type="email" id="loginEmail" placeholder="you@email.com" onkeydown="if(event.key==='Enter')loginCRM()"></div>
+      <div class="login-field"><label>Password</label><input type="password" id="loginPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')loginCRM()"></div>
+      <div id="loginError" style="display:none;font-size:12px;color:#e07070;margin-bottom:10px;padding:8px 12px;background:#fff0f0;border-radius:6px;"></div>
+      <button class="login-btn" onclick="loginCRM()">Log In →</button>
+      <p style="text-align:center;margin-top:14px;font-size:12px;color:var(--gray);">New here? <span style="color:var(--gold);cursor:pointer;font-weight:700;" onclick="showSetupScreen()">Create an account</span></p>
+    </div>
+
   </div>
 </div>
 
@@ -276,6 +295,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   </div>
   <div class="header-right">
     <span class="header-partner" id="headerPartner"></span>
+    <button onclick="logout()" style="background:transparent;border:1px solid rgba(196,154,120,0.3);color:rgba(240,230,216,0.5);font-family:'Lato',sans-serif;font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(196,154,120,0.3)';this.style.color='rgba(240,230,216,0.5)'">Log Out</button>
     <a class="header-cta" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke</a>
   </div>
 </div>
@@ -409,37 +429,172 @@ const TEMPLATES = [
 ];
 
 // ═══════════════════════════════════════════════════════════
-// LOGIN
+// LOGIN & ACCOUNT SETUP
 // ═══════════════════════════════════════════════════════════
-function loginCRM() {
-  const id   = document.getElementById('loginId').value.trim();
-  const name = document.getElementById('loginName').value.trim();
-  if (!id || !name) { showToast('Please enter your REALTOR ID and name.','error'); return; }
-  REALTOR_ID   = id;
+
+function showSetupScreen() {
+  document.getElementById('setupScreen').style.display = 'block';
+  document.getElementById('loginScreen').style.display = 'none';
+}
+function showLoginScreen() {
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'block';
+}
+
+// Hash password simply (not cryptographic but better than plaintext)
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function setupAccount() {
+  const name     = document.getElementById('setupName').value.trim();
+  const email    = document.getElementById('setupEmail').value.trim().toLowerCase();
+  const password = document.getElementById('setupPassword').value;
+  const confirm  = document.getElementById('setupConfirm').value;
+
+  if (!name || !email || !password) { showToast('Please fill in all fields.','error'); return; }
+  if (password.length < 6) { showToast('Password must be at least 6 characters.','error'); return; }
+  if (password !== confirm) { showToast('Passwords do not match.','error'); return; }
+
+  const btn = document.querySelector('#setupScreen .login-btn');
+  btn.textContent = 'Setting up...';
+  btn.disabled = true;
+
+  try {
+    // Check if account already exists
+    const filter = encodeURIComponent(`{Email}="${email}"`);
+    const check = await fetch(`${AT_URL}/Partners?filterByFormula=${filter}&db=crm`);
+    const checkData = await check.json();
+
+    if (checkData.records && checkData.records.length > 0) {
+      showToast('An account with this email already exists. Please log in.','error');
+      showLoginScreen();
+      document.getElementById('loginEmail').value = email;
+      btn.textContent = 'Set Up My Account →';
+      btn.disabled = false;
+      return;
+    }
+
+    const hashed = await hashPassword(password);
+    const rid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '-' + Date.now().toString(36);
+
+    // Get RID from URL params if available (set by Brooke's generator)
+    const P = new URLSearchParams(window.location.search);
+    const generatorRid = P.get('rid') || rid;
+
+    const res = await fetch(`${AT_URL}/Partners?db=crm`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ records: [{ fields: {
+        Name:     name,
+        Email:    email,
+        Password: hashed,
+        RealtorID: generatorRid,
+        Company:  P.get('company') || '',
+        Phone:    P.get('phone') || '',
+        Created:  new Date().toISOString()
+      }}]})
+    });
+    const data = await res.json();
+
+    if (data.records) {
+      enterCRM(generatorRid, name, email);
+    } else {
+      showToast('Could not create account. Please try again.','error');
+    }
+  } catch(e) {
+    showToast('Connection error. Please try again.','error');
+  }
+
+  btn.textContent = 'Set Up My Account →';
+  btn.disabled = false;
+}
+
+async function loginCRM() {
+  const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+
+  if (!email || !password) { showToast('Please enter your email and password.','error'); return; }
+
+  const btn = document.querySelector('#loginScreen .login-btn');
+  btn.textContent = 'Logging in...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  try {
+    const hashed = await hashPassword(password);
+    const filter = encodeURIComponent(`AND({Email}="${email}",{Password}="${hashed}")`);
+    const res    = await fetch(`${AT_URL}/Partners?filterByFormula=${filter}&db=crm`);
+    const data   = await res.json();
+
+    if (data.records && data.records.length > 0) {
+      const partner = data.records[0].fields;
+      enterCRM(partner.RealtorID, partner.Name, partner.Email);
+    } else {
+      errEl.textContent = 'Incorrect email or password. Please try again.';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    showToast('Connection error. Please try again.','error');
+  }
+
+  btn.textContent = 'Log In →';
+  btn.disabled = false;
+}
+
+function enterCRM(rid, name, email) {
+  REALTOR_ID   = rid;
   REALTOR_NAME = name;
-  localStorage.setItem('crm_rid', id);
-  localStorage.setItem('crm_rname', name);
+  // Save session so they stay logged in
+  localStorage.setItem('crm_session', JSON.stringify({ rid, name, email, ts: Date.now() }));
   document.getElementById('loginOverlay').classList.remove('show');
   document.getElementById('headerPartner').textContent = name;
   loadClients();
 }
 
-// Auto-login if saved
+function logout() {
+  localStorage.removeItem('crm_session');
+  REALTOR_ID   = '';
+  REALTOR_NAME = '';
+  document.getElementById('loginOverlay').classList.add('show');
+  showLoginScreen();
+  document.getElementById('loginEmail').value    = '';
+  document.getElementById('loginPassword').value = '';
+}
+
+// Auto-login if session saved
 window.addEventListener('load', () => {
-  const rid   = localStorage.getItem('crm_rid');
-  const rname = localStorage.getItem('crm_rname');
-  if (rid && rname) {
-    REALTOR_ID   = rid;
-    REALTOR_NAME = rname;
-    document.getElementById('loginOverlay').classList.remove('show');
-    document.getElementById('headerPartner').textContent = rname;
-    loadClients();
+  const session = localStorage.getItem('crm_session');
+  if (session) {
+    try {
+      const s = JSON.parse(session);
+      // Session valid for 30 days
+      if (Date.now() - s.ts < 30 * 24 * 60 * 60 * 1000) {
+        enterCRM(s.rid, s.name, s.email);
+        return;
+      }
+    } catch(e) {}
   }
 
-  // Pre-fill from URL params (when coming from generator)
+  // Pre-fill from URL params and show setup screen if new partner
   const P = new URLSearchParams(window.location.search);
-  if (P.get('rid'))  document.getElementById('loginId').value   = P.get('rid');
-  if (P.get('name')) document.getElementById('loginName').value = P.get('name');
+  if (P.get('name')) {
+    document.getElementById('setupName').value  = decodeURIComponent(P.get('name'));
+    showSetupScreen();
+  }
+  if (P.get('email')) {
+    document.getElementById('setupEmail').value = decodeURIComponent(P.get('email'));
+  }
+  // If coming from generator show setup, otherwise show login
+  if (P.get('rid') && P.get('name')) {
+    showSetupScreen();
+  } else {
+    showLoginScreen();
+  }
 });
 
 // ═══════════════════════════════════════════════════════════
