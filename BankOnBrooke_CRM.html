@@ -148,6 +148,11 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .toast.error{border-left:4px solid #e07070;}
 
 @media(max-width:600px){.main{padding:16px 12px 40px;}.field-grid{grid-template-columns:1fr;}}
+
+/* TEST MODE */
+.test-banner{background:#f0a020;padding:8px 20px;text-align:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px;display:none;}
+.test-banner.show{display:block;}
+.test-banner a{color:#fff;text-decoration:underline;cursor:pointer;margin-left:12px;}
 </style>
 </head>
 <body>
@@ -299,6 +304,13 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     <a class="header-cta" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke</a>
   </div>
 </div>
+
+<!-- TEST MODE BANNER -->
+<div class="test-banner" id="testBanner">
+  🧪 TEST MODE — Nothing saves to Airtable. Fake data only.
+  <a onclick="exitTestMode()">Exit Test Mode</a>
+</div>
+
 
 <!-- MAIN -->
 <div class="main">
@@ -602,6 +614,7 @@ window.addEventListener('load', () => {
 // ═══════════════════════════════════════════════════════════
 async function loadClients() {
   showLoading(true);
+  if (IS_TEST_MODE) { renderClients(); updateCounts(); showLoading(false); return; }
   try {
     const filter = encodeURIComponent(`{RealtorID}="${REALTOR_ID}"`);
     const res  = await fetch(`${AT_URL}/Clients?filterByFormula=${filter}&sort[0][field]=Created&sort[0][direction]=desc&db=crm`);
@@ -623,6 +636,7 @@ async function loadClients() {
 }
 
 async function saveClientToAirtable(data, existingId) {
+  if (IS_TEST_MODE) return { id: data.id || genId() };
   const fields = {
     Name:         data.name,
     Phone:        data.phone,
@@ -662,6 +676,7 @@ async function saveClientToAirtable(data, existingId) {
 }
 
 async function deleteClientFromAirtable(airtableId) {
+  if (IS_TEST_MODE) return;
   await fetch(`${AT_URL}/Clients/${airtableId}?db=crm`, { method: 'DELETE' });
 }
 
@@ -816,7 +831,12 @@ async function updateClient() {
     updated:      new Date().toISOString(),
   };
   try {
+    const prevStage = stageKey(clients[idx].Stage || clients[idx].stage || 'lead');
+    const newStage  = document.getElementById('dStage').value;
     await saveClientToAirtable(clients[idx], editingId);
+    if (newStage !== prevStage) {
+      await sendStageChangeNotification(clients[idx], newStage);
+    }
     renderClients();
     updateCounts();
     document.getElementById('detailName').textContent = clients[idx].name;
@@ -845,6 +865,87 @@ function onStageChange() {
   if (!editingId) return;
   const c = clients.find(x => x.id === editingId);
   if (c) renderTemplates({...c, Stage: document.getElementById('dStage').value, stage: document.getElementById('dStage').value});
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// TEST MODE
+// ═══════════════════════════════════════════════════════════
+const TEST_CLIENTS = [
+  { id:'t1', Name:'Babs Young', Phone:'(405) 555-0101', Email:'babs@email.com', Stage:'Lead', Budget:'$280,000 – $320,000', PreApproval:'', LoanType:'FHA', Address:'Edmond, OK', Referral:'Instagram', Notes:'First-time buyer, very motivated.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+  { id:'t2', Name:'Marcus Rivera', Phone:'(405) 555-0102', Email:'marcus@email.com', Stage:'Pre-Approval', Budget:'$350,000 – $400,000', PreApproval:'$390,000', LoanType:'Conventional', Address:'Yukon, OK', Referral:'Open House', Notes:'Pre-approved through Brooke. Looking in Yukon area.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+  { id:'t3', Name:'Jordan Lee', Phone:'(405) 555-0103', Email:'jordan@email.com', Stage:'Searching', Budget:'$200,000 – $250,000', PreApproval:'$245,000', LoanType:'USDA', Address:'Mustang, OK', Referral:'Referral', Notes:'Interested in rural properties. May qualify for USDA.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+  { id:'t4', Name:'Taylor Brooks', Phone:'(405) 555-0104', Email:'taylor@email.com', Stage:'Under Contract', Budget:'$315,000', PreApproval:'$315,000', LoanType:'VA', Address:'123 Maple St, Norman, OK', Referral:'Past Client', Notes:'VA loan. Inspection scheduled for next week. Close date Feb 28.', ContractDate:'2026-02-01', CloseDate:'2026-02-28', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+  { id:'t5', Name:'Casey Morgan', Phone:'(405) 555-0105', Email:'casey@email.com', Stage:'Closed', Budget:'$290,000', PreApproval:'$290,000', LoanType:'Conventional', Address:'456 Oak Ave, Edmond, OK', Referral:'Instagram', Notes:'Closed smoothly. Great client.', CloseDate:'2026-01-15', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+];
+
+let IS_TEST_MODE = false;
+
+function enterTestMode(pwd) {
+  if (pwd !== 'Laqu1sha!1') { showToast('Incorrect password.','error'); return; }
+  IS_TEST_MODE   = true;
+  REALTOR_ID     = 'test';
+  REALTOR_NAME   = 'Test REALTOR';
+  clients        = [...TEST_CLIENTS];
+  document.getElementById('loginOverlay').classList.remove('show');
+  document.getElementById('headerPartner').textContent = 'Test REALTOR';
+  document.getElementById('testBanner').classList.add('show');
+  renderClients();
+  updateCounts();
+  showToast('Test mode active — nothing saves to Airtable.','success');
+}
+
+// Secret keyboard shortcut: type "testmode" anywhere on the login screen
+let _keyBuffer = '';
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('loginOverlay').classList.contains('show')) {
+    _keyBuffer += e.key;
+    if (_keyBuffer.length > 8) _keyBuffer = _keyBuffer.slice(-8);
+    if (_keyBuffer === 'testmode') {
+      _keyBuffer = '';
+      const pwd = prompt('Enter test password:');
+      if (pwd) enterTestMode(pwd);
+    }
+  } else {
+    _keyBuffer = '';
+  }
+});
+
+function exitTestMode() {
+  IS_TEST_MODE = false;
+  clients      = [];
+  REALTOR_ID   = '';
+  REALTOR_NAME = '';
+  document.getElementById('testBanner').classList.remove('show');
+  document.getElementById('loginOverlay').classList.add('show');
+  showLoginScreen();
+}
+
+// ═══════════════════════════════════════════════════════════
+// STAGE CHANGE EMAIL NOTIFICATION (replaces Airtable automation)
+// ═══════════════════════════════════════════════════════════
+async function sendStageChangeNotification(client, newStage) {
+  if (IS_TEST_MODE) return; // skip in test mode
+  const realtorEmail = client.RealtorEmail || client.realtorEmail || '';
+  if (!realtorEmail) return;
+
+  const stageFriendly = {
+    lead:'Buyer Lead', preapproval:'Pre-Approval', searching:'Home Search',
+    contract:'Under Contract', closed:'Closed', seller:'Seller Lead'
+  }[newStage] || newStage;
+
+  const clientName = client.Name || client.name || '';
+  const subject    = encodeURIComponent(`Action needed — ${clientName} moved to ${stageFriendly}`);
+  const body       = encodeURIComponent(
+    `Hi ${REALTOR_NAME},\n\n` +
+    `Your client ${clientName} has moved to the ${stageFriendly} stage in your CRM.\n\n` +
+    `Open your CRM to send the appropriate follow-up email:\n` +
+    `https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html\n\n` +
+    `— Bank on Brooke Home Loans`
+  );
+
+  // Open mailto — REALTOR sends from their own email
+  window.open(`mailto:${realtorEmail}?subject=${subject}&body=${body}`, '_blank');
 }
 
 // ═══════════════════════════════════════════════════════════
