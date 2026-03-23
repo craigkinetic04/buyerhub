@@ -151,14 +151,52 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     // SMS
     const smsBody = encodeURIComponent(
-      `Hi ${name}! Brooke here. I've set up your personalized Buyer Hub — it has the first-time buyer checklist and Oklahoma property search all in one place, pre-loaded with your info. Share it with your buyers:\n\n${generatedURL}`
+      `Hi ${name}! Brooke here from Bank on Brooke Home Loans. I've set up two tools for you — both are ready to go and pre-loaded with your info.\n\n` +
+      `🏠 BUYER HUB (share with your buyers)\n` +
+      `This has the first-time buyer checklist, your featured listings, and an Oklahoma property search. Send this link to every buyer you're working with.\n` +
+      `${generatedURL}\n\n` +
+      `📋 YOUR CLIENT CRM (private — just for you)\n` +
+      `Use this to manage all your clients, track where they are in the process, and send follow-up emails with one click.\n` +
+      `${crmURL}\n\n` +
+      `Open the Buyer Hub link first and check out the Properties tab — that's where you set up your profile and add listings before sharing with buyers. Let me know if you have any questions!\n\n` +
+      `— Brooke\nBank on Brooke Home Loans\nbankonbrooke.studio`
     );
     document.getElementById('smsBtn').href = `sms:?body=${smsBody}`;
 
     // Email
-    const emailSubject = encodeURIComponent('Your Personalized Buyer Hub — Bank on Brooke');
+    const emailSubject = encodeURIComponent(`Your Buyer Hub & Client CRM Are Ready — Bank on Brooke`);
     const emailBody = encodeURIComponent(
-      `Hi ${name},\n\nI've created your personalized Buyer Hub! It includes the first-time buyer checklist and Oklahoma property search — already loaded with your contact info so your buyers know exactly who to call.\n\nYour link:\n${generatedURL}\n\nHow to use it:\n1. Open the link and go to the Properties tab\n2. Click "+ Add a Featured Listing" to add any homes you want to highlight\n3. Share the link with your buyers — their checklist and property search are ready to go\n\nLet me know if you have any questions!\n\nBrooke Gagliardi-Young\nBank on Brooke Home Loans\nbankonbrooke.studio/contact`
+      `Hi ${name},\n\n` +
+      `I've set up two tools for you — both are personalized with your info and ready to go right now.\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🏠 YOUR BUYER HUB — Share this with your buyers\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `${generatedURL}\n\n` +
+      `This is what your buyers will use. It includes:\n` +
+      `• A 7-step homebuying checklist with saved progress\n` +
+      `• Your featured listings (you add these from your setup link)\n` +
+      `• Oklahoma property search on Zillow, Realtor.com & Redfin\n` +
+      `• A full FAQ section covering pre-approval, earnest money, and down payment assistance\n` +
+      `• My contact info on every page\n\n` +
+      `How to get started:\n` +
+      `1. Open the Buyer Hub link above\n` +
+      `2. Go to the Find Properties tab\n` +
+      `3. Fill in your profile and add your featured listings\n` +
+      `4. Copy the Buyer Link from the green banner and send it to your buyers\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📋 YOUR CLIENT CRM — Private, just for you\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `${crmURL}\n\n` +
+      `This is your private client management dashboard. Use it to:\n` +
+      `• Add and track all your buyers and sellers\n` +
+      `• See where each client is in the process at a glance\n` +
+      `• Send pre-written follow-up emails with one click — new client welcome, pre-approval reminder, offer congratulations, closing day, and more\n` +
+      `• Keep notes, budgets, loan types, and important dates all in one place\n\n` +
+      `Bookmark both links on your phone — you'll use them often.\n\n` +
+      `Let me know if you have any questions at all. I'm here to help!\n\n` +
+      `Brooke Gagliardi-Young\n` +
+      `Bank on Brooke Home Loans\n` +
+      `bankonbrooke.studio/contact`
     );
     document.getElementById('emailBtn').href = `mailto:${email}?subject=${emailSubject}&body=${emailBody}`;
 
