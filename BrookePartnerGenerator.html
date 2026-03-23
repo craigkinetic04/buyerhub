@@ -76,7 +76,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
     <input type="text" id="rEmail" placeholder="jane@smithrealty.com">
   </div>
 
-  <button class="gen-btn" onclick="generate()">Generate Partner Link →</button>
+  <button class="gen-btn" class="generate-btn" onclick="generate()">Generate Partner Link →</button>
 
   <div class="result" id="result">
     <div class="result-label">Partner's Personalized Link</div>
@@ -113,8 +113,19 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
   const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
 
   let generatedURL = '';
+  let shortHubURL  = '';
+  let shortCrmURL  = '';
 
-  function generate() {
+  async function shortenURL(longURL) {
+    try {
+      const res = await fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longURL));
+      const short = await res.text();
+      if (short.trim().startsWith('https://tinyurl.com')) return short.trim();
+    } catch(e) {}
+    return longURL;
+  }
+
+  async function generate() {
     const name    = document.getElementById('rName').value.trim();
     const company = document.getElementById('rCompany').value.trim();
     const phone   = document.getElementById('rPhone').value.trim();
@@ -122,7 +133,10 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     if (!name) { alert('Please enter the REALTOR®\'s name.'); return; }
 
-    // Generate unique REALTOR ID from name + timestamp
+    const btn = document.querySelector('.generate-btn');
+    btn.textContent = 'Generating links...';
+    btn.disabled = true;
+
     const rid = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'') + '-' + Date.now().toString(36);
 
     const params = new URLSearchParams();
@@ -135,7 +149,6 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     generatedURL = HUB_BASE + '?' + params.toString();
 
-    // Also build CRM link
     const crmParams = new URLSearchParams();
     crmParams.set('rid',  rid);
     crmParams.set('name', name);
@@ -143,10 +156,19 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
     if (phone)   crmParams.set('phone',   phone);
     if (email)   crmParams.set('email',   email);
     const crmURL = 'https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html?' + crmParams.toString();
-    document.getElementById('crmLinkDisplay').textContent = crmURL;
-    document.getElementById('crmSection').style.display = 'block';
 
-    document.getElementById('generatedLink').textContent = generatedURL;
+    // Shorten both links simultaneously
+    [shortHubURL, shortCrmURL] = await Promise.all([
+      shortenURL(generatedURL),
+      shortenURL(crmURL)
+    ]);
+
+    btn.textContent = 'Generate Partner Link →';
+    btn.disabled = false;
+
+    document.getElementById('crmLinkDisplay').textContent = shortCrmURL;
+    document.getElementById('crmSection').style.display = 'block';
+    document.getElementById('generatedLink').textContent = shortHubURL;
     document.getElementById('previewLink').href = generatedURL;
 
     // SMS
@@ -154,10 +176,10 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       `Hi ${name}! Brooke here from Bank on Brooke. I've set up two tools for you — both are ready to go and pre-loaded with your info.\n\n` +
       `🏠 BUYER HUB (share with your buyers)\n` +
       `This has the first-time buyer checklist, your featured listings, and an Oklahoma property search. Send this link to every buyer you're working with.\n` +
-      `${generatedURL}\n\n` +
+      `${shortHubURL}\n\n` +
       `📋 YOUR CLIENT CRM (private — just for you)\n` +
       `Use this to manage all your clients, track where they are in the process, and send follow-up emails with one click.\n` +
-      `${crmURL}\n\n` +
+      `${shortCrmURL}\n\n` +
       `Open the Buyer Hub link first and check out the Properties tab — that's where you set up your profile and add listings before sharing with buyers. Let me know if you have any questions!\n\n` +
       `— Brooke\nThe Residential Lending Studio`
     );
@@ -171,7 +193,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `🏠 YOUR BUYER HUB — Share this with your buyers\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `${generatedURL}\n\n` +
+      `${shortHubURL}\n\n` +
       `This is what your buyers will use. It includes:\n` +
       `• A 7-step homebuying checklist with saved progress\n` +
       `• Your featured listings (you add these from your setup link)\n` +
@@ -186,7 +208,7 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
       `📋 YOUR CLIENT CRM — Private, just for you\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `${crmURL}\n\n` +
+      `${shortCrmURL}\n\n` +
       `This is your private client management dashboard. Use it to:\n` +
       `• Add and track all your buyers and sellers\n` +
       `• See where each client is in the process at a glance\n` +
