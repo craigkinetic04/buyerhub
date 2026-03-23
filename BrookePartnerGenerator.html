@@ -150,14 +150,14 @@ body{background:var(--navy);font-family:'Lato',sans-serif;color:var(--cream);min
 
     // SMS
     const smsBody = encodeURIComponent(
-      `Hi ${name}! Brooke here from Bank on Brooke. I've set up two tools for you — both are ready to go and pre-loaded with your info.\n\n` +
-      `🏠 BUYER HUB\n` +
-      `Share this link with your buyers:\n` +
+      `Hi ${name}! Brooke here from Bank on Brooke. I set up two tools for you — here's what each one does:\n\n` +
+      `🏠 BUYER HUB — Send this to your buyers\n` +
+      `This is what your buyers open. It has a step-by-step homebuying checklist, your featured listings, an Oklahoma property search, and my contact info on every page. Open it first, go to the Properties tab, set up your profile and add your listings, then copy the buyer link from the green banner to share with clients.\n` +
       `${generatedURL}\n\n` +
-      `📋 YOUR CLIENT CRM\n` +
-      `Your private client management dashboard:\n` +
+      `📋 YOUR CLIENT CRM — Keep this private\n` +
+      `This is your personal dashboard to manage all your clients. Add clients, track where they are in the buying process, and send follow-up emails with one click — new client welcome, pre-approval reminder, offer congratulations, closing day, and more. Only you can see this.\n` +
       `${crmURL}\n\n` +
-      `Open the Buyer Hub first — go to the Properties tab to set up your profile and add listings before sharing with buyers.\n\n` +
+      `Let me know if you have any questions!\n\n` +
       `— Brooke\nThe Residential Lending Studio`
     );
     document.getElementById('smsBtn').href = `sms:?body=${smsBody}`;
