@@ -190,6 +190,24 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .ejs-input:focus{border-color:var(--gold);}
 .ejs-connect-btn{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap;}
 .ejs-connect-btn:hover{background:var(--navy-light);}
+
+/* CRM ONBOARDING */
+.crm-onboarding{background:var(--white);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 12px rgba(27,42,74,0.06);display:none;}
+.crm-onboarding.show{display:block;}
+.crm-ob-head{background:var(--navy);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.crm-ob-head-left{display:flex;align-items:center;gap:12px;}
+.crm-ob-icon{font-size:18px;}
+.crm-ob-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--white);}
+.crm-ob-sub{font-size:11px;color:var(--gold);font-style:italic;margin-top:1px;}
+.crm-ob-chevron{color:rgba(240,230,216,0.4);font-size:11px;transition:transform 0.3s;}
+.crm-onboarding.open .crm-ob-chevron{transform:rotate(180deg);}
+.crm-ob-body{display:none;padding:16px 20px;}
+.crm-onboarding.open .crm-ob-body{display:block;}
+.crm-ob-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid #f5f2ef;}
+.crm-ob-step:last-child{border-bottom:none;}
+.crm-ob-num{min-width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;}
+.crm-ob-step-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.crm-ob-step-desc{font-size:12px;color:var(--gray);line-height:1.6;}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -528,6 +546,29 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 
   <!-- CONTENT -->
   <div class="content">
+
+    <!-- CRM ONBOARDING — shows in test mode and for new REALTORs -->
+    <div class="crm-onboarding" id="onboardingWrap">
+      <div class="crm-ob-head" onclick="toggleCrmOnboarding()">
+        <div class="crm-ob-head-left">
+          <div class="crm-ob-icon">📖</div>
+          <div>
+            <div class="crm-ob-title">How to Use Your Client CRM</div>
+            <div class="crm-ob-sub">Tap to expand — reference this anytime</div>
+          </div>
+        </div>
+        <span class="crm-ob-chevron">▼</span>
+      </div>
+      <div class="crm-ob-body">
+        <div class="crm-ob-step"><div class="crm-ob-num">1</div><div><div class="crm-ob-step-title">Add your clients</div><div class="crm-ob-step-desc">Click <b>+ Add Client</b> to create a client profile. Fill in their name, email, phone, budget, and stage. The stage tells you where they are in the buying or selling process.</div></div></div>
+        <div class="crm-ob-step"><div class="crm-ob-num">2</div><div><div class="crm-ob-step-title">Assign a workflow</div><div class="crm-ob-step-desc">Open any client, scroll to the <b>Workflow</b> section, and pick the workflow that matches their situation — First-Time Buyer, Ready to Buy Now, Past Client, and more. Preview the steps before assigning. Once assigned, follow-up emails schedule automatically.</div></div></div>
+        <div class="crm-ob-step"><div class="crm-ob-num">3</div><div><div class="crm-ob-step-title">Connect your email for automatic sending</div><div class="crm-ob-step-desc">In the left sidebar click <b>Connect My Email</b>. The 4-step wizard walks you through connecting your Gmail or Outlook. Takes 2 minutes. After that, workflow emails send automatically from your address every morning — you never have to click anything.</div></div></div>
+        <div class="crm-ob-step"><div class="crm-ob-num">4</div><div><div class="crm-ob-step-title">Track progress on each client</div><div class="crm-ob-step-desc">Open any client to see their workflow progress — which emails have been sent, which are upcoming, and which are overdue. Use <b>Mark Done</b> to manually complete a step. Use <b>Send Email</b> to send a step immediately without waiting for the due date.</div></div></div>
+        <div class="crm-ob-step"><div class="crm-ob-num">5</div><div><div class="crm-ob-step-title">Send follow-up emails manually anytime</div><div class="crm-ob-step-desc">Open a client and scroll to <b>Follow-Up Templates</b>. Every pre-written email template is there. Click <b>Send</b> to open it in your email app pre-filled with the client's name and your signature. Use these anytime outside of the workflow schedule.</div></div></div>
+        <div class="crm-ob-step"><div class="crm-ob-num">6</div><div><div class="crm-ob-step-title">Use the Pipeline to stay organized</div><div class="crm-ob-step-desc">The left sidebar shows all your clients organized by stage. Click any stage to filter your view. The Overview box shows your totals at a glance. The Follow-Ups number shows clients in stages that need active attention.</div></div></div>
+      </div>
+    </div>
+
     <div class="content-header">
       <div class="content-title" id="contentTitle">All Clients</div>
       <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
@@ -1120,14 +1161,24 @@ function enterTestMode(pwd) {
   if (pwd !== 'Laqu1sha!1') { showToast('Incorrect password.','error'); return; }
   IS_TEST_MODE   = true;
   REALTOR_ID     = 'test';
-  REALTOR_NAME   = 'Test REALTOR';
-  clients        = [...TEST_CLIENTS];
+  REALTOR_NAME   = 'Babs Young';
+  clients        = TEST_CLIENTS.map(c => Object.assign({}, c));
   document.getElementById('loginOverlay').classList.remove('show');
-  document.getElementById('headerPartner').textContent = 'Test REALTOR';
+  document.getElementById('headerPartner').textContent = 'Babs Young';
   document.getElementById('testBanner').classList.add('show');
   renderClients();
   updateCounts();
-  showToast('Test mode active — nothing saves to Airtable.','success');
+  loadEjsCredentials();
+  setTimeout(checkWorkflowsDue, 500);
+
+  // Show REALTOR welcome experience exactly as a new REALTOR would see it
+  setTimeout(function() {
+    showToast('Test mode — you are seeing exactly what a REALTOR® partner sees.','success');
+  }, 800);
+
+  // Show the onboarding collapsible — same as real REALTOR setup link
+  const ow = document.getElementById('onboardingWrap');
+  if (ow) { ow.classList.add('show'); ow.classList.add('open'); }
 }
 
 // Secret keyboard shortcut: type "testmode" anywhere on the login screen
@@ -1214,12 +1265,53 @@ function renderEjsStatus() {
   const display = document.getElementById('ejsStatusDisplay');
   const form    = document.getElementById('ejsSetupForm');
   if (!display) return;
+
   if (ejsReady) {
-    display.innerHTML = '<span class="ejs-status connected">✓ Email Connected</span>';
+    let html = '<span class="ejs-status connected">✓ Email Connected</span>';
+    // Show test controls — in test mode shows a full test panel, live mode shows simple test button
+    html += `<div style="margin-top:10px;">`;
+    if (IS_TEST_MODE) {
+      html += `<div style="background:#fff8e6;border:1px solid #f0a020;border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+        <div style="font-size:11px;font-weight:700;color:#c07000;margin-bottom:6px;">🧪 TEST MODE — Email Testing</div>
+        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;line-height:1.5;">Test your email connection — enter any address to send a sample email and verify it arrives.</div>
+        <input type="email" id="testEmailAddr" placeholder="your@email.com" style="width:100%;border:1.5px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'Lato',sans-serif;font-size:12px;outline:none;margin-bottom:6px;">
+        <button onclick="sendTestEmail()" style="width:100%;background:#f0a020;color:#fff;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:6px;padding:7px;cursor:pointer;margin-bottom:6px;">Send Test Email</button>
+        <button onclick="autoSendDueEmails(true)" style="width:100%;background:var(--navy);color:#fff;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:6px;padding:7px;cursor:pointer;">▶ Trigger Auto-Send Now (today's due emails)</button>
+      </div>`;
+    }
+    html += `<button onclick="showEjsGuide()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--gray);font-family:'Lato',sans-serif;font-size:11px;padding:6px;border-radius:6px;cursor:pointer;">Reconnect / Change Email</button>`;
+    html += `</div>`;
+    display.innerHTML = html;
     if (form) form.style.display = 'none';
   } else {
     display.innerHTML = '<span class="ejs-status disconnected">⚠ Not Connected</span>';
     if (form) form.style.display = 'block';
+  }
+}
+
+async function sendTestEmail() {
+  const addr = document.getElementById('testEmailAddr').value.trim();
+  if (!addr) { showToast('Enter an email address first.','error'); return; }
+  if (!ejsReady) { showToast('Email not connected yet.','error'); return; }
+
+  showToast('Sending test email...','success');
+
+  const subject = 'Test Email — Bank on Brooke CRM ✓';
+  const body =
+    'Hi there!\n\n' +
+    'This is a test email from the Bank on Brooke Partner CRM.\n\n' +
+    'If you received this, your email automation is connected correctly and working. ' +
+    'Workflow emails will send automatically from your email address on their scheduled due dates.\n\n' +
+    'REALTOR Name: ' + REALTOR_NAME + '\n' +
+    'Sent at: ' + new Date().toLocaleString() + '\n\n' +
+    '— Bank on Brooke — The Residential Lending Studio\n' +
+    'bankonbrooke.studio';
+
+  const ok = await sendEmailViaEJS(addr, subject, body);
+  if (ok) {
+    showToast('Test email sent to ' + addr + ' — check your inbox!', 'success');
+  } else {
+    showToast('Send failed — check your Service ID and Public Key are correct.', 'error');
   }
 }
 
@@ -1310,8 +1402,10 @@ async function sendEmailViaEJS(toEmail, subject, body) {
 }
 
 // Check for workflow steps due today and auto-send via EmailJS
-async function autoSendDueEmails() {
-  if (!ejsReady || IS_TEST_MODE) return;
+async function autoSendDueEmails(forceSend) {
+  if (!ejsReady) return;
+  // In test mode only run if explicitly triggered via test button
+  if (IS_TEST_MODE && !forceSend) return;
   const today = new Date().toISOString().split('T')[0];
   let sent = 0;
 
@@ -1953,6 +2047,11 @@ function updateCounts() {
   document.getElementById('stat-active').textContent   = clients.filter(c=>getStage(c)!=='closed').length;
   document.getElementById('stat-closed').textContent   = clients.filter(c=>getStage(c)==='closed').length;
   document.getElementById('stat-followup').textContent = clients.filter(c=>['contract','preapproval'].includes(getStage(c))).length;
+}
+
+
+function toggleCrmOnboarding() {
+  document.getElementById('onboardingWrap').classList.toggle('open');
 }
 
 function filterStage(stage, btn) {
