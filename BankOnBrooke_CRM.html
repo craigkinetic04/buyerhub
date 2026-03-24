@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Client CRM — Bank on Brooke</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -176,7 +177,21 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .wf-step-dot.reminder{background:#4a90d9;}
 .wf-step-dot.done{background:#3CE8A0;}
 .wf-step-dot.pending{background:#ddd;}
+
+/* EMAILJS SETUP */
+.ejs-setup-card{background:var(--white);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(27,42,74,0.06);border-left:3px solid var(--gold);}
+.ejs-setup-card h3{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.ejs-setup-card p{font-size:12px;color:var(--gray);line-height:1.6;margin-bottom:10px;}
+.ejs-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;}
+.ejs-status.connected{background:rgba(60,232,160,0.12);color:#2a9e6e;}
+.ejs-status.disconnected{background:rgba(240,160,32,0.12);color:#c07000;}
+.ejs-input-row{display:flex;gap:8px;margin-top:8px;}
+.ejs-input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;}
+.ejs-input:focus{border-color:var(--gold);}
+.ejs-connect-btn{background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap;}
+.ejs-connect-btn:hover{background:var(--navy-light);}
 </style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -211,6 +226,110 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   </div>
 </div>
 
+
+
+<!-- EMAILJS SETUP MODAL -->
+<div class="modal-overlay" id="ejsModal">
+  <div class="modal-card" style="max-width:520px;">
+    <div class="modal-header" style="padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <h2 id="ejsModalTitle">Connect Your Email</h2>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px;">Step <span id="ejsStepNum">1</span> of 4</div>
+      </div>
+      <button class="modal-close" onclick="closeEjsModal()">×</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="height:3px;background:var(--border);margin:0 24px;">
+      <div id="ejsProgress" style="height:3px;background:var(--gold);transition:width 0.4s;width:25%;"></div>
+    </div>
+
+    <div class="modal-body" style="padding:16px 24px 24px;">
+
+      <!-- STEP 1: Create EmailJS account -->
+      <div id="ejsStep1Panel">
+        <div style="background:var(--light);border-radius:10px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:22px;margin-bottom:8px;">📧</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Create your free EmailJS account</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:12px;">EmailJS lets you send emails automatically from your own Gmail or Outlook — free for up to 200 emails/month. Click the button below to open the signup page in a small window. Come back here when done.</div>
+          <button onclick="openEmailJSSignup()" style="background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:11px 20px;cursor:pointer;width:100%;margin-bottom:8px;">Open EmailJS Signup →</button>
+          <div style="font-size:11px;color:var(--gray);text-align:center;">A small window will open. Sign up, then come back here and click Next.</div>
+        </div>
+        <button onclick="ejsGoTo(2)" style="width:100%;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:13px;cursor:pointer;">I have an account — Next →</button>
+      </div>
+
+      <!-- STEP 2: Connect email service -->
+      <div id="ejsStep2Panel" style="display:none;">
+        <div style="background:var(--light);border-radius:10px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:22px;margin-bottom:8px;">🔗</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Connect your Gmail or Outlook</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:12px;">In EmailJS, click <b>Email Services</b> → <b>Add New Service</b> → choose Gmail or Outlook → Connect Account → sign in → Create Service. Then copy your <b>Service ID</b> (looks like service_xxxxxxx) and paste it below.</div>
+          <button onclick="openEmailJSServices()" style="background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;width:100%;margin-bottom:12px;">Open EmailJS Email Services →</button>
+          <div class="login-field" style="margin-bottom:0;">
+            <label>Paste your Service ID here</label>
+            <input type="text" id="ejsServiceIdInput" placeholder="service_xxxxxxx" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Lato',sans-serif;font-size:13px;outline:none;">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="ejsGoTo(1)" style="flex:1;background:var(--light);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;">← Back</button>
+          <button onclick="ejsStep2Next()" style="flex:2;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:11px;cursor:pointer;">Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Create template -->
+      <div id="ejsStep3Panel" style="display:none;">
+        <div style="background:var(--light);border-radius:10px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:22px;margin-bottom:8px;">📝</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Create one email template</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:10px;">In EmailJS click <b>Email Templates</b> → <b>Create New Template</b>. Fill in exactly as shown below, then click Save.</div>
+
+          <div style="background:var(--white);border-radius:8px;padding:12px;border:1px solid var(--border);font-size:12px;margin-bottom:10px;">
+            <div style="display:grid;grid-template-columns:100px 1fr;gap:6px;align-items:center;">
+              <span style="color:var(--gray);font-weight:600;">Template Name:</span><span style="color:var(--navy);font-weight:700;">BOB Workflow</span>
+              <span style="color:var(--gray);font-weight:600;">Template ID:</span><span style="color:var(--navy);font-weight:700;font-family:monospace;">template_bob_workflow</span>
+              <span style="color:var(--gray);font-weight:600;">To Email:</span><span style="color:var(--navy);font-family:monospace;">{{to_email}}</span>
+              <span style="color:var(--gray);font-weight:600;">Subject:</span><span style="color:var(--navy);font-family:monospace;">{{subject}}</span>
+              <span style="color:var(--gray);font-weight:600;">Content:</span><span style="color:var(--navy);font-family:monospace;">{{message}}</span>
+            </div>
+          </div>
+
+          <button onclick="openEmailJSTemplates()" style="background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;width:100%;">Open EmailJS Templates →</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="ejsGoTo(2)" style="flex:1;background:var(--light);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;">← Back</button>
+          <button onclick="ejsGoTo(4)" style="flex:2;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:11px;cursor:pointer;">Template is saved — Next →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Public key -->
+      <div id="ejsStep4Panel" style="display:none;">
+        <div style="background:var(--light);border-radius:10px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:22px;margin-bottom:8px;">🔑</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;">Get your Public Key</div>
+          <div style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:10px;">In EmailJS click your name/avatar → <b>Account</b> → <b>General</b> → copy your <b>Public Key</b> and paste it below.</div>
+          <button onclick="openEmailJSAccount()" style="background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;width:100%;margin-bottom:12px;">Open EmailJS Account →</button>
+          <div class="login-field" style="margin-bottom:0;">
+            <label>Paste your Public Key here</label>
+            <input type="text" id="ejsPublicKeyInput" placeholder="xxxxxxxxxxxxxxxxxxxxxx" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Lato',sans-serif;font-size:13px;outline:none;">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="ejsGoTo(3)" style="flex:1;background:var(--light);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;">← Back</button>
+          <button onclick="ejsStep4Finish()" style="flex:2;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:11px;cursor:pointer;">✓ Connect My Email</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div id="ejsSuccessPanel" style="display:none;text-align:center;padding:20px 0;">
+        <div style="font-size:48px;margin-bottom:12px;">✅</div>
+        <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;font-family:'Playfair Display',serif;">Email Connected!</div>
+        <div style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:20px;">Your workflow emails will now send automatically from your email address every morning. You never have to do this again.</div>
+        <button onclick="closeEjsModal()" style="background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;padding:13px 32px;cursor:pointer;">Done →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- TEMPLATES MODAL -->
 <div class="modal-overlay" id="templatesModal">
@@ -386,6 +505,16 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="stat-box"><span class="stat-num" id="stat-active">0</span><div class="stat-label">Active</div></div>
         <div class="stat-box"><span class="stat-num" id="stat-closed">0</span><div class="stat-label">Closed</div></div>
         <div class="stat-box"><span class="stat-num" id="stat-followup">0</span><div class="stat-label">Follow-Ups</div></div>
+      </div>
+    </div>
+
+
+    <div class="sidebar-card" id="ejsSetupCard">
+      <h3>Email Automation</h3>
+      <div id="ejsStatusDisplay"></div>
+      <div id="ejsSetupForm" style="display:none;">
+        <p style="font-size:11px;color:var(--gray);line-height:1.6;margin-top:6px;">Connect your email to send workflow emails automatically from your address. Takes 2 minutes.</p>
+        <button onclick="showEjsGuide()" style="width:100%;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:9px;cursor:pointer;margin-top:6px;">Connect My Email →</button>
       </div>
     </div>
 
@@ -623,7 +752,9 @@ function enterCRM(rid, name, email) {
   document.getElementById('loginOverlay').classList.remove('show');
   document.getElementById('headerPartner').textContent = name;
   loadClients();
+  loadEjsCredentials();
   setTimeout(checkWorkflowsDue, 1000);
+  setTimeout(autoSendDueEmails, 2000);
 }
 
 function logout() {
@@ -1053,6 +1184,172 @@ async function sendStageChangeNotification(client, newStage) {
 }
 
 
+
+// ═══════════════════════════════════════════════════════════
+// EMAILJS — AUTO EMAIL SENDING
+// ═══════════════════════════════════════════════════════════
+const EJS_TEMPLATE_ID = 'template_bob_workflow'; // Single template in EmailJS
+
+let ejsServiceId = '';
+let ejsPublicKey  = '';
+let ejsReady      = false;
+
+function loadEjsCredentials() {
+  const saved = localStorage.getItem('ejs_creds_' + REALTOR_ID);
+  if (saved) {
+    try {
+      const c = JSON.parse(saved);
+      ejsServiceId = c.serviceId || '';
+      ejsPublicKey  = c.publicKey  || '';
+      if (ejsServiceId && ejsPublicKey) {
+        emailjs.init(ejsPublicKey);
+        ejsReady = true;
+      }
+    } catch(e) {}
+  }
+  renderEjsStatus();
+}
+
+function renderEjsStatus() {
+  const display = document.getElementById('ejsStatusDisplay');
+  const form    = document.getElementById('ejsSetupForm');
+  if (!display) return;
+  if (ejsReady) {
+    display.innerHTML = '<span class="ejs-status connected">✓ Email Connected</span>';
+    if (form) form.style.display = 'none';
+  } else {
+    display.innerHTML = '<span class="ejs-status disconnected">⚠ Not Connected</span>';
+    if (form) form.style.display = 'block';
+  }
+}
+
+function showEjsGuide() {
+  ejsGoTo(1);
+  document.getElementById('ejsModal').classList.add('show');
+}
+function closeEjsModal() {
+  document.getElementById('ejsModal').classList.remove('show');
+}
+
+function ejsGoTo(step) {
+  [1,2,3,4].forEach(n => {
+    const el = document.getElementById('ejsStep' + n + 'Panel');
+    if (el) el.style.display = n === step ? 'block' : 'none';
+  });
+  const success = document.getElementById('ejsSuccessPanel');
+  if (success) success.style.display = 'none';
+  document.getElementById('ejsStepNum').textContent = step;
+  document.getElementById('ejsProgress').style.width = (step * 25) + '%';
+  const titles = ['','Create Your Account','Connect Your Email','Create Template','Get Public Key'];
+  document.getElementById('ejsModalTitle').textContent = titles[step] || 'Connect Your Email';
+}
+
+function openEmailJSSignup() {
+  window.open('https://www.emailjs.com/signup/', 'emailjs', 'width=600,height=700,left=200,top=100');
+}
+function openEmailJSServices() {
+  window.open('https://dashboard.emailjs.com/admin', 'emailjs', 'width=900,height=700,left=100,top=50');
+}
+function openEmailJSTemplates() {
+  window.open('https://dashboard.emailjs.com/admin/templates', 'emailjs', 'width=900,height=700,left=100,top=50');
+}
+function openEmailJSAccount() {
+  window.open('https://dashboard.emailjs.com/admin/account', 'emailjs', 'width=900,height=700,left=100,top=50');
+}
+
+function ejsStep2Next() {
+  const sid = document.getElementById('ejsServiceIdInput').value.trim();
+  if (!sid || !sid.startsWith('service_')) {
+    showToast('Please paste your Service ID — it starts with service_','error');
+    return;
+  }
+  ejsServiceId = sid;
+  ejsGoTo(3);
+}
+
+function ejsStep4Finish() {
+  const key = document.getElementById('ejsPublicKeyInput').value.trim();
+  if (!key || key.length < 10) {
+    showToast('Please paste your Public Key from EmailJS','error');
+    return;
+  }
+  ejsPublicKey = key;
+  emailjs.init(key);
+  ejsReady = true;
+  localStorage.setItem('ejs_creds_' + REALTOR_ID, JSON.stringify({ serviceId: ejsServiceId, publicKey: key }));
+
+  // Show success screen
+  [1,2,3,4].forEach(n => {
+    const el = document.getElementById('ejsStep' + n + 'Panel');
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('ejsSuccessPanel').style.display = 'block';
+  document.getElementById('ejsProgress').style.width = '100%';
+  document.getElementById('ejsModalTitle').textContent = 'All Done!';
+  document.getElementById('ejsStepNum').textContent = '4';
+  renderEjsStatus();
+}
+
+function saveEjsCredentials() {
+  ejsStep4Finish();
+}
+
+async function sendEmailViaEJS(toEmail, subject, body) {
+  if (!ejsReady) return false;
+  try {
+    await emailjs.send(ejsServiceId, EJS_TEMPLATE_ID, {
+      to_email: toEmail,
+      subject:  subject,
+      message:  body,
+    });
+    return true;
+  } catch(e) {
+    console.error('EmailJS error:', e);
+    return false;
+  }
+}
+
+// Check for workflow steps due today and auto-send via EmailJS
+async function autoSendDueEmails() {
+  if (!ejsReady || IS_TEST_MODE) return;
+  const today = new Date().toISOString().split('T')[0];
+  let sent = 0;
+
+  for (const c of clients) {
+    if (!c.wfSchedule) continue;
+    for (let i = 0; i < c.wfSchedule.length; i++) {
+      const step = c.wfSchedule[i];
+      if (step.done || step.dueDate !== today || step.type !== 'email') continue;
+
+      const tpl   = WF_EMAILS[step.id];
+      if (!tpl) continue;
+      const email = c.Email || c.email || '';
+      if (!email) continue;
+
+      const r       = { name: REALTOR_NAME, phone: c.Phone || c.phone || '' };
+      const subject = tpl.subject(c, r);
+      const body    = tpl.body(c, r);
+
+      const ok = await sendEmailViaEJS(email, subject, body);
+      if (ok) {
+        c.wfSchedule[i].done = true;
+        sent++;
+        if (!IS_TEST_MODE) markStepDoneInAirtable(c.id, step.id);
+      }
+    }
+  }
+
+  if (sent > 0) {
+    saveClients();
+    showToast(sent + ' workflow email' + (sent > 1 ? 's' : '') + ' sent automatically!', 'success');
+    // Re-render if detail panel is open
+    if (editingId) {
+      const c = clients.find(x => x.id === editingId);
+      if (c) renderWorkflowPanel(c);
+    }
+  }
+}
+
 // ═══════════════════════════════════════════════════════════
 // WORKFLOWS
 // ═══════════════════════════════════════════════════════════
@@ -1252,10 +1549,87 @@ function assignWorkflow(clientId, workflowKey) {
   clients[idx].wfSchedule  = schedule;
   clients[idx].wfStartDate = startDate.toISOString().split('T')[0];
 
-  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
   saveClients();
   renderWorkflowPanel(clients[idx]);
   showToast('Workflow assigned!', 'success');
+
+  if (!IS_TEST_MODE) {
+    saveClientToAirtable(clients[idx], clientId);
+    saveWorkflowStepsToAirtable(clients[idx], schedule);
+  }
+}
+
+async function saveWorkflowStepsToAirtable(client, schedule) {
+  // First delete any existing steps for this client
+  try {
+    const filter = encodeURIComponent('{ClientID}="' + client.id + '"');
+    const existing = await fetch(AT_URL + '/WorkflowSteps?filterByFormula=' + filter + '&db=crm');
+    const data = await existing.json();
+    if (data.records && data.records.length > 0) {
+      // Delete in batches of 10
+      const ids = data.records.map(function(r){ return r.id; });
+      for (let i = 0; i < ids.length; i += 10) {
+        const batch = ids.slice(i, i+10);
+        const qs = batch.map(function(id){ return 'records[]=' + id; }).join('&');
+        await fetch(AT_URL + '/WorkflowSteps?' + qs + '&db=crm', { method: 'DELETE' });
+      }
+    }
+  } catch(e) { console.log('Delete existing steps error:', e); }
+
+  // Save new steps
+  try {
+    const clientName  = client.Name  || client.name  || '';
+    const clientEmail = client.Email || client.email || '';
+    const clientPhone = client.Phone || client.phone || '';
+    const wfName      = WORKFLOWS[client.workflow] ? WORKFLOWS[client.workflow].name : '';
+
+    // Save in batches of 10
+    for (let i = 0; i < schedule.length; i += 10) {
+      const batch = schedule.slice(i, i+10);
+      const records = batch.map(function(step) {
+        const tpl = WF_EMAILS[step.id];
+        const rInfo = { name: REALTOR_NAME, phone: '' };
+        const fakeClient = { Name: clientName, name: clientName, Email: clientEmail, email: clientEmail };
+        return { fields: {
+          ClientID:      client.id,
+          ClientName:    clientName,
+          ClientEmail:   clientEmail,
+          ClientPhone:   clientPhone,
+          RealtorID:     REALTOR_ID,
+          RealtorName:   REALTOR_NAME,
+          WorkflowName:  wfName,
+          StepID:        step.id,
+          StepName:      step.name,
+          StepType:      step.type,
+          DueDate:       step.dueDate,
+          Done:          false,
+          EmailSubject:  tpl ? tpl.subject(fakeClient, rInfo) : step.name,
+          EmailBody:     tpl ? tpl.body(fakeClient, rInfo) : '',
+        }};
+      });
+      await fetch(AT_URL + '/WorkflowSteps?db=crm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records: records })
+      });
+    }
+  } catch(e) { console.log('Save steps error:', e); }
+}
+
+async function markStepDoneInAirtable(clientId, stepId) {
+  if (IS_TEST_MODE) return;
+  try {
+    const filter = encodeURIComponent('AND({ClientID}="' + clientId + '",{StepID}="' + stepId + '")');
+    const res  = await fetch(AT_URL + '/WorkflowSteps?filterByFormula=' + filter + '&db=crm');
+    const data = await res.json();
+    if (data.records && data.records.length > 0) {
+      await fetch(AT_URL + '/WorkflowSteps/' + data.records[0].id + '?db=crm', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { Done: true } })
+      });
+    }
+  } catch(e) { console.log('Mark done error:', e); }
 }
 
 function checkWorkflowsDue() {
@@ -1444,7 +1818,11 @@ function markStepDone(clientId, stepIdx) {
   const idx = clients.findIndex(x => x.id === clientId);
   if (idx < 0 || !clients[idx].wfSchedule) return;
   clients[idx].wfSchedule[stepIdx].done = true;
-  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], clientId);
+  const stepId = clients[idx].wfSchedule[stepIdx].id;
+  if (!IS_TEST_MODE) {
+    saveClientToAirtable(clients[idx], clientId);
+    markStepDoneInAirtable(clientId, stepId);
+  }
   saveClients();
   renderWorkflowPanel(clients[idx]);
   showToast('Step marked complete.','success');
