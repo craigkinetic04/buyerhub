@@ -213,6 +213,16 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .faq-brooke-btn{background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;padding:10px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background 0.2s;}
 .faq-brooke-btn:hover{background:var(--gold-light);}
 
+
+/* PHOTO UPLOAD */
+.photo-upload-wrap{display:flex;flex-direction:column;gap:8px;}
+.photo-preview{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;flex-shrink:0;}
+.photo-preview.show{display:block;}
+.photo-upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.upload-btn{background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:9px 16px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.upload-btn:hover{background:var(--gold-light);}
+.upload-btn-secondary{background:transparent;border:1.5px solid var(--border);color:var(--gray);font-family:'Lato',sans-serif;font-size:11px;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+.photo-filename{font-size:12px;color:var(--gray);font-style:italic;}
 </style>
 
   <!-- Open Graph / Rich Link Preview -->
@@ -495,7 +505,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <span class="onboarding-chevron">▼</span>
       </div>
       <div class="onboarding-body">
-        <div class="ob-step"><div class="ob-num">1</div><div class="ob-body"><div class="ob-title">Set up your profile first</div><div class="ob-desc">Fill in your name, company, phone, email, and paste your headshot URL in the Your Profile section. Click Save Profile — your buyer link updates automatically.</div></div></div>
+        <div class="ob-step"><div class="ob-num">1</div><div class="ob-body"><div class="ob-title">Set up your profile first</div><div class="ob-desc">Fill in your name, company, phone, and email. Click Upload Photo or Logo to add your headshot — your photo will show at the top of every buyer's hub. Click Save Profile when done.</div></div></div>
         <div class="ob-step"><div class="ob-num">2</div><div class="ob-body"><div class="ob-title">Add your featured listings</div><div class="ob-desc">Click "+ Add a Featured Listing" and fill in the details. Add a Zillow link so buyers can view full photos. Changes save instantly and appear for all your buyers immediately.</div></div></div>
         <div class="ob-step"><div class="ob-num">3</div><div class="ob-body"><div class="ob-title">Remove a listing anytime</div><div class="ob-desc">Each listing card has a small trash icon in the bottom right. Tap it to remove the listing instantly — useful when a home goes under contract.</div></div></div>
         <div class="ob-step"><div class="ob-num">4</div><div class="ob-body"><div class="ob-title">Copy your buyer link</div><div class="ob-desc">The Setup Mode banner at the top has your buyer link. Click "Copy Buyer Link" and text it to your buyers. The same link works for every buyer — each person's checklist and favorites are completely private.</div></div></div>
@@ -519,7 +529,20 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="form-field"><label>Your Company</label><input type="text" id="spCompany" placeholder="Your brokerage"></div>
         <div class="form-field"><label>Your Phone</label><input type="text" id="spPhone" placeholder="(405) 555-0100"></div>
         <div class="form-field"><label>Your Email</label><input type="text" id="spEmail" placeholder="you@brokerage.com"></div>
-        <div class="form-field full"><label>Your Headshot or Logo URL — paste a direct image link</label><input type="text" id="spPhoto" placeholder="https://...your-photo-url..."></div>
+        <div class="form-field full">
+          <label>Your Headshot or Logo</label>
+          <div class="photo-upload-wrap">
+            <div class="photo-upload-row">
+              <img id="spPhotoPreview" class="photo-preview" src="" alt="Your photo">
+              <div>
+                <button type="button" class="upload-btn" onclick="document.getElementById('spPhotoFile').click()">📷 Upload Photo or Logo</button>
+                <div class="photo-filename" id="spPhotoFilename">No photo uploaded yet</div>
+              </div>
+            </div>
+            <input type="file" id="spPhotoFile" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)">
+            <input type="hidden" id="spPhoto">
+          </div>
+        </div>
       </div>
       <button class="setup-save-btn" onclick="saveProfile()">Save Profile & Update Buyer Link</button>
       <span id="profileSaved" style="font-size:12px;color:#3a9e6e;margin-left:12px;display:none;">✓ Saved</span>
@@ -541,7 +564,16 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="form-field"><label>Sq Ft</label><input type="text" id="fSqft" placeholder="1,450"></div>
         <div class="form-field"><label>Status</label><select id="fStatus"><option>For Sale</option><option>Coming Soon</option><option>Under Contract</option><option>New Listing</option></select></div>
         <div class="form-field"><label>Zillow / MLS Link</label><input type="text" id="fLink" placeholder="https://zillow.com/..."></div>
-        <div class="form-field full"><label>Photo URL (optional)</label><input type="text" id="fPhoto" placeholder="Paste a direct image URL"></div>
+        <div class="form-field full">
+          <label>Listing Photo (optional)</label>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <img id="fPhotoPreview" style="width:48px;height:48px;border-radius:6px;object-fit:cover;border:1px solid var(--border);display:none;" src="" alt="">
+            <button type="button" class="upload-btn" onclick="document.getElementById('fPhotoFile').click()">📷 Upload Photo</button>
+            <span id="fPhotoFilename" style="font-size:12px;color:var(--gray);font-style:italic;">No photo yet</span>
+          </div>
+          <input type="file" id="fPhotoFile" accept="image/*" style="display:none;" onchange="handleListingPhotoUpload(this)">
+          <input type="hidden" id="fPhoto">
+        </div>
       </div>
       <button class="add-submit" onclick="addListing()">Add This Listing</button>
       <div class="form-loading" id="formLoading"><span class="spinner"></span> Saving...</div>
@@ -687,7 +719,10 @@ function buildBuyerLink(){
 }
 
 function renderPartnerBar(){
-  const name=P.get('name'),co=P.get('company'),ph=P.get('phone'),em=P.get('email'),pic=P.get('photo');
+  const name=P.get('name'),co=P.get('company'),ph=P.get('phone'),em=P.get('email');
+  let pic=P.get('photo');
+  // Retrieve stored photo if it was saved to sessionStorage
+  if(pic==='__stored__') pic=sessionStorage.getItem('bob_photo_'+(P.get('rid')||RID))||'';
   if(!name)return;
   let h=`<div class="partner-name">${name}</div>`;
   if(co)h+=`<div class="partner-company">${co}</div>`;
@@ -820,6 +855,47 @@ function renderCard(rec,grid){
       </div>
     </div>`;
   grid.appendChild(card);
+}
+
+
+// ── PHOTO UPLOAD HANDLERS ──────────────────────────────────────────────────
+function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    showToast && showToast('Photo must be under 2MB. Please choose a smaller image.', 'error');
+    alert('Photo must be under 2MB. Please choose a smaller image.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    document.getElementById('spPhoto').value = dataUrl;
+    const preview = document.getElementById('spPhotoPreview');
+    preview.src = dataUrl;
+    preview.classList.add('show');
+    document.getElementById('spPhotoFilename').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleListingPhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Photo must be under 2MB. Please choose a smaller image.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    document.getElementById('fPhoto').value = dataUrl;
+    const preview = document.getElementById('fPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+    document.getElementById('fPhotoFilename').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
 }
 
 function toggleAddForm(){document.getElementById('addForm').classList.toggle('open');}

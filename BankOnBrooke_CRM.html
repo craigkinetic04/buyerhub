@@ -931,6 +931,22 @@ function genId() { return 'c' + Date.now().toString(36) + Math.random().toString
 // ADD / EDIT / DELETE
 // ═══════════════════════════════════════════════════════════
 
+
+function handleCrmPhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Photo must be under 2MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('fPhoto').value = e.target.result;
+    const prev = document.getElementById('crmPhotoPreview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    document.getElementById('crmPhotoFilename').textContent = file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
 function openTemplatesModal() {
   const list = document.getElementById('allTemplatesList');
   const dummyClient = { id:'preview', name:'[Client Name]', Name:'[Client Name]', email:'client@email.com', Email:'client@email.com' };
