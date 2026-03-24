@@ -874,25 +874,25 @@ async function loadClients() {
 
 async function saveClientToAirtable(data, existingId) {
   if (IS_TEST_MODE) return { id: data.id || genId() };
-  const fields = {
-    Name:         data.name,
-    Phone:        data.phone,
-    Email:        data.email,
-    Stage:        stageLabel(data.stage),
-    Budget:       data.budget,
-    PreApproval:  data.preapproval,
-    LoanType:     data.loan,
-    Address:      data.address,
-    Referral:     data.referral,
-    ContractDate: data.contractDate || null,
-    CloseDate:    data.closeDate || null,
-    Notes:        data.notes,
-    RealtorID:    REALTOR_ID,
-    RealtorName:  REALTOR_NAME,
-    RealtorEmail: data.realtorEmail || '',
-  };
-  // Remove empty fields
-  Object.keys(fields).forEach(k => { if (!fields[k]) delete fields[k]; });
+
+  // Build fields object — only include fields that have real values
+  // This avoids Airtable rejecting empty strings on typed fields (Phone, Email, Date)
+  const fields = {};
+  if (data.name)         fields.Name         = data.name;
+  if (data.phone)        fields.Phone        = data.phone;
+  if (data.email)        fields.Email        = data.email;
+  if (data.stage)        fields.Stage        = stageLabel(data.stage);
+  if (data.budget)       fields.Budget       = data.budget;
+  if (data.preapproval)  fields.PreApproval  = data.preapproval;
+  if (data.loan)         fields.LoanType     = data.loan;
+  if (data.address)      fields.Address      = data.address;
+  if (data.referral)     fields.Referral     = data.referral;
+  if (data.contractDate) fields.ContractDate = data.contractDate;
+  if (data.closeDate)    fields.CloseDate    = data.closeDate;
+  if (data.notes)        fields.Notes        = data.notes;
+  if (data.realtorEmail) fields.RealtorEmail = data.realtorEmail;
+  fields.RealtorID   = REALTOR_ID;
+  fields.RealtorName = REALTOR_NAME;
 
   if (existingId) {
     const res = await fetch(`${AT_URL}/Clients/${existingId}?db=crm`, {
