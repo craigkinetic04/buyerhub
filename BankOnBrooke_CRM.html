@@ -707,6 +707,8 @@ async function setupAccount() {
     const filter = encodeURIComponent(`{Email}="${email}"`);
     const check = await fetch(`${AT_URL}/Partners?filterByFormula=${filter}&db=crm`);
     const checkData = await check.json();
+    console.log('Check existing account response:', JSON.stringify(checkData));
+    console.log('Check HTTP status:', check.status);
 
     if (checkData.records && checkData.records.length > 0) {
       showToast('An account with this email already exists. Please log in.','error');
@@ -728,24 +730,29 @@ async function setupAccount() {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ records: [{ fields: {
-        Name:     name,
-        Email:    email,
-        Password: hashed,
+        Name:      name,
+        Email:     email,
+        Password:  hashed,
         RealtorID: generatorRid,
-        Company:  P.get('company') || '',
-        Phone:    P.get('phone') || '',
-        Created:  new Date().toISOString()
+        ...(P.get('company') ? { Company: P.get('company') } : {}),
+        ...(P.get('phone')   ? { Phone:   P.get('phone')   } : {})
       }}]})
     });
     const data = await res.json();
+    console.log('Airtable create account response:', JSON.stringify(data));
+    console.log('HTTP status:', res.status);
 
     if (data.records) {
       enterCRM(generatorRid, name, email);
     } else {
-      showToast('Could not create account. Please try again.','error');
+      // Show the actual Airtable error message so we can debug
+      const errMsg = data.error ? data.error.message || data.error.type || JSON.stringify(data.error) : JSON.stringify(data);
+      console.error('Airtable error:', errMsg);
+      showToast('Could not create account: ' + errMsg, 'error');
     }
   } catch(e) {
-    showToast('Connection error. Please try again.','error');
+    console.error('Fetch error:', e);
+    showToast('Connection error: ' + e.message, 'error');
   }
 
   btn.textContent = 'Set Up My Account →';
