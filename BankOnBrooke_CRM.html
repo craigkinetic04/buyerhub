@@ -372,9 +372,9 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     </div>
     <div class="modal-body">
       <div class="modal-grid">
-        <div class="field-group"><label>Full Name *</label><input type="text" id="mName" placeholder="Babs Young"></div>
+        <div class="field-group"><label>Full Name *</label><input type="text" id="mName" placeholder="Jane Smith"></div>
         <div class="field-group"><label>Phone</label><input type="text" id="mPhone" placeholder="(405) 555-0100"></div>
-        <div class="field-group"><label>Email</label><input type="email" id="mEmail" placeholder="babs@email.com"></div>
+        <div class="field-group"><label>Email</label><input type="email" id="mEmail" placeholder="jane@email.com"></div>
         <div class="field-group"><label>Stage *</label>
           <select id="mStage">
             <option value="lead">Buyer Lead</option>
@@ -607,14 +607,14 @@ const TEMPLATES = [
     name: 'New Client Welcome',
     stage: 'lead',
     subject: (c) => `Welcome! Let's find your perfect home, ${c.name.split(' ')[0]}`,
-    body: (c,r) => `Hi ${c.name.split(' ')[0]},\n\nWelcome — I'm so excited to work with you on finding your perfect home! My name is ${r.name} and I'm here to guide you every step of the way.\n\nHere's what we'll do first:\n• Get you pre-approved so we know your exact budget\n• Talk about what you're looking for in a home\n• Start searching in your target area\n\nI've also connected you with my preferred lender, Brooke Gagliardi-Young at Bank on Brooke — The Residential Lending Studio. She's amazing at finding the right loan program for every buyer — including down payment assistance programs that could save you thousands.\n\nYou can reach Brooke at bankonbrooke.studio/contact for a free consultation.\n\nLet's chat soon — reply to this email or call me anytime.\n\n${r.name}\n${r.email}`
+    body: (c,r) => `Hi ${c.name.split(' ')[0]},\n\nWelcome — I'm so excited to work with you on finding your perfect home! My name is ${r.name} and I'm here to guide you every step of the way.\n\nHere's what we'll do first:\n• Get you pre-approved so we know your exact budget\n• Talk about what you're looking for in a home\n• Start searching in your target area\n\nI've also connected you with my preferred lender, Brooke Gagliardi-Young at Bank on Brooke. She's amazing at finding the right loan program for every buyer — including down payment assistance programs that could save you thousands.\n\nYou can reach Brooke at bankonbrooke.studio/contact for a free consultation.\n\nLet's chat soon — reply to this email or call me anytime.\n\n${r.name}\n${r.email}`
   },
   {
     id: 'preapproval',
     name: 'Pre-Approval Reminder',
     stage: 'preapproval',
     subject: (c) => `Next step: Let's get you pre-approved, ${c.name.split(' ')[0]}`,
-    body: (c,r) => `Hi ${c.name.split(' ')[0]},\n\nJust checking in — the next step in your homebuying journey is getting pre-approved. This is one of the most important things you can do right now.\n\nHere's why:\n• Sellers won't consider offers without a pre-approval letter\n• You'll know your exact budget before you fall in love with a home\n• It typically takes just 1-2 days\n\nI highly recommend reaching out to Brooke at Bank on Brooke — The Residential Lending Studio. She specializes in Oklahoma buyers and knows every down payment assistance program available. A 15-minute call with her could save you thousands.\n\nBook a free call: bankonbrooke.studio/contact\n\nLet me know once you've connected with her and we'll start scheduling showings!\n\n${r.name}\n${r.email}`
+    body: (c,r) => `Hi ${c.name.split(' ')[0]},\n\nJust checking in — the next step in your homebuying journey is getting pre-approved. This is one of the most important things you can do right now.\n\nHere's why:\n• Sellers won't consider offers without a pre-approval letter\n• You'll know your exact budget before you fall in love with a home\n• It typically takes just 1-2 days\n\nI highly recommend reaching out to Brooke at Bank on Brooke. She specializes in Oklahoma buyers and knows every down payment assistance program available. A 15-minute call with her could save you thousands.\n\nBook a free call: bankonbrooke.studio/contact\n\nLet me know once you've connected with her and we'll start scheduling showings!\n\n${r.name}\n${r.email}`
   },
   {
     id: 'searching',
@@ -1148,7 +1148,7 @@ function onStageChange() {
 // TEST MODE
 // ═══════════════════════════════════════════════════════════
 const TEST_CLIENTS = [
-  { id:'t1', Name:'Babs Young', Phone:'(405) 555-0101', Email:'babs@email.com', Stage:'Lead', Budget:'$280,000 – $320,000', PreApproval:'', LoanType:'FHA', Address:'Edmond, OK', Referral:'Instagram', Notes:'First-time buyer, very motivated.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
+  { id:'t1', Name:'Jane Smith', Phone:'(405) 555-0101', Email:'jane@email.com', Stage:'Lead', Budget:'$280,000 – $320,000', PreApproval:'', LoanType:'FHA', Address:'Edmond, OK', Referral:'Instagram', Notes:'First-time buyer, very motivated.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
   { id:'t2', Name:'Marcus Rivera', Phone:'(405) 555-0102', Email:'marcus@email.com', Stage:'Pre-Approval', Budget:'$350,000 – $400,000', PreApproval:'$390,000', LoanType:'Conventional', Address:'Yukon, OK', Referral:'Open House', Notes:'Pre-approved through Brooke. Looking in Yukon area.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
   { id:'t3', Name:'Jordan Lee', Phone:'(405) 555-0103', Email:'jordan@email.com', Stage:'Searching', Budget:'$200,000 – $250,000', PreApproval:'$245,000', LoanType:'USDA', Address:'Mustang, OK', Referral:'Referral', Notes:'Interested in rural properties. May qualify for USDA.', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
   { id:'t4', Name:'Taylor Brooks', Phone:'(405) 555-0104', Email:'taylor@email.com', Stage:'Under Contract', Budget:'$315,000', PreApproval:'$315,000', LoanType:'VA', Address:'123 Maple St, Norman, OK', Referral:'Past Client', Notes:'VA loan. Inspection scheduled for next week. Close date Feb 28.', ContractDate:'2026-02-01', CloseDate:'2026-02-28', RealtorID:'test', RealtorName:'Test REALTOR', RealtorEmail:'test@email.com' },
@@ -1161,10 +1161,10 @@ function enterTestMode(pwd) {
   if (pwd !== 'Laqu1sha!1') { showToast('Incorrect password.','error'); return; }
   IS_TEST_MODE   = true;
   REALTOR_ID     = 'test';
-  REALTOR_NAME   = 'Babs Young';
+  REALTOR_NAME   = 'Jane Smith';
   clients        = TEST_CLIENTS.map(c => Object.assign({}, c));
   document.getElementById('loginOverlay').classList.remove('show');
-  document.getElementById('headerPartner').textContent = 'Babs Young';
+  document.getElementById('headerPartner').textContent = 'Jane Smith';
   document.getElementById('testBanner').classList.add('show');
   renderClients();
   updateCounts();
@@ -1227,7 +1227,7 @@ async function sendStageChangeNotification(client, newStage) {
     `Your client ${clientName} has moved to the ${stageFriendly} stage in your CRM.\n\n` +
     `Open your CRM to send the appropriate follow-up email:\n` +
     `https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html\n\n` +
-    `— Bank on Brooke — The Residential Lending Studio`
+    `— Bank on Brooke`
   );
 
   // Open mailto — REALTOR sends from their own email
@@ -1304,7 +1304,7 @@ async function sendTestEmail() {
     'Workflow emails will send automatically from your email address on their scheduled due dates.\n\n' +
     'REALTOR Name: ' + REALTOR_NAME + '\n' +
     'Sent at: ' + new Date().toLocaleString() + '\n\n' +
-    '— Bank on Brooke — The Residential Lending Studio\n' +
+    '— Bank on Brooke\n' +
     'bankonbrooke.studio';
 
   const ok = await sendEmailViaEJS(addr, subject, body);
@@ -1522,7 +1522,7 @@ const WF_EMAILS = {
 
   'wf-ftb-welcome': {
     subject: (c,r) => `Welcome, ${c.Name||c.name}! Let's get you on the path to homeownership`,
-    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI'm so excited to start working with you on your homebuying journey! The fact that you're planning ahead 6–12 months puts you in a fantastic position — most buyers wish they had started earlier.\n\nHere's what I'd love for you to focus on right now:\n\n1. Check your credit score — aim for 620+ to qualify for most programs. 680+ opens up even better options.\n2. Start saving — even a small amount consistently each month adds up fast.\n3. Stop opening new credit cards or taking on new debt — your debt-to-income ratio matters.\n\nI've also connected you with my preferred lender, Brooke Gagliardi-Young at Bank on Brooke — The Residential Lending Studio. She specializes in first-time buyers and knows every down payment assistance program available in Oklahoma. A free 15-minute call with her could save you thousands.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nI'll be in touch regularly as we get closer to your buying window. In the meantime — don't hesitate to reach out with any questions!\n\n${r.name}\n${r.phone||''}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nI'm so excited to start working with you on your homebuying journey! The fact that you're planning ahead 6–12 months puts you in a fantastic position — most buyers wish they had started earlier.\n\nHere's what I'd love for you to focus on right now:\n\n1. Check your credit score — aim for 620+ to qualify for most programs. 680+ opens up even better options.\n2. Start saving — even a small amount consistently each month adds up fast.\n3. Stop opening new credit cards or taking on new debt — your debt-to-income ratio matters.\n\nI've also connected you with my preferred lender, Brooke Gagliardi-Young at Bank on Brooke. She specializes in first-time buyers and knows every down payment assistance program available in Oklahoma. A free 15-minute call with her could save you thousands.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nI'll be in touch regularly as we get closer to your buying window. In the meantime — don't hesitate to reach out with any questions!\n\n${r.name}\n${r.phone||''}`,
   },
 
   'wf-ftb-credit': {
@@ -1542,7 +1542,7 @@ const WF_EMAILS = {
 
   'wf-rn-welcome': {
     subject: (c,r) => `${(c.Name||c.name).split(' ')[0]}, let's get you moving — here's what to do right now`,
-    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nWelcome — I'm thrilled to be working with you and I can tell you're ready to make this happen. Since you're looking to buy now, we need to move with purpose.\n\nHere's your action plan for the next 7 days:\n\n1. Get pre-approved — this is the single most important thing. Without a pre-approval letter, sellers won't consider your offer.\n2. Gather your documents — W-2s, pay stubs, bank statements, and ID.\n3. Know your budget — your pre-approval will confirm the number, but have a ballpark in mind.\n\nI've connected you with Brooke Gagliardi-Young at Bank on Brooke — The Residential Lending Studio. She moves fast, knows Oklahoma programs inside and out, and will make the financing side of this stress-free. Reach out to her today.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nOnce you're pre-approved, we'll start looking at homes immediately. Exciting times ahead!\n\n${r.name}`,
+    body: (c,r) => `Hi ${(c.Name||c.name).split(' ')[0]},\n\nWelcome — I'm thrilled to be working with you and I can tell you're ready to make this happen. Since you're looking to buy now, we need to move with purpose.\n\nHere's your action plan for the next 7 days:\n\n1. Get pre-approved — this is the single most important thing. Without a pre-approval letter, sellers won't consider your offer.\n2. Gather your documents — W-2s, pay stubs, bank statements, and ID.\n3. Know your budget — your pre-approval will confirm the number, but have a ballpark in mind.\n\nI've connected you with Brooke Gagliardi-Young at Bank on Brooke. She moves fast, knows Oklahoma programs inside and out, and will make the financing side of this stress-free. Reach out to her today.\n\nBook a free call with Brooke: bankonbrooke.studio/contact\n\nOnce you're pre-approved, we'll start looking at homes immediately. Exciting times ahead!\n\n${r.name}`,
   },
 
   'wf-rn-doclist': {
