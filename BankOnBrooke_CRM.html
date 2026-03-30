@@ -208,6 +208,36 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .crm-ob-num{min-width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;}
 .crm-ob-step-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
 .crm-ob-step-desc{font-size:12px;color:var(--gray);line-height:1.6;}
+
+/* ── MOBILE IMPROVEMENTS ── */
+@media(max-width:600px){
+  .main{grid-template-columns:1fr;padding:12px 10px 40px;}
+  .sidebar{display:flex;flex-direction:row;flex-wrap:wrap;gap:10px;}
+  .sidebar-card{flex:1;min-width:150px;}
+  .stage-filter{flex-direction:row;flex-wrap:wrap;gap:4px;}
+  .stage-btn{font-size:12px;padding:6px 10px;}
+  .client-row{flex-wrap:wrap;gap:10px;}
+  .client-stage-badge{font-size:10px;}
+  .client-meta{display:none;}
+  .content-header{flex-direction:column;align-items:flex-start;}
+  .add-client-btn{width:100%;text-align:center;}
+  .detail-panel{max-width:100%;width:100%;}
+  .field-grid{grid-template-columns:1fr;}
+  .modal-card{max-width:100%;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh;overflow-y:auto;}
+  .modal-overlay.show{align-items:flex-end;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .wf-assign-btn{width:100%;padding:12px;}
+  .wf-select{font-size:14px;padding:12px;}
+  .send-btn{padding:8px 12px;font-size:12px;}
+  .ejs-setup-card{padding:12px;}
+  .login-card{border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh;overflow-y:auto;width:100%;max-width:100%;}
+  .login-overlay.show{align-items:flex-end;}
+  .modal-card{max-width:100% !important;}
+}
+@media(max-width:768px){
+  .main{gap:12px;}
+  .detail-panel{max-width:100%;}
+}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -1997,7 +2027,8 @@ function sendTemplate(templateId, clientId) {
 
   const r = { name: REALTOR_NAME, email: '' };
   const subject = t.subject(c);
-  const body    = t.body(c, r);
+  const bodyRaw = t.body(c, r);
+  const body    = bodyRaw + '\n\n---\nTo stop receiving emails from ' + REALTOR_NAME + ', reply with UNSUBSCRIBE.';
 
   // Open in default email client
   const mailtoLink = `mailto:${c.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

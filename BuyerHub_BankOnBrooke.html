@@ -287,8 +287,8 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="modal-got-it" onclick="closeBuyerWelcome()">Let's go! →</button>
+    <div class="modal-footer" style="position:sticky;bottom:0;background:var(--white);padding:16px 20px;border-top:1px solid var(--border);">
+      <button class="modal-got-it" onclick="closeBuyerWelcome()" style="width:100%;">Let's go! →</button>
     </div>
   </div>
 </div>
@@ -306,7 +306,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="modal-step-icon">👤</div>
         <div class="modal-step-body">
           <div class="modal-step-title">1. Set up your profile</div>
-          <div class="modal-step-desc">Go to the Properties tab — fill in your name, photo URL, and contact info. Your buyers will see this at the top of their hub so they always know who to call.</div>
+          <div class="modal-step-desc">Go to the Properties tab — fill in your name, photo link (paste a direct image URL), and contact info. Your buyers will see this at the top of their hub so they always know who to call.</div>
         </div>
       </div>
       <div class="modal-step">
@@ -530,18 +530,9 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="form-field"><label>Your Phone</label><input type="text" id="spPhone" placeholder="(405) 555-0100"></div>
         <div class="form-field"><label>Your Email</label><input type="text" id="spEmail" placeholder="you@brokerage.com"></div>
         <div class="form-field full">
-          <label>Your Headshot or Logo</label>
-          <div class="photo-upload-wrap">
-            <div class="photo-upload-row">
-              <img id="spPhotoPreview" class="photo-preview" src="" alt="Your photo">
-              <div>
-                <button type="button" class="upload-btn" onclick="document.getElementById('spPhotoFile').click()">📷 Upload Photo or Logo</button>
-                <div class="photo-filename" id="spPhotoFilename">No photo uploaded yet</div>
-              </div>
-            </div>
-            <input type="file" id="spPhotoFile" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)">
-            <input type="hidden" id="spPhoto">
-          </div>
+          <label>Your Headshot or Logo — Paste a direct image link</label>
+          <input type="text" id="spPhoto" placeholder="https://example.com/your-photo.jpg">
+          <div style="font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5;">Paste a direct link to your photo. To get one: upload your photo to Google Drive, right-click → Share → Anyone with the link → copy the link. Or use your LinkedIn profile photo URL.</div>
         </div>
       </div>
       <button class="setup-save-btn" onclick="saveProfile()">Save Profile & Update Buyer Link</button>
@@ -871,7 +862,7 @@ function handlePhotoUpload(input) {
   reader.onload = function(e) {
     const dataUrl = e.target.result;
     document.getElementById('spPhoto').value = dataUrl;
-    const preview = document.getElementById('spPhotoPreview');
+    const preview = document.getElementById('spPhoto');
     preview.src = dataUrl;
     preview.classList.add('show');
     document.getElementById('spPhotoFilename').textContent = file.name;
@@ -956,6 +947,35 @@ function saveProfile(){
   const link=HUB+'?'+q.toString();
   document.getElementById('buyerLinkDisplay').textContent=link;
   document.getElementById('buyerLinkDisplay').dataset.link=link;
+
+  // Show share buttons and set text/email links
+  const shareBtns = document.getElementById('buyerShareBtns');
+  if(shareBtns){
+    shareBtns.style.display='flex';
+    const realtorName = document.getElementById('spName').value.trim() || 'Your REALTOR®';
+    const smsText = encodeURIComponent(
+      'Hi! I set up a free resource just for you to help with your home search.\n\n' +
+      'It has a step-by-step homebuying checklist, featured listings I want you to see, and an Oklahoma property search all in one place.\n\n' +
+      'Open this link anytime:\n' + link + '\n\n' +
+      'Let me know if you have any questions!' 
+    );
+    const emailSubject = encodeURIComponent('Your Personal Buyer Hub is Ready!');
+    const emailBody = encodeURIComponent(
+      'Hi!\n\n' +
+      'I created a personalized resource just for you to help with your home search.\n\n' +
+      'It includes:\n' +
+      '• A step-by-step homebuying checklist\n' +
+      '• Featured listings I think you should see\n' +
+      '• An Oklahoma property search on Zillow, Realtor.com & Redfin\n' +
+      '• A full FAQ covering pre-approval, down payment assistance, and more\n\n' +
+      'Your personal link:\n' + link + '\n\n' +
+      'Bookmark it — you can come back anytime and your checklist progress saves automatically.\n\n' +
+      'Let me know if you have any questions!\n\n' + realtorName
+    );
+    document.getElementById('buyerSmsBtn').href = 'sms:?body=' + smsText;
+    document.getElementById('buyerEmailBtn').href = 'mailto:?subject=' + emailSubject + '&body=' + emailBody;
+  }
+
   const s=document.getElementById('profileSaved');s.style.display='inline';
   setTimeout(()=>s.style.display='none',3000);
 }
