@@ -812,6 +812,7 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   <div class="sidebar">
     <div class="sidebar-card">
       <h3>Pipeline</h3>
+      <div class="stage-filter">
         <button class="stage-btn active" onclick="filterStage('all',this)">All Clients <span class="stage-count" id="cnt-all">0</span></button>
         <button class="stage-btn" onclick="filterStage('lead',this)">Buyer Lead <span class="stage-count" id="cnt-lead">0</span></button>
         <button class="stage-btn" onclick="filterStage('preapproval',this)">Pre-Approval <span class="stage-count" id="cnt-preapproval">0</span></button>
@@ -850,46 +851,48 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   </div>
 
   <!-- CONTENT -->
-  <div class="content">
+  <div class="content-area">
 
-    <div class="content-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:18px;">
-        <div id="contentTitle" class="content-title" style="display:none;">All Clients</div>
-        <div id="dashHeaderTitle" style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text);">Dashboard</div>
-        <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
-      </div>
-      <!-- DASHBOARD -->
-      <div id="dashboardView" style="display:none;">
-        <div class="dash-greeting">
-          <h2 id="dashGreeting">Welcome back.</h2>
-          <p id="dashSubtext">Loading your clients...</p>
-        </div>
-        <div class="dash-stats">
-          <div class="dash-stat"><div class="dash-stat-label">Active Clients</div><div class="dash-stat-num" id="ds-active">0</div><div class="dash-stat-sub">Currently managed</div></div>
-          <div class="dash-stat amber"><div class="dash-stat-label">Follow-Ups Due</div><div class="dash-stat-num" id="ds-due">0</div><div class="dash-stat-sub">Send today</div></div>
-          <div class="dash-stat"><div class="dash-stat-label">Under Contract</div><div class="dash-stat-num" id="ds-contract">0</div><div class="dash-stat-sub">In closing process</div></div>
-          <div class="dash-stat green"><div class="dash-stat-label">Closed</div><div class="dash-stat-num" id="ds-closed">0</div><div class="dash-stat-sub">Total closings</div></div>
-        </div>
-        <div class="dash-grid">
-          <div class="dash-card">
-            <div class="dash-card-title">Active Clients</div>
-            <div id="dashClientList"><div style="font-size:13px;color:var(--muted);padding:12px 0;">Add your first client to get started.</div></div>
-          </div>
-          <div class="dash-card">
-            <div class="dash-card-title">Due Today</div>
-            <div id="dashDueList"><div style="font-size:13px;color:var(--muted);padding:12px 0;">No follow-ups due today.</div></div>
-          </div>
-        </div>
-      </div>
-      <!-- CLIENT LIST -->
-      <div id="clientListView" style="display:none;">
+    <!-- PERSISTENT HEADER BAR -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div id="dashHeaderTitle" class="content-title">Dashboard</div>
+      <div id="contentTitle" class="content-title" style="display:none;">All Clients</div>
+      <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
     </div>
-    <input class="search-bar" type="text" id="searchBar" placeholder="Search clients by name, email, or phone..." oninput="renderClients()">
-    <div class="clients-grid" id="clientsGrid">
-      <div class="empty-state">No clients yet. Click "+ Add Client" to get started.</div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardView" style="display:none;">
+      <div class="dash-greeting">
+        <h2 id="dashGreeting">Welcome back.</h2>
+        <p id="dashSubtext">Loading your clients...</p>
+      </div>
+      <div class="dash-stats">
+        <div class="dash-stat"><div class="dash-stat-label">Active Clients</div><div class="dash-stat-num" id="ds-active">0</div><div class="dash-stat-sub">Currently managed</div></div>
+        <div class="dash-stat amber"><div class="dash-stat-label">Follow-Ups Due</div><div class="dash-stat-num" id="ds-due">0</div><div class="dash-stat-sub">Send today</div></div>
+        <div class="dash-stat"><div class="dash-stat-label">Under Contract</div><div class="dash-stat-num" id="ds-contract">0</div><div class="dash-stat-sub">In closing process</div></div>
+        <div class="dash-stat green"><div class="dash-stat-label">Closed</div><div class="dash-stat-num" id="ds-closed">0</div><div class="dash-stat-sub">Total closings</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Active Clients</div>
+          <div id="dashClientList"><div style="font-size:13px;color:var(--muted);padding:12px 0;">Add your first client to get started.</div></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Due Today</div>
+          <div id="dashDueList"><div style="font-size:13px;color:var(--muted);padding:12px 0;">No follow-ups due today.</div></div>
+        </div>
+      </div>
     </div>
-  </div><!-- end content-header -->
-  </div><!-- end .content -->
+
+    <!-- CLIENT LIST -->
+    <div id="clientListView" style="display:none;">
+      <input class="search-bar" type="text" id="searchBar" placeholder="Search clients by name, email, or phone..." oninput="renderClients()">
+      <div class="clients-grid" id="clientsGrid">
+        <div class="empty-state">No clients yet. Click "+ Add Client" to get started.</div>
+      </div>
+    </div>
+
+  </div><!-- end content-area -->
 </div><!-- end .main -->
 
 </div><!-- end platform-crm -->
