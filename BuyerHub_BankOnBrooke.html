@@ -529,7 +529,7 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="buyer-link-box" id="buyerLinkDisplay">Save your profile to generate your buyer link</div>
         <button class="copy-link-btn" id="copyLinkBtn" onclick="copyBuyerLink()">📋 Copy</button>
       </div>
-      <div id="buyerShareBtns" style="display:none;margin-top:10px;display:none;gap:8px;flex-wrap:wrap;">
+      <div id="buyerShareBtns" style="display:flex;margin-top:10px;gap:8px;flex-wrap:wrap;">
         <a id="buyerSmsBtn" href="#" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--cream);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;">💬 Send via Text</a>
         <a id="buyerEmailBtn" href="#" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--cream);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;">✉️ Send via Email</a>
       </div>
@@ -742,7 +742,20 @@ window.addEventListener('load',async()=>{
     setTimeout(function(){ showRealtorModal(); }, 800);
   } else {
     const s=localStorage.getItem('bob_'+RID);
-    if(s){buyer=JSON.parse(s);await loadProgress(buyer.email);}
+    if(s){
+      buyer=JSON.parse(s);
+      // Restore checked state from localStorage immediately (no flicker)
+      const saved=localStorage.getItem('bob_progress_'+RID);
+      if(saved){
+        const checked=JSON.parse(saved);
+        document.querySelectorAll('.item').forEach((el,i)=>{
+          if(checked.includes(i))el.classList.add('checked');
+        });
+        updateProgress();updateSectionCounts();
+      }
+      // Then sync with Airtable to get latest + ensure atId is set
+      await loadProgress(buyer.email);
+    }
     else{document.getElementById('loginOverlay').classList.add('show');}
   }
   await loadListings();
@@ -928,6 +941,7 @@ function renderPartnerBar(){
 async function loginBuyer(){
   const n=document.getElementById('buyerName').value.trim();
   const e=document.getElementById('buyerEmail').value.trim();
+  if(!n||!e){showToast && showToast('Please enter your name and email.','error');return;}
   if(!n||!e){alert('Please enter your name and email.');return;}
   document.getElementById('loginOverlay').classList.remove('show');
   buyer={name:n,email:e,rid:RID};
@@ -941,7 +955,7 @@ function skipLogin(){document.getElementById('loginOverlay').classList.remove('s
 async function loadProgress(email){
   try{
     const f=encodeURIComponent(`AND({Email}="${email}",{RealtorID}="${RID}")`);
-    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}`,{headers:AT_H});
+    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}&db=hub`,{headers:AT_H});
     const d=await r.json();
     if(d.records&&d.records.length>0){
       const rec=d.records[0];buyer.atId=rec.id;
@@ -958,11 +972,11 @@ async function loadProgress(email){
 async function upsertBuyer(name,email){
   try{
     const f=encodeURIComponent(`AND({Email}="${email}",{RealtorID}="${RID}")`);
-    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}`,{headers:AT_H});
+    const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}&db=hub`,{headers:AT_H});
     const d=await r.json();
     if(d.records&&d.records.length>0){buyer.atId=d.records[0].id;}
     else{
-      const cr=await fetch(`${AT_URL}/Buyers`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{Name:name,Email:email,RealtorID:RID,ChecklistProgress:'[]',Favorites:'[]',CompletedCount:0}}]})});
+      const cr=await fetch(`${AT_URL}/Buyers?db=hub`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{Name:name,Email:email,RealtorID:RID,ChecklistProgress:'[]',Favorites:'[]',CompletedCount:0}}]})});
       const cd=await cr.json();
       if(cd.records)buyer.atId=cd.records[0].id;
     }
@@ -970,14 +984,23 @@ async function upsertBuyer(name,email){
 }
 
 async function saveProgress(){
-  if(!buyer||!buyer.atId)return;
+  const items=document.querySelectorAll('.item');
+  const c=[];items.forEach((el,i)=>{if(el.classList.contains('checked'))c.push(i);});
+  // Always save to localStorage first — instant backup regardless of Airtable
+  localStorage.setItem('bob_progress_'+RID,JSON.stringify(c));
+  if(!buyer||!buyer.atId){
+    setSS('saved'); // saved locally at least
+    return;
+  }
   setSS('saving');
   try{
-    const items=document.querySelectorAll('.item');
-    const c=[];items.forEach((el,i)=>{if(el.classList.contains('checked'))c.push(i);});
-    await fetch(`${AT_URL}/Buyers/${buyer.atId}`,{method:'PATCH',headers:AT_H,body:JSON.stringify({fields:{ChecklistProgress:JSON.stringify(c),CompletedCount:c.length,Favorites:JSON.stringify([...favs])}})});
+    await fetch(`${AT_URL}/Buyers/${buyer.atId}?db=hub`,{method:'PATCH',headers:AT_H,body:JSON.stringify({fields:{ChecklistProgress:JSON.stringify(c),CompletedCount:c.length,Favorites:JSON.stringify([...favs])}})});
     setSS('saved');
-  }catch(e){setSS('error');}
+  }catch(e){
+    // Airtable failed but localStorage backup exists
+    setSS('saved');
+    console.log('Airtable save failed, localStorage backup active',e);
+  }
 }
 
 function setSS(s){
@@ -1013,7 +1036,7 @@ async function loadListings(){
   const grid=document.getElementById('listingsGrid');
   try{
     const f=RID?encodeURIComponent(`{RealtorID}="${RID}"`):'';
-    const r=await fetch(`${AT_URL}/Listings${f?'?filterByFormula='+f:''}`,{headers:AT_H});
+    const r=await fetch(`${AT_URL}/Listings?db=hub${f?'&filterByFormula='+f:''}`,{headers:AT_H});
     const d=await r.json();
     if(!d.records||d.records.length===0){
       grid.innerHTML=`<div class="no-listings">${IS_SETUP?'No listings yet — add your first one below.':'Your REALTOR® hasn\'t added any featured listings yet.'}</div>`;
@@ -1098,7 +1121,7 @@ async function addListing(){
   document.querySelector('.add-submit').disabled=true;
   try{
     const body={records:[{fields:{Address:addr,City:document.getElementById('fCity').value.trim(),Price:price,Beds:parseFloat(document.getElementById('fBeds').value)||null,Baths:parseFloat(document.getElementById('fBaths').value)||null,SqFt:document.getElementById('fSqft').value.trim(),Status:document.getElementById('fStatus').value,Link:document.getElementById('fLink').value.trim(),Photo:document.getElementById('fPhoto').value.trim(),RealtorID:RID}}]};
-    const r=await fetch(`${AT_URL}/Listings`,{method:'POST',headers:AT_H,body:JSON.stringify(body)});
+    const r=await fetch(`${AT_URL}/Listings?db=hub`,{method:'POST',headers:AT_H,body:JSON.stringify(body)});
     const d=await r.json();
     if(d.records){
       const grid=document.getElementById('listingsGrid');
@@ -1116,7 +1139,7 @@ async function deleteListing(e,id){
   e.stopPropagation();
   if(!confirm('Remove this listing?'))return;
   try{
-    await fetch(`${AT_URL}/Listings/${id}`,{method:'DELETE',headers:AT_H});
+    await fetch(`${AT_URL}/Listings/${id}?db=hub`,{method:'DELETE',headers:AT_H});
     const card=document.querySelector(`.listing-card[data-id="${id}"]`);
     if(card)card.remove();
     if(!document.querySelector('.listing-card'))document.getElementById('listingsGrid').innerHTML='<div class="no-listings">No listings yet — add your first one below.</div>';
@@ -1130,7 +1153,7 @@ async function toggleFav(e,id,addr){
   if(was){favs.delete(id);btn.innerHTML='🤍 Save';btn.classList.remove('active');}
   else{
     favs.add(id);btn.innerHTML='❤️ Saved';btn.classList.add('active');
-    try{await fetch(`${AT_URL}/Favorites`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{BuyerName:buyer.name,BuyerEmail:buyer.email,Property:addr,RealtorID:RID,Date:new Date().toISOString().split('T')[0]}}]})});}catch(e){}
+    try{await fetch(`${AT_URL}/Favorites?db=hub`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{BuyerName:buyer.name,BuyerEmail:buyer.email,Property:addr,RealtorID:RID,Date:new Date().toISOString().split('T')[0]}}]})});}catch(e){}
   }
   clearTimeout(saveTimer);saveTimer=setTimeout(saveProgress,1500);
 }
