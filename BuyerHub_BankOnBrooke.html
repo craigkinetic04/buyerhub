@@ -1042,7 +1042,8 @@ async function saveProgress(){
   // Always save to localStorage first — instant backup regardless of Airtable
   localStorage.setItem('bob_progress_'+RID,JSON.stringify(c));
   if(!buyer||!buyer.atId){
-    setSS('saved'); // saved locally at least
+    // atId not set yet — try again in 3 seconds
+    setTimeout(saveProgress, 3000);
     return;
   }
   setSS('saving');
