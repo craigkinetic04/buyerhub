@@ -353,15 +353,16 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   </div>
 </div>
 
+<!-- Fallback login — only shown if buyer opens link without name/email params -->
 <div class="buyer-login-overlay" id="loginOverlay">
   <div class="buyer-login-card">
     <img class="buyer-login-logo" src="brooke_logo.png" alt="Bank on Brooke">
     <h2>Welcome to Your Buyer Hub</h2>
-    <p id="loginSubtext">Save your progress so your checklist picks up right where you left off every time you come back.</p>
-    <div class="login-field"><label>Your Name</label><input type="text" id="buyerName" placeholder="e.g. Jane Smith"></div>
-    <div class="login-field"><label>Your Email</label><input type="email" id="buyerEmail" placeholder="jane@email.com"></div>
-    <button class="login-btn" onclick="loginBuyer()">Save My Progress →</button>
-    <div style="font-size:11px;color:var(--gray);text-align:center;margin-top:10px;line-height:1.5;">We never share your information.</div>
+    <p>Enter your name and email so your checklist progress saves across all your devices.</p>
+    <div class="login-field"><label>Your Name</label><input type="text" id="buyerName" placeholder="Jane Smith" autocomplete="name"></div>
+    <div class="login-field"><label>Your Email</label><input type="email" id="buyerEmail" placeholder="jane@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')loginBuyer()"></div>
+    <button class="login-btn" onclick="loginBuyer()">Get Started →</button>
+    <div style="font-size:11px;color:var(--gray);text-align:center;margin-top:10px;line-height:1.5;">Your progress saves automatically so you can pick up where you left off on any device.</div>
   </div>
 </div>
 
@@ -748,45 +749,34 @@ window.addEventListener('load',async()=>{
     // Show realtor welcome modal
     setTimeout(function(){ showRealtorModal(); }, 800);
   } else {
-    const s=localStorage.getItem('bob_'+RID);
-    if(s){
-      buyer=JSON.parse(s);
-      showBuyerName(buyer.name);
-      // Restore from localStorage immediately
-      const saved=localStorage.getItem('bob_progress_'+RID);
-      if(saved){
-        const checked=JSON.parse(saved);
-        document.querySelectorAll('.item').forEach((el,i)=>{
-          if(checked.includes(i))el.classList.add('checked');
-        });
-        updateProgress();updateSectionCounts();
-      }
-      // Sync with Airtable
-      await loadProgress(buyer.email);
-    } else if(BUYER_NAME_PRESET && BUYER_EMAIL_PRESET) {
-      // REALTOR pre-filled buyer info — auto-login silently, no form needed
-      const bEmail = BUYER_EMAIL_PRESET.toLowerCase().trim();
-      const bName  = BUYER_NAME_PRESET.trim();
+    // Buyer identity comes from URL params (set by REALTOR from CRM)
+    // or from a previous localStorage session
+    const bName  = BUYER_NAME_PRESET.trim()  || JSON.parse(localStorage.getItem('bob_'+RID)||'{}').name  || '';
+    const bEmail = (BUYER_EMAIL_PRESET.trim() || JSON.parse(localStorage.getItem('bob_'+RID)||'{}').email || '').toLowerCase();
+
+    if (bName && bEmail) {
       buyer = { name: bName, email: bEmail };
       localStorage.setItem('bob_'+RID, JSON.stringify(buyer));
       showBuyerName(bName);
-      // Restore any local progress backup
-      const saved=localStorage.getItem('bob_progress_'+RID);
-      if(saved){
-        const checked=JSON.parse(saved);
-        document.querySelectorAll('.item').forEach((el,i)=>{
-          if(checked.includes(i))el.classList.add('checked');
+
+      // Restore local progress immediately for instant display
+      const saved = localStorage.getItem('bob_progress_'+RID);
+      if (saved) {
+        const checked = JSON.parse(saved);
+        document.querySelectorAll('.item').forEach((el,i) => {
+          if (checked.includes(i)) el.classList.add('checked');
         });
-        updateProgress();updateSectionCounts();
+        updateProgress(); updateSectionCounts();
       }
-      // Create/find Airtable record and load progress
+
+      // Create/find Airtable record and load latest progress
       await upsertBuyer(bName, bEmail);
       await loadProgress(bEmail);
     } else {
-      // No preset, no session — show login, pre-fill if available
-      if(BUYER_NAME_PRESET)  document.getElementById('buyerName').value  = BUYER_NAME_PRESET;
-      if(BUYER_EMAIL_PRESET) document.getElementById('buyerEmail').value = BUYER_EMAIL_PRESET;
-      document.getElementById('loginOverlay').classList.add('show');
+      // No name/email in URL or storage — show a simple name/email prompt
+      // (fallback only — this should not happen if REALTOR sends link from CRM)
+      const loginOverlay = document.getElementById('loginOverlay');
+      if (loginOverlay) loginOverlay.classList.add('show');
     }
   }
   await loadListings();
@@ -982,28 +972,23 @@ function showBuyerName(name) {
 }
 
 function buyerLogout() {
-  // Clear all buyer session data for this REALTOR's hub
+  // Clear session for this hub — reload so URL params can re-identify
   localStorage.removeItem('bob_' + RID);
   localStorage.removeItem('bob_progress_' + RID);
-  buyer = null;
-  favs = new Set();
-  // Uncheck all items
-  document.querySelectorAll('.item.checked').forEach(el => el.classList.remove('checked'));
-  updateProgress(); updateSectionCounts();
-  // Hide name and logout button
-  const el = document.getElementById('buyerNameDisplay');
-  if (el) { el.textContent = ''; el.style.display = 'none'; }
-  const logoutBtn = document.getElementById('buyerLogoutBtn');
-  if (logoutBtn) logoutBtn.style.display = 'none';
-  // Show login screen
-  document.getElementById('loginOverlay').classList.add('show');
+  // Reload — if URL has buyerName/buyerEmail they will re-login automatically
+  // Otherwise the fallback login form will appear
+  window.location.reload();
 }
 
 async function loginBuyer(){
-  const n=document.getElementById('buyerName').value.trim();
-  const e=document.getElementById('buyerEmail').value.trim().toLowerCase();
+  // Fallback login — used when buyer opens link without name/email params
+  const nEl = document.getElementById('buyerName');
+  const eEl = document.getElementById('buyerEmail');
+  const n = nEl ? nEl.value.trim() : '';
+  const e = eEl ? eEl.value.trim().toLowerCase() : '';
   if(!n||!e){alert('Please enter your name and email.');return;}
-  document.getElementById('loginOverlay').classList.remove('show');
+  const loginOverlay = document.getElementById('loginOverlay');
+  if (loginOverlay) loginOverlay.classList.remove('show');
   buyer={name:n,email:e,rid:RID};
   showBuyerName(n);
   localStorage.setItem('bob_'+RID,JSON.stringify(buyer));
@@ -1011,7 +996,7 @@ async function loginBuyer(){
   await upsertBuyer(n,e);
   await loadProgress(e);
 }
-function skipLogin(){document.getElementById('loginOverlay').classList.remove('show');setTimeout(function(){ showBuyerWelcome(); }, 400);}
+function skipLogin(){ const o=document.getElementById('loginOverlay'); if(o) o.classList.remove('show'); }
 
 async function loadProgress(email){
   try{
@@ -1234,7 +1219,7 @@ async function deleteListing(e,id){
 
 async function toggleFav(e,id,addr){
   e.stopPropagation();
-  if(!buyer){document.getElementById('loginOverlay').classList.add('show');return;}
+  if(!buyer){const lo=document.getElementById('loginOverlay');if(lo)lo.classList.add('show');return;}
   const btn=e.currentTarget,was=favs.has(id);
   if(was){favs.delete(id);btn.innerHTML='🤍 Save';btn.classList.remove('active');}
   else{
