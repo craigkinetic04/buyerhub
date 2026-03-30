@@ -1424,17 +1424,17 @@ const CHECKLIST_STEPS = [
   { label: 'Negotiate repairs or credits if needed', section: 'Under Contract' },
   { label: 'Appraisal ordered by your lender', section: 'Under Contract' },
   { label: 'Respond to any lender conditions or requests', section: 'Under Contract' },
-  { label: 'Shop and bind homeowner's insurance', section: 'Under Contract' },
+  { label: 'Shop and bind homeowners insurance', section: 'Under Contract' },
   { label: 'Do a final walk-through of the home', section: 'Under Contract' },
   // Section 7 — Closing Day
   { label: 'Review your closing disclosure', section: 'Closing Day' },
-  { label: 'Confirm wire transfer or cashier's check amount', section: 'Closing Day' },
+  { label: 'Confirm wire transfer or cashiers check amount', section: 'Closing Day' },
   { label: 'Bring your photo ID to closing', section: 'Closing Day' },
   { label: 'Sign all closing documents', section: 'Closing Day' },
   { label: 'Closing funds wired or check delivered', section: 'Closing Day' },
   { label: 'Receive your keys', section: 'Closing Day' },
   { label: 'Record the deed with the county', section: 'Closing Day' },
-  { label: 'Celebrate — you are a homeowner!', section: 'Closing Day' },
+  { label: 'Celebrate - you are a homeowner!', section: 'Closing Day' },
 ];
 
 function renderClientChecklist() {
@@ -1488,7 +1488,7 @@ function renderClientChecklist() {
         <div class="checklist-progress-bar"><div class="checklist-progress-fill" style="width:${pct}%"></div></div>
         <div style="font-size:11px;color:var(--gray);margin-top:3px;">${pct}% complete</div>
       </div>
-      ${progress ? sectionsHtml : '<div style="font-size:13px;color:var(--gray);">This client hasn't started their checklist yet. Share their Buyer Hub link so they can begin.</div>'}
+      ${progress ? sectionsHtml : '<div style="font-size:13px;color:var(--gray);">This client has not started their checklist yet. Share their Buyer Hub link so they can begin.</div>'}
       <div style="font-size:11px;color:var(--gray);margin-top:10px;font-style:italic;">Progress updates automatically as your client checks off steps in their Buyer Hub.</div>
     `;
   });
