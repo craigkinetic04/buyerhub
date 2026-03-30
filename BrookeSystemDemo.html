@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank on Brooke — System Demo & Walkthrough</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2A4A;--navy-light:#243860;
+  --gold:#C49A78;--gold-dim:rgba(196,154,120,0.12);--gold-light:#D4AA88;
+  --cream:#F0E6D8;--white:#FFFFFF;
+  --bg:#0F1117;--surface:#111318;--surface2:#1A1D24;--surface3:#1E2230;
+  --border:#1E2230;--border2:#2A2E38;
+  --text:#F0EDE8;--muted:#6B7280;--hint:#3A3F4E;
+  --green:#3CE8A0;--green-dim:rgba(60,232,160,0.1);
+  --amber:#FFB347;--amber-dim:rgba(255,179,71,0.1);
+  --red:#FF6B6B;
+}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.hdr-logo{height:32px;}
+.hdr-divider{width:1px;height:20px;background:var(--border2);}
+.hdr-title{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gold);}
+.hdr-right{font-size:12px;color:var(--muted);}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px);}
+
+/* NAV */
+.nav{background:var(--surface);border-right:1px solid var(--border);padding:20px 12px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;}
+.nav-section{margin-bottom:20px;}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--hint);margin:0 8px 8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all 0.15s;margin-bottom:2px;border:none;background:transparent;width:100%;text-align:left;font-family:'Inter',sans-serif;}
+.nav-item:hover{background:var(--surface2);}
+.nav-item.active{background:var(--surface2);}
+.nav-num{width:22px;height:22px;border-radius:50%;background:var(--surface3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.nav-item.active .nav-num{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.nav-item.done .nav-num{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.nav-text{font-size:12px;color:var(--muted);}
+.nav-item.active .nav-text{color:var(--text);font-weight:600;}
+.nav-item.done .nav-text{color:var(--muted);text-decoration:line-through;}
+.nav-progress{margin:12px 8px 0;background:var(--surface3);border-radius:20px;height:3px;}
+.nav-progress-fill{background:var(--gold);height:3px;border-radius:20px;transition:width 0.4s;}
+.nav-pct{font-size:10px;color:var(--muted);margin-top:6px;padding:0 8px;}
+
+/* CONTENT */
+.content{padding:32px 40px;max-width:800px;}
+.step-page{display:none;}
+.step-page.active{display:block;}
+
+/* STEP HEADER */
+.step-eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.step-title{font-family:'Playfair Display',serif;font-size:28px;color:var(--text);margin-bottom:8px;line-height:1.2;}
+.step-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:28px;max-width:580px;}
+
+/* CARDS */
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+.info-card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+
+/* STEPS LIST */
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.step-item{display:flex;gap:14px;align-items:flex-start;}
+.step-circle{width:28px;height:28px;border-radius:50%;background:var(--gold-dim);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;margin-top:2px;}
+.step-item-body{flex:1;}
+.step-item-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.step-item-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* ACTION BUTTONS */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.btn-primary{background:var(--gold);color:#0F1117;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;padding:11px 22px;cursor:pointer;transition:background 0.2s;text-decoration:none;display:inline-block;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-secondary{background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border-radius:9px;padding:10px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold);}
+.btn-nav{background:var(--navy);color:var(--cream);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;padding:11px 22px;cursor:pointer;transition:background 0.2s;}
+.btn-nav:hover{background:var(--navy-light);}
+
+/* HIGHLIGHT BOX */
+.highlight{background:var(--gold-dim);border:1px solid rgba(196,154,120,0.3);border-radius:10px;padding:14px 16px;margin:16px 0;font-size:13px;color:var(--cream);line-height:1.6;}
+.highlight strong{color:var(--gold);}
+.tip{background:var(--surface2);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:13px;color:var(--muted);line-height:1.6;}
+.tip strong{color:var(--text);}
+.warning{background:var(--amber-dim);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin:16px 0;font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* TOOL CARD */
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:16px;}
+.tool-icon{width:44px;height:44px;border-radius:10px;background:var(--gold-dim);border:1.5px solid rgba(196,154,120,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.tool-info{flex:1;}
+.tool-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.tool-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.tool-url{font-size:11px;color:var(--green);font-family:monospace;background:var(--surface2);padding:4px 8px;border-radius:6px;display:inline-block;word-break:break-all;}
+
+/* CHECKLIST */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);}
+.check-item:last-child{border-bottom:none;}
+.check-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;margin-top:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.check-box.checked{background:var(--green);border-color:var(--green);}
+.check-label{font-size:13px;color:var(--text);line-height:1.4;}
+.check-label.checked{color:var(--muted);text-decoration:line-through;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:24px 0;}
+
+/* DONE BANNER */
+.done-banner{background:linear-gradient(135deg,var(--navy),var(--navy-light));border:1px solid rgba(196,154,120,0.3);border-radius:14px;padding:28px;text-align:center;margin-top:24px;}
+.done-banner h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--white);margin-bottom:8px;}
+.done-banner p{font-size:14px;color:var(--cream);opacity:0.8;line-height:1.6;max-width:480px;margin:0 auto 20px;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;}
+  .nav{display:none;}
+  .content{padding:20px 16px;}
+  .step-title{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <img class="hdr-logo" src="brooke_logo.png" alt="Bank on Brooke">
+    <div class="hdr-divider"></div>
+    <div class="hdr-title">System Demo & Walkthrough</div>
+  </div>
+  <div class="hdr-right">For Brooke — Private</div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <div class="nav">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <button class="nav-item active" onclick="goToStep(0, this)" id="nav-0">
+        <div class="nav-num">0</div>
+        <div class="nav-text">Start Here</div>
+      </button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">The Full Flow</div>
+      <button class="nav-item" onclick="goToStep(1, this)" id="nav-1">
+        <div class="nav-num">1</div>
+        <div class="nav-text">Partner Generator</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(2, this)" id="nav-2">
+        <div class="nav-num">2</div>
+        <div class="nav-text">REALTOR® CRM Login</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(3, this)" id="nav-3">
+        <div class="nav-num">3</div>
+        <div class="nav-text">Buyer Hub Setup</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(4, this)" id="nav-4">
+        <div class="nav-num">4</div>
+        <div class="nav-text">Add a Test Client</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(5, this)" id="nav-5">
+        <div class="nav-num">5</div>
+        <div class="nav-text">Share the Buyer Hub</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(6, this)" id="nav-6">
+        <div class="nav-num">6</div>
+        <div class="nav-text">Buyer's Experience</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(7, this)" id="nav-7">
+        <div class="nav-num">7</div>
+        <div class="nav-text">Checklist in CRM</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(8, this)" id="nav-8">
+        <div class="nav-num">8</div>
+        <div class="nav-text">Workflows & Emails</div>
+      </button>
+      <button class="nav-item" onclick="goToStep(9, this)" id="nav-9">
+        <div class="nav-num">9</div>
+        <div class="nav-text">All Done</div>
+      </button>
+    </div>
+    <div class="nav-progress">
+      <div class="nav-progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="nav-pct" id="progressPct">0 of 9 steps complete</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STEP 0: START HERE -->
+    <div class="step-page active" id="step-0">
+      <div class="step-eyebrow">Welcome</div>
+      <div class="step-title">Your Complete System Walkthrough</div>
+      <div class="step-desc">This guide walks you through the entire Bank on Brooke partner system from start to finish — exactly as a new REALTOR® partner would experience it. You can use it to demo the system, test everything end to end, or train new partners.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">The 3 Tools in Your System</div>
+        <div class="tool-card" style="border:none;padding:12px 0;border-bottom:0.5px solid var(--border);border-radius:0;">
+          <div class="tool-icon">🔗</div>
+          <div class="tool-info">
+            <div class="tool-name">Partner Generator</div>
+            <div class="tool-desc">Your private tool. You enter a REALTOR®'s info and it generates their personalized CRM link with a pre-written text and email ready to send.</div>
+            <span class="tool-url">buyerhub.bankonbrooke.studio/BrookePartnerGenerator.html</span>
+          </div>
+        </div>
+        <div class="tool-card" style="border:none;padding:12px 0;border-bottom:0.5px solid var(--border);border-radius:0;margin-bottom:0;">
+          <div class="tool-icon">📋</div>
+          <div class="tool-info">
+            <div class="tool-name">Partner CRM</div>
+            <div class="tool-desc">The REALTOR®'s private dashboard. They manage clients, assign follow-up workflows, set up their Buyer Hub, and share it with buyers — all in one place.</div>
+            <span class="tool-url">buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html</span>
+          </div>
+        </div>
+        <div class="tool-card" style="border:none;padding:12px 0;border-radius:0;margin-bottom:0;">
+          <div class="tool-icon">🏠</div>
+          <div class="tool-info">
+            <div class="tool-name">Buyer Hub</div>
+            <div class="tool-desc">The buyer-facing page. Buyers get a personalized link with their 46-step homebuying checklist, featured listings, and property search. Their REALTOR® sees their progress in real time.</div>
+            <span class="tool-url">buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <strong>How to use this walkthrough:</strong> Click through each step in order using the left sidebar or the Next button. Each step tells you exactly what to do and what to look for. The whole demo takes about 10 minutes.
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="nextStep()">Start the Walkthrough →</button>
+      </div>
+    </div>
+
+    <!-- STEP 1: PARTNER GENERATOR -->
+    <div class="step-page" id="step-1">
+      <div class="step-eyebrow">Step 1 of 9</div>
+      <div class="step-title">Generate a Partner Link</div>
+      <div class="step-desc">This is the first thing you do when onboarding a new REALTOR® partner. You go to your Partner Generator, enter their info, and it creates their personalized CRM link and writes their outreach message for you.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">What This Tool Does</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">You enter the REALTOR®'s name, company, phone, and email</div>
+              <div class="step-item-desc">The generator creates a unique ID for them and builds their personalized CRM link with their info already embedded.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">A pre-written text message and email are generated</div>
+              <div class="step-item-desc">Both include the CRM link and explain what the tool does. You just tap Send — no writing required.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">The REALTOR® opens their link and creates an account</div>
+              <div class="step-item-desc">They set up a password on their first visit. After that they log in from any device with their email and password.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tip"><strong>Try it now:</strong> Open the Partner Generator in a new tab and enter test info — use your own name and email so you can follow the REALTOR® experience in the next steps.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BrookePartnerGenerator.html" target="_blank">Open Partner Generator ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: CRM LOGIN -->
+    <div class="step-page" id="step-2">
+      <div class="step-eyebrow">Step 2 of 9</div>
+      <div class="step-title">Log Into the CRM as a REALTOR®</div>
+      <div class="step-desc">Now you're going to experience the CRM the way your REALTOR® partners do. Open the CRM link and create a test account — or log in if you already have one.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">What the REALTOR® Sees When They Log In</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">First visit — they create a password</div>
+              <div class="step-item-desc">The CRM asks for their name, email, and a password. After this they log in automatically for 30 days — no re-entering credentials.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">They land on their dashboard</div>
+              <div class="step-item-desc">Their personalized dashboard shows stat cards (active clients, follow-ups due, under contract, closed), a client list, and today's pending workflow emails.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Three tabs in the header</div>
+              <div class="step-item-desc"><strong style="color:var(--text);">My Clients</strong> — their CRM. <strong style="color:var(--text);">Buyer Hub</strong> — their hub setup and buyer link. <strong style="color:var(--text);">Templates</strong> — all pre-written emails.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tip"><strong>Test mode available:</strong> On the CRM page, type the word <strong style="color:var(--text);">testmode</strong> on your keyboard (no field needed — just type it anywhere on the page). A password prompt appears — enter <strong style="color:var(--text);">Laqu1sha!1</strong> to enter test mode with fake data. Nothing saves to Airtable in test mode.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open the CRM ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: BUYER HUB SETUP -->
+    <div class="step-page" id="step-3">
+      <div class="step-eyebrow">Step 3 of 9</div>
+      <div class="step-title">Set Up the Buyer Hub Profile</div>
+      <div class="step-desc">Inside the CRM, click the <strong style="color:var(--text);">Buyer Hub</strong> tab in the header. This is where the REALTOR® customizes their hub before sharing it with buyers.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">What to Fill In</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Profile — name, company, phone, email, headshot</div>
+              <div class="step-item-desc">Upload a headshot by clicking the Upload Photo button. The photo saves to the database and shows at the top of every buyer's hub automatically.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Featured Listings — homes you want buyers to see</div>
+              <div class="step-item-desc">Click + Add Listing to add properties. Any buyer who opens the hub will see these listings on the Find Properties tab.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Save Profile to generate the buyer link</div>
+              <div class="step-item-desc">Once saved, the buyer link appears with three buttons — Copy Link, Send via Text, and Send via Email — all pre-written and ready to go.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="highlight">
+        <strong>Important:</strong> The buyer link is generated from the REALTOR®'s profile. Every buyer who opens it sees the REALTOR®'s photo and contact info on every page. The link is the same for all buyers — each person's checklist progress is private to them.
+      </div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open CRM → Buyer Hub Tab ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: ADD TEST CLIENT -->
+    <div class="step-page" id="step-4">
+      <div class="step-eyebrow">Step 4 of 9</div>
+      <div class="step-title">Add a Test Client</div>
+      <div class="step-desc">Go to the My Clients tab and add a test client. Use a real email address you have access to — you'll need it to experience the buyer side in the next steps.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">How to Add a Client</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Click + Add Client in the sidebar or header</div>
+              <div class="step-item-desc">A form slides open. Fill in their name, email (use one you can access), phone, and stage. Leave other fields blank for now.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Click Save</div>
+              <div class="step-item-desc">The client appears in your pipeline list immediately and saves to Airtable. You can now click on them to open their full profile.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Explore the 5 tabs in their profile</div>
+              <div class="step-item-desc"><strong style="color:var(--text);">Info</strong> — contact details. <strong style="color:var(--text);">Checklist</strong> — their hub progress. <strong style="color:var(--text);">Workflow</strong> — follow-up emails. <strong style="color:var(--text);">Share Hub</strong> — send their buyer link. <strong style="color:var(--text);">Emails</strong> — manual templates.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tip"><strong>Use your own email</strong> as the test client's email. This way when you open the buyer link in the next step, the system will recognize you and your checklist progress will show in the REALTOR®'s CRM view.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open CRM → Add Client ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: SHARE BUYER HUB -->
+    <div class="step-page" id="step-5">
+      <div class="step-eyebrow">Step 5 of 9</div>
+      <div class="step-title">Send the Buyer Hub Link</div>
+      <div class="step-desc">Now you'll send your test client their personalized buyer hub link. This is exactly what a REALTOR® does when they get a new buyer.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">How to Share the Buyer Hub</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Open the test client you just created</div>
+              <div class="step-item-desc">Click on their name in the client list to open their profile panel.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Click the Share Hub tab</div>
+              <div class="step-item-desc">You'll see a card with the buyer's personalized link and three options — Copy, Text, or Email. The link has their name and email baked in so they don't need to log in.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Copy the buyer link</div>
+              <div class="step-item-desc">Copy the link and save it somewhere — you'll open it in the next step to experience what the buyer sees. The link contains buyerName and buyerEmail already filled in.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="highlight">
+        <strong>What makes this link special:</strong> The buyer's name and email are embedded in the URL. When they open it they land directly in their hub — no login, no form, no friction. Their progress saves automatically to Airtable and shows in your CRM Checklist tab.
+      </div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open CRM → Share Hub Tab ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: BUYER EXPERIENCE -->
+    <div class="step-page" id="step-6">
+      <div class="step-eyebrow">Step 6 of 9</div>
+      <div class="step-title">Experience the Buyer's Side</div>
+      <div class="step-desc">Open the buyer link you copied in the last step. This is exactly what your buyers see when you send them their hub. Check off several items on the checklist so you can verify the progress shows in the CRM.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">What the Buyer Sees</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">They land directly in their hub — no login needed</div>
+              <div class="step-item-desc">Their name appears in the header ("Hi, [Name] •"). The REALTOR®'s photo and contact info shows at the top. They are ready to go immediately.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Buyer Checklist tab — 46 steps across 7 sections</div>
+              <div class="step-item-desc">From checking credit scores all the way to getting keys. Each section collapses and expands. Progress percentage shows at the top. Check off 5–10 items to test.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Find Properties tab — Oklahoma home search</div>
+              <div class="step-item-desc">Launches Zillow, Realtor.com, or Redfin with city and price filters pre-applied. REALTOR®'s featured listings show here too.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Progress saves to Airtable after 1.5 seconds</div>
+              <div class="step-item-desc">When a buyer checks off a step, "✓ Progress saved" appears. Their progress syncs to Airtable and will show in the REALTOR®'s CRM checklist view.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="warning"><strong>Make sure you check off several items</strong> before going to the next step — you need saved progress in Airtable for the CRM checklist test to work.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html" target="_blank">Open Buyer Hub ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: CHECKLIST IN CRM -->
+    <div class="step-page" id="step-7">
+      <div class="step-eyebrow">Step 7 of 9</div>
+      <div class="step-title">See the Checklist in the CRM</div>
+      <div class="step-desc">Go back to the CRM and open your test client. Click the Checklist tab — you should see the items you just checked off in the Buyer Hub reflected here in real time.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">What the REALTOR® Sees</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">All 46 steps organized by section</div>
+              <div class="step-item-desc">Get Your Finances in Order, Gather Your Documents, Explore Down Payment Assistance, Get Pre-Approved, Find Your Home, Make an Offer, and Closing Day.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Completed steps shown with gold checkmarks</div>
+              <div class="step-item-desc">Every item the buyer has checked off shows as complete. The section header shows "X/Y" so the REALTOR® can see progress at a glance.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Progress bar with percentage</div>
+              <div class="step-item-desc">A gold progress bar at the top of the checklist tab shows overall completion percentage. Updates live as the buyer checks things off.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tip"><strong>If you don't see progress:</strong> Wait 5–10 seconds and refresh the CRM page. The data syncs from Airtable on page load. Make sure the test client's email matches exactly what you used in the buyer hub.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open CRM → Checklist Tab ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: WORKFLOWS -->
+    <div class="step-page" id="step-8">
+      <div class="step-eyebrow">Step 8 of 9</div>
+      <div class="step-title">Test Workflows & Email Templates</div>
+      <div class="step-desc">The workflow system is the automation engine of the CRM. Assign a workflow to your test client and explore the pre-written emails that go out automatically.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">The 6 Workflows Available</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">First-Time Buyer 6–12 Months</div>
+            <div style="font-size:11px;color:var(--muted);">7 emails over 120 days</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Ready to Buy Now</div>
+            <div style="font-size:11px;color:var(--muted);">5 emails over 14 days</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Past Client Nurture</div>
+            <div style="font-size:11px;color:var(--muted);">5 emails over 365 days</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Seller Lead</div>
+            <div style="font-size:11px;color:var(--muted);">5 emails over 30 days</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Not Ready 12+ Months</div>
+            <div style="font-size:11px;color:var(--muted);">7 emails over 365 days</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Holiday Touch-Base</div>
+            <div style="font-size:11px;color:var(--muted);">2 emails, seasonal</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card" style="margin-top:16px;">
+        <div class="info-card-title">How to Test a Workflow</div>
+        <ul class="steps-list">
+          <li class="step-item">
+            <div class="step-circle">1</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Open the test client → Workflow tab</div>
+              <div class="step-item-desc">Select "Ready to Buy Now" from the dropdown — it's the shortest workflow with 5 steps over 14 days. Click Assign This Workflow.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">2</div>
+            <div class="step-item-body">
+              <div class="step-item-title">See the scheduled emails appear</div>
+              <div class="step-item-desc">All 5 emails show with their due dates. Click Send Email on any step to open it in your email app — the subject and body are already written with the client's name filled in.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">3</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Connect your email for automatic sending</div>
+              <div class="step-item-desc">Click Connect Email in the sidebar. The 4-step wizard connects your Gmail or Outlook through EmailJS. After connecting, due emails fire automatically every morning when you open the CRM.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-circle">4</div>
+            <div class="step-item-body">
+              <div class="step-item-title">Check the Templates tab for standalone emails</div>
+              <div class="step-item-desc">Click the Templates tab in the header to see all 9 standalone email templates — new client welcome, pre-approval reminder, offer congratulations, closing day, and more. Each sends in one click.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tip"><strong>Every email includes an unsubscribe footer.</strong> If a client replies UNSUBSCRIBE, the REALTOR® toggles the Unsubscribed switch in the client's Info tab — all emails to that client are then blocked automatically.</div>
+
+      <div class="action-row">
+        <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open CRM → Workflow Tab ↗</a>
+        <button class="btn-nav" onclick="nextStep()">Next Step →</button>
+      </div>
+    </div>
+
+    <!-- STEP 9: ALL DONE -->
+    <div class="step-page" id="step-9">
+      <div class="step-eyebrow">Complete</div>
+      <div class="step-title">You've Seen the Full System</div>
+      <div class="step-desc">You've now walked through everything — from generating a partner link to seeing buyer checklist progress in the CRM. Here's a quick recap of the complete flow.</div>
+
+      <div class="info-card">
+        <div class="info-card-title">The Complete Journey</div>
+        <ul class="steps-list">
+          <li class="step-item"><div class="step-circle" style="background:var(--green-dim);border-color:var(--green);color:var(--green);">✓</div><div class="step-item-body"><div class="step-item-title">You generate a REALTOR®'s partner link</div><div class="step-item-desc">Partner Generator creates their personalized CRM link and pre-written outreach in seconds.</div></div></li>
+          <li class="step-item"><div class="step-circle" style="background:var(--green-dim);border-color:var(--green);color:var(--green);">✓</div><div class="step-item-body"><div class="step-item-title">REALTOR® creates an account and sets up their hub</div><div class="step-item-desc">One login, one link, everything in one place — CRM, Buyer Hub, and email templates.</div></div></li>
+          <li class="step-item"><div class="step-circle" style="background:var(--green-dim);border-color:var(--green);color:var(--green);">✓</div><div class="step-item-body"><div class="step-item-title">REALTOR® adds clients and assigns workflows</div><div class="step-item-desc">Follow-up emails schedule automatically and fire from their own email address every morning.</div></div></li>
+          <li class="step-item"><div class="step-circle" style="background:var(--green-dim);border-color:var(--green);color:var(--green);">✓</div><div class="step-item-body"><div class="step-item-title">REALTOR® shares the Buyer Hub with each client</div><div class="step-item-desc">One tap from the Share Hub tab sends a personalized link. The buyer opens it immediately — no login required.</div></div></li>
+          <li class="step-item"><div class="step-circle" style="background:var(--green-dim);border-color:var(--green);color:var(--green);">✓</div><div class="step-item-body"><div class="step-item-title">Buyer checks off their 46-step checklist</div><div class="step-item-desc">Progress saves to Airtable automatically. The REALTOR® sees every completed step in the CRM Checklist tab in real time.</div></div></li>
+        </ul>
+      </div>
+
+      <div class="done-banner">
+        <h2>Making Homeownership Simple.</h2>
+        <p>This system positions you as the most organized, most helpful mortgage lender your REALTOR® partners have ever worked with. That's the Bank on Brooke difference.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a class="btn-primary" href="https://buyerhub.bankonbrooke.studio/BankOnBrooke_CRM.html" target="_blank">Open the CRM</a>
+          <a class="btn-secondary" style="border-color:rgba(240,230,216,0.3);color:var(--cream);" href="https://buyerhub.bankonbrooke.studio/BrookePartnerGenerator.html" target="_blank">Partner Generator</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end layout -->
+
+<script>
+let currentStep = 0;
+const totalSteps = 9;
+const completed = new Set();
+
+function goToStep(n, btn) {
+  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  document.getElementById('nav-' + n).classList.add('active');
+  currentStep = n;
+  window.scrollTo(0, 0);
+  updateProgress();
+}
+
+function nextStep() {
+  completed.add(currentStep);
+  document.getElementById('nav-' + currentStep).classList.add('done');
+  if (currentStep < totalSteps) goToStep(currentStep + 1, null);
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round(completed.size / totalSteps * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = completed.size + ' of ' + totalSteps + ' steps complete';
+}
+</script>
+</body>
+</html>

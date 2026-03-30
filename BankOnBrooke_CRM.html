@@ -946,6 +946,113 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   </div>
 </div>
 
+
+<!-- HELP & FAQ MODAL -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-card" style="max-width:600px;">
+    <div class="modal-header">
+      <h2 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--text);">Help & FAQ</h2>
+      <button class="modal-close" onclick="closeModal('helpModal')">×</button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">Getting Started</div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do I add a client?</div>
+            <div style="color:var(--muted);font-size:16px;transition:transform 0.2s;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Click <strong style="color:var(--text);">+ Add Client</strong> in the sidebar or the top right of the client list. Fill in their name, email, phone, and select their pipeline stage. Click Save — they appear in your client list immediately.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">What are pipeline stages?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;"><strong style="color:var(--text);">Buyer Lead</strong> — someone interested but not started. <strong style="color:var(--text);">Pre-Approval</strong> — working on getting approved. <strong style="color:var(--text);">Home Search</strong> — actively looking. <strong style="color:var(--text);">Under Contract</strong> — offer accepted. <strong style="color:var(--text);">Closed</strong> — keys in hand. <strong style="color:var(--text);">Seller Lead</strong> — a listing client.</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">Workflows & Emails</div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do workflows work?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Open a client → click the <strong style="color:var(--text);">Workflow</strong> tab → select a workflow → click Assign. The system schedules follow-up emails automatically. Each morning when you open the CRM, any emails due that day fire automatically from your connected email address.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do I connect my email for automatic sending?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Click <strong style="color:var(--text);">Connect Email</strong> in the sidebar. The 4-step wizard connects your Gmail or Outlook through EmailJS. Takes about 2 minutes. After that, workflow emails send automatically every morning from your address — you never have to click anything.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">Can I send an email manually without a workflow?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Yes — open any client and click the <strong style="color:var(--text);">Emails</strong> tab. Every pre-written template is there. Click <strong style="color:var(--text);">Send</strong> and it opens in your email app already addressed and written. You can edit it before sending.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">What happens if a client unsubscribes?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Every email has an unsubscribe footer. If a client replies with UNSUBSCRIBE, open their profile → Info tab → toggle the <strong style="color:var(--text);">Unsubscribed</strong> switch on. All emails to them will be blocked and a red warning shows on their card.</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">Buyer Hub</div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do I send a buyer their hub link?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Open the client → click the <strong style="color:var(--text);">Share Hub</strong> tab → use the <strong style="color:var(--text);">💬 Text</strong> or <strong style="color:var(--text);">✉️ Email</strong> button. A pre-written message with their personalized link opens in your messages or email app. One tap and it sends.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do I see what my buyer has checked off?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Open the client → click the <strong style="color:var(--text);">Checklist</strong> tab. You see all 46 steps organized by section with checkmarks on everything they have completed. It updates automatically as they check things off in their hub.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">How do I set up my Buyer Hub profile?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Click <strong style="color:var(--text);">Buyer Hub</strong> in the top navigation. Fill in your name, company, phone, and email. Upload your headshot. Add your featured listings. Click <strong style="color:var(--text);">Save Profile</strong> — your buyer link is generated and ready to share.</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">Account</div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;border-bottom:0.5px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">Can I use this on my phone?</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Yes. Open your CRM link in Safari or Chrome on your phone. Tap the share button and select <strong style="color:var(--text);">Add to Home Screen</strong> — it works like an app. Your login session stays active for 30 days so you stay logged in automatically.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaqItem(this)" style="cursor:pointer;padding:10px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">Need help? Contact Brooke.</div>
+            <div style="color:var(--muted);font-size:16px;">▾</div>
+          </div>
+          <div class="faq-answer" style="display:none;font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6;">Questions about the CRM or your mortgage pipeline? Reach out at <a href="https://bankonbrooke.studio/contact" target="_blank" style="color:var(--gold);">bankonbrooke.studio/contact</a> or call directly. Brooke is here to help.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -3001,6 +3108,21 @@ function showClientListView() {
   if(cl) cl.style.display='block';
 }
 
+
+
+function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+
+function openHelpModal() {
+  document.getElementById('helpModal').classList.add('show');
+}
+
+function toggleFaqItem(item) {
+  const answer = item.querySelector('.faq-answer');
+  const arrow = item.querySelector('div > div:last-child');
+  const isOpen = answer.style.display === 'block';
+  answer.style.display = isOpen ? 'none' : 'block';
+  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
 
 function toggleCrmOnboarding() {
   document.getElementById('onboardingWrap').classList.toggle('open');
