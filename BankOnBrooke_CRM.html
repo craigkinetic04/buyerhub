@@ -280,6 +280,18 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 /* ── BUYER HUB PAGE (full embed) ── */
 .hub-page-wrap{background:var(--white);border-radius:14px;overflow:hidden;min-height:600px;}
 .hub-iframe-note{text-align:center;padding:60px 20px;color:var(--gray);}
+
+/* ── UNSUBSCRIBED ── */
+.unsub-badge{display:inline-flex;align-items:center;gap:4px;background:var(--red-dim,rgba(220,53,69,0.1));color:var(--red,#dc3545);font-size:10px;font-weight:700;letter-spacing:0.5px;padding:3px 8px;border-radius:20px;border:1px solid rgba(220,53,69,0.25);}
+.unsub-warning{background:rgba(220,53,69,0.06);border:1px solid rgba(220,53,69,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#dc3545;margin-bottom:12px;line-height:1.5;}
+.unsub-toggle-wrap{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);margin-top:4px;}
+.unsub-toggle-label{font-size:13px;color:var(--navy);flex:1;}
+.unsub-toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.unsub-toggle input{opacity:0;width:0;height:0;}
+.unsub-slider{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:20px;transition:0.2s;}
+.unsub-slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.2s;}
+.unsub-toggle input:checked + .unsub-slider{background:#dc3545;}
+.unsub-toggle input:checked + .unsub-slider:before{transform:translateX(18px);}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -490,6 +502,11 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     <button class="detail-close" onclick="closeDetail()">×</button>
   </div>
   <div class="detail-body">
+
+    <!-- UNSUBSCRIBED WARNING -->
+    <div class="unsub-warning" id="unsubWarning" style="display:none;">
+      ⛔ This client has unsubscribed. All emails are blocked. Remove the unsubscribe flag in the Info tab to resume sending.
+    </div>
 
     <!-- CLIENT TABS -->
     <div class="client-tabs" id="clientTabsRow">
@@ -1658,6 +1675,10 @@ function openDetail(id) {
   document.getElementById('dContractDate').value     = c.ContractDate||c.contractDate||'';
   document.getElementById('dCloseDate').value        = c.CloseDate||c.closeDate||'';
   document.getElementById('dNotes').value            = c.Notes||c.notes||'';
+  const unsubChk = document.getElementById('detailUnsubscribed');
+  if (unsubChk) unsubChk.checked = !!(c.Unsubscribed);
+  const unsubWarn = document.getElementById('unsubWarning');
+  if (unsubWarn) unsubWarn.style.display = c.Unsubscribed ? 'block' : 'none';
 
   renderTemplates(c);
   renderWorkflowPanel(c);
@@ -2014,9 +2035,13 @@ async function autoSendDueEmails(forceSend) {
       const email = c.Email || c.email || '';
       if (!email) continue;
 
+      // Skip unsubscribed clients
+      if (c.Unsubscribed) continue;
+
       const r       = { name: REALTOR_NAME, phone: c.Phone || c.phone || '' };
       const subject = tpl.subject(c, r);
-      const body    = tpl.body(c, r);
+      const bodyRaw = tpl.body(c, r);
+      const body    = bodyRaw + '\n\n---\nTo stop receiving these emails, reply with UNSUBSCRIBE. If you receive an UNSUBSCRIBE reply, open this client in your CRM and mark them as unsubscribed so no further emails are sent.';
 
       const ok = await sendEmailViaEJS(email, subject, body);
       if (ok) {
@@ -2357,9 +2382,11 @@ function fireWorkflowStep(clientId, stepIdx) {
   if (step.type === 'email') {
     const tpl = WF_EMAILS[step.id];
     if (!tpl) { showToast('Email template not found.','error'); return; }
+    if (c.Unsubscribed) { showToast('This client has unsubscribed — email blocked.','error'); return; }
     const r = { name: REALTOR_NAME, phone: '' };
     const subject = encodeURIComponent(tpl.subject(c, r));
-    const body    = encodeURIComponent(tpl.body(c, r));
+    const bodyRaw = tpl.body(c, r);
+    const body    = encodeURIComponent(bodyRaw + '\n\n---\nTo stop receiving these emails, reply with UNSUBSCRIBE. If you receive an UNSUBSCRIBE reply, open this client in your CRM and mark them as unsubscribed so no further emails are sent.');
     const email   = c.Email || c.email || '';
     if (!email) { showToast('No email address for this client.','error'); return; }
     window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
@@ -2381,6 +2408,22 @@ function fireWorkflowStep(clientId, stepIdx) {
     document.getElementById('wfNotification').classList.remove('show');
   }
   showToast('Step completed!','success');
+}
+
+
+function toggleUnsubscribed(checkbox) {
+  if (!editingId) return;
+  const idx = clients.findIndex(c => c.id === editingId);
+  if (idx < 0) return;
+  clients[idx].Unsubscribed = checkbox.checked;
+  saveClients();
+  if (!IS_TEST_MODE) saveClientToAirtable(clients[idx], editingId);
+  // Update warning banner
+  const warning = document.getElementById('unsubWarning');
+  if (warning) warning.style.display = checkbox.checked ? 'block' : 'none';
+  // Refresh client list to show badge
+  renderClients();
+  showToast(checkbox.checked ? 'Client marked as unsubscribed — emails blocked.' : 'Unsubscribe removed — emails enabled.', checkbox.checked ? 'error' : 'success');
 }
 
 function renderWorkflowPanel(client) {
@@ -2569,7 +2612,7 @@ function sendTemplate(templateId, clientId) {
   const r = { name: REALTOR_NAME, email: '' };
   const subject = t.subject(c);
   const bodyRaw = t.body(c, r);
-  const body    = bodyRaw + '\n\n---\nTo stop receiving emails from ' + REALTOR_NAME + ', reply with UNSUBSCRIBE.';
+  const body    = (clients.find(x=>x.id===editingId)||{}).Unsubscribed ? null : bodyRaw + '\n\n---\nTo stop receiving these emails, reply with UNSUBSCRIBE. If you receive an UNSUBSCRIBE reply, open this client in your CRM and mark them as unsubscribed so no further emails are sent.';
 
   // Open in default email client
   const mailtoLink = `mailto:${c.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
