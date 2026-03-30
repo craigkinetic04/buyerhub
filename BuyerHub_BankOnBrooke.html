@@ -327,8 +327,8 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
       <div class="modal-step">
         <div class="modal-step-icon">🔗</div>
         <div class="modal-step-body">
-          <div class="modal-step-title">3. Copy your buyer link and send it</div>
-          <div class="modal-step-desc">The green Setup Mode banner has your buyer link. Copy it and text it to every buyer you're working with. One link works for all your buyers — each person's experience is private.</div>
+          <div class="modal-step-title">3. Send your buyer link</div>
+          <div class="modal-step-desc">The green Setup Mode banner has your buyer link with Send via Text and Send via Email buttons. Tap either one to send a pre-written message straight to your buyer. One link works for all your buyers — each person's experience is private.</div>
         </div>
       </div>
       <div class="modal-step">
@@ -517,18 +517,23 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="ob-step"><div class="ob-num">1</div><div class="ob-body"><div class="ob-title">Set up your profile first</div><div class="ob-desc">Fill in your name, company, phone, and email. Click Upload Photo or Logo to add your headshot — your photo will show at the top of every buyer's hub. Click Save Profile when done.</div></div></div>
         <div class="ob-step"><div class="ob-num">2</div><div class="ob-body"><div class="ob-title">Add your featured listings</div><div class="ob-desc">Click "+ Add a Featured Listing" and fill in the details. Add a Zillow link so buyers can view full photos. Changes save instantly and appear for all your buyers immediately.</div></div></div>
         <div class="ob-step"><div class="ob-num">3</div><div class="ob-body"><div class="ob-title">Remove a listing anytime</div><div class="ob-desc">Each listing card has a small trash icon in the bottom right. Tap it to remove the listing instantly — useful when a home goes under contract.</div></div></div>
-        <div class="ob-step"><div class="ob-num">4</div><div class="ob-body"><div class="ob-title">Copy your buyer link</div><div class="ob-desc">The Setup Mode banner at the top has your buyer link. Click "Copy Buyer Link" and text it to your buyers. The same link works for every buyer — each person's checklist and favorites are completely private.</div></div></div>
+        <div class="ob-step"><div class="ob-num">4</div><div class="ob-body"><div class="ob-title">Send your buyer link</div><div class="ob-desc">The Setup Mode banner at the top has your buyer link. Use the "Send via Text" or "Send via Email" button to send a pre-written message with the link directly to your buyers. Or tap "Copy" to copy it manually. The same link works for every buyer — each person's checklist and favorites are completely private.</div></div></div>
         <div class="ob-step"><div class="ob-num">5</div><div class="ob-body"><div class="ob-title">You'll get an email when a buyer saves a listing</div><div class="ob-desc">When a buyer taps the heart on one of your listings an automatic email goes to you with their name and the property they saved. No need to check anything — it comes straight to your inbox.</div></div></div>
         <div class="ob-step"><div class="ob-num">6</div><div class="ob-body"><div class="ob-title">Bookmark this page</div><div class="ob-desc">This is your private setup link. Bookmark it on your phone (tap Share then Add to Home Screen) so you can open it anytime to add listings or grab your buyer link. Never share this link with buyers.</div></div></div>
       </div>
     </div>
 
     <div class="setup-banner" id="setupBanner">
-      <p><strong>Setup Mode</strong> — Add your listings below. They appear for all your buyers instantly. When ready, copy your buyer link and send it to your buyers.</p>
+      <p><strong>Setup Mode</strong> — Fill in your profile below, add listings, then send your buyer link.</p>
       <div class="buyer-link-row">
-        <div class="buyer-link-box" id="buyerLinkDisplay">Building your link...</div>
-        <button class="copy-link-btn" id="copyLinkBtn" onclick="copyBuyerLink()">Copy Buyer Link</button>
+        <div class="buyer-link-box" id="buyerLinkDisplay">Save your profile to generate your buyer link</div>
+        <button class="copy-link-btn" id="copyLinkBtn" onclick="copyBuyerLink()">📋 Copy</button>
       </div>
+      <div id="buyerShareBtns" style="display:none;margin-top:10px;display:none;gap:8px;flex-wrap:wrap;">
+        <a id="buyerSmsBtn" href="#" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--cream);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;">💬 Send via Text</a>
+        <a id="buyerEmailBtn" href="#" style="display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:var(--cream);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;white-space:nowrap;">✉️ Send via Email</a>
+      </div>
+      <div style="font-size:11px;color:rgba(240,230,216,0.5);margin-top:8px;">This is your private setup link — never share this with buyers. Use the share buttons above to send the buyer version.</div>
     </div>
 
     <div class="setup-profile" id="setupProfile">
@@ -749,6 +754,28 @@ function buildBuyerLink(){
   const l=HUB+'?'+q.toString();
   document.getElementById('buyerLinkDisplay').textContent=l;
   document.getElementById('buyerLinkDisplay').dataset.link=l;
+
+  // Build share buttons on load too
+  const realtorName = P.get('name') || 'Your REALTOR®';
+  const smsOnLoad = encodeURIComponent(
+    'Hi! I set up a free resource just for you to help with your home search.\n\n' +
+    'It has a step-by-step homebuying checklist, featured listings I want you to see, and an Oklahoma property search all in one place.\n\n' +
+    'Open this link anytime:\n' + l + '\n\nLet me know if you have any questions!'
+  );
+  const emailSubjectLoad = encodeURIComponent('Your Personal Buyer Hub is Ready!');
+  const emailBodyLoad = encodeURIComponent(
+    'Hi!\n\nI created a personalized resource just for you to help with your home search.\n\n' +
+    'It includes:\n• A step-by-step homebuying checklist\n• Featured listings I think you should see\n' +
+    '• An Oklahoma property search on Zillow, Realtor.com & Redfin\n' +
+    '• A full FAQ covering pre-approval, down payment assistance, and more\n\n' +
+    'Your personal link:\n' + l + '\n\nBookmark it — your checklist progress saves automatically.\n\n' + realtorName
+  );
+  const smsBtnLoad = document.getElementById('buyerSmsBtn');
+  const emailBtnLoad = document.getElementById('buyerEmailBtn');
+  const shareBtnsLoad = document.getElementById('buyerShareBtns');
+  if(smsBtnLoad) smsBtnLoad.href = 'sms:?body=' + smsOnLoad;
+  if(emailBtnLoad) emailBtnLoad.href = 'mailto:?subject=' + emailSubjectLoad + '&body=' + emailBodyLoad;
+  if(shareBtnsLoad) shareBtnsLoad.style.cssText = 'display:flex;margin-top:10px;gap:8px;flex-wrap:wrap;';
 }
 
 
@@ -1131,7 +1158,7 @@ function saveProfile(){
   // Show share buttons and set text/email links
   const shareBtns = document.getElementById('buyerShareBtns');
   if(shareBtns){
-    shareBtns.style.display='flex';
+    shareBtns.style.cssText='display:flex;margin-top:10px;gap:8px;flex-wrap:wrap;';
     const realtorName = document.getElementById('spName').value.trim() || 'Your REALTOR®';
     const smsText = encodeURIComponent(
       'Hi! I set up a free resource just for you to help with your home search.\n\n' +
