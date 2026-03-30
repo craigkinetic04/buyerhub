@@ -807,7 +807,7 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
 
     <div class="sidebar-card">
       <h3>Quick Actions</h3>
-      <button onclick="openTemplatesModal()" style="width:100%;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--gold-dim)'" onmouseout="this.style.background='var(--light)'">
+      <button onclick="openTemplatesModal()" style="width:100%;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:13px;color:var(--text);cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--gold-dim)'" onmouseout="this.style.background='var(--light)'">
         ✉️ View All Email Templates
       </button>
     </div>
@@ -815,28 +815,6 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
 
   <!-- CONTENT -->
   <div class="content">
-
-    <!-- CRM ONBOARDING — shows in test mode and for new REALTORs -->
-    <div class="crm-onboarding" id="onboardingWrap">
-      <div class="crm-ob-head" onclick="toggleCrmOnboarding()">
-        <div class="crm-ob-head-left">
-          <div class="crm-ob-icon">📖</div>
-          <div>
-            <div class="crm-ob-title">How to Use Your Client CRM</div>
-            <div class="crm-ob-sub">Tap to expand — reference this anytime</div>
-          </div>
-        </div>
-        <span class="crm-ob-chevron">▼</span>
-      </div>
-      <div class="crm-ob-body">
-        <div class="crm-ob-step"><div class="crm-ob-num">1</div><div><div class="crm-ob-step-title">Add your clients</div><div class="crm-ob-step-desc">Click <b>+ Add Client</b> to create a client profile. Fill in their name, email, phone, budget, and stage. The stage tells you where they are in the buying or selling process.</div></div></div>
-        <div class="crm-ob-step"><div class="crm-ob-num">2</div><div><div class="crm-ob-step-title">Assign a workflow</div><div class="crm-ob-step-desc">Open any client, scroll to the <b>Workflow</b> section, and pick the workflow that matches their situation — First-Time Buyer, Ready to Buy Now, Past Client, and more. Preview the steps before assigning. Once assigned, follow-up emails schedule automatically.</div></div></div>
-        <div class="crm-ob-step"><div class="crm-ob-num">3</div><div><div class="crm-ob-step-title">Connect your email for automatic sending</div><div class="crm-ob-step-desc">In the left sidebar click <b>Connect My Email</b>. The 4-step wizard walks you through connecting your Gmail or Outlook. Takes 2 minutes. After that, workflow emails send automatically from your address every morning — you never have to click anything.</div></div></div>
-        <div class="crm-ob-step"><div class="crm-ob-num">4</div><div><div class="crm-ob-step-title">Track progress on each client</div><div class="crm-ob-step-desc">Open any client to see their workflow progress — which emails have been sent, which are upcoming, and which are overdue. Use <b>Mark Done</b> to manually complete a step. Use <b>Send Email</b> to send a step immediately without waiting for the due date.</div></div></div>
-        <div class="crm-ob-step"><div class="crm-ob-num">5</div><div><div class="crm-ob-step-title">Send follow-up emails manually anytime</div><div class="crm-ob-step-desc">Open a client and scroll to <b>Follow-Up Templates</b>. Every pre-written email template is there. Click <b>Send</b> to open it in your email app pre-filled with the client's name and your signature. Use these anytime outside of the workflow schedule.</div></div></div>
-        <div class="crm-ob-step"><div class="crm-ob-num">6</div><div><div class="crm-ob-step-title">Use the Pipeline to stay organized</div><div class="crm-ob-step-desc">The left sidebar shows all your clients organized by stage. Click any stage to filter your view. The Overview box shows your totals at a glance. The Follow-Ups number shows clients in stages that need active attention.</div></div></div>
-      </div>
-    </div>
 
     <div class="content-header">
       <!-- DASHBOARD -->
@@ -878,7 +856,34 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
 
 <!-- BUYER HUB PLATFORM PAGE -->
 <div id="platform-hub" class="platform-page">
-  <div style="max-width:1100px;margin:0 auto;padding:24px 20px 60px;">
+<div class="main">
+  <!-- SIDEBAR (hub tab) -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <h3>Pipeline</h3>
+      <div class="stage-filter">
+        <button class="stage-btn" onclick="switchPlatformTab('crm',document.querySelectorAll('.platform-tab')[0])">← Back to Clients</button>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Overview</h3>
+      <div class="stat-grid">
+        <div class="stat-box"><span class="stat-num" id="hub-stat-total">—</span><div class="stat-label">Total Clients</div></div>
+        <div class="stat-box"><span class="stat-num" id="hub-stat-active">—</span><div class="stat-label">Active</div></div>
+        <div class="stat-box"><span class="stat-num" id="hub-stat-closed">—</span><div class="stat-label">Closed</div></div>
+        <div class="stat-box"><span class="stat-num" id="hub-stat-followup">—</span><div class="stat-label">Follow-Ups</div></div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Quick Actions</h3>
+      <button onclick="openTemplatesModal()" style="width:100%;background:var(--light);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Lato',sans-serif;font-size:13px;color:var(--text);cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='var(--gold-dim)'" onmouseout="this.style.background='var(--light)'">
+        ✉️ View All Email Templates
+      </button>
+    </div>
+  </div>
+  <!-- HUB CONTENT -->
+  <div class="content-area">
+  <div style="max-width:860px;margin:0 auto;padding:0 0 60px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);">Your Buyer Hub</div>
@@ -944,7 +949,10 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
       </div>
     </div>
   </div>
-</div>
+</div><!-- end max-width wrapper -->
+</div><!-- end content-area -->
+</div><!-- end main grid -->
+</div><!-- end platform-hub -->
 
 
 <!-- HELP & FAQ MODAL -->
@@ -1561,7 +1569,15 @@ function switchPlatformTab(tab, btn) {
   const page = document.getElementById('platform-' + tab);
   if (page) page.classList.add('active');
   if (btn) btn.classList.add('active');
-  if (tab === 'hub') loadHubProfileFromStorage();
+  if (tab === 'hub') {
+    loadHubProfileFromStorage();
+    // Sync sidebar stats on hub page
+    const getStage = c => stageKey(c.Stage||c.stage||'lead');
+    const t = document.getElementById('hub-stat-total'); if(t) t.textContent = clients.length;
+    const a = document.getElementById('hub-stat-active'); if(a) a.textContent = clients.filter(c=>getStage(c)!=='closed').length;
+    const cl = document.getElementById('hub-stat-closed'); if(cl) cl.textContent = clients.filter(c=>getStage(c)==='closed').length;
+    const f = document.getElementById('hub-stat-followup'); if(f) f.textContent = clients.filter(c=>['contract','preapproval'].includes(getStage(c))).length;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
