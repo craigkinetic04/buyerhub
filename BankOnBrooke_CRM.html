@@ -1318,15 +1318,23 @@ function renderShareHubTab() {
   const params = new URLSearchParams();
   params.set('mode', 'buyer');
   params.set('rid', rid);
-  const hubName = localStorage.getItem('hub_name_' + rid) || REALTOR_NAME;
+  const hubName    = localStorage.getItem('hub_name_' + rid) || REALTOR_NAME;
   const hubCompany = localStorage.getItem('hub_company_' + rid) || '';
-  const hubPhone = localStorage.getItem('hub_phone_' + rid) || '';
-  const hubEmail = localStorage.getItem('hub_email_' + rid) || '';
-  if (hubName) params.set('name', hubName);
+  const hubPhone   = localStorage.getItem('hub_phone_' + rid) || '';
+  const hubEmail   = localStorage.getItem('hub_email_' + rid) || '';
+  if (hubName)    params.set('name',    hubName);
   if (hubCompany) params.set('company', hubCompany);
-  if (hubPhone) params.set('phone', hubPhone);
-  if (hubEmail) params.set('email', hubEmail);
+  if (hubPhone)   params.set('phone',   hubPhone);
+  if (hubEmail)   params.set('email',   hubEmail);
   params.set('photo', '__airtable__');
+
+  // Embed buyer's name and email from the CRM client record
+  // This means the Buyer Hub knows exactly who this link is for
+  // and pre-fills their login — ensuring their email matches the CRM exactly
+  const clientNameFull  = c.Name  || c.name  || '';
+  const clientEmailFull = c.Email || c.email || '';
+  if (clientNameFull)  params.set('buyerName',  clientNameFull);
+  if (clientEmailFull) params.set('buyerEmail', clientEmailFull);
 
   const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
   const buyerLink = HUB_BASE + '?' + params.toString();
