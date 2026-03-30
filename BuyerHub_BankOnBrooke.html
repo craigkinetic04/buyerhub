@@ -1009,7 +1009,7 @@ async function loadProgress(email){
         document.querySelectorAll('.item').forEach((el,i)=>{if(c.includes(i))el.classList.add('checked');});
         updateProgress();updateSectionCounts();
       }
-      if(rec.fields.Favorites)JSON.parse(rec.fields.Favorites).forEach(f=>favs.add(f));
+      // Favorites stored in separate Favorites table — not in Buyers
     }
   }catch(e){console.log('load err',e);}
 }
@@ -1019,13 +1019,21 @@ async function upsertBuyer(name,email){
     const f=encodeURIComponent(`AND({Email}="${email}",{RealtorID}="${RID}")`);
     const r=await fetch(`${AT_URL}/Buyers?filterByFormula=${f}&db=hub`,{headers:AT_H});
     const d=await r.json();
-    if(d.records&&d.records.length>0){buyer.atId=d.records[0].id;}
-    else{
-      const cr=await fetch(`${AT_URL}/Buyers?db=hub`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields:{Name:name,Email:email,RealtorID:RID,ChecklistProgress:'[]',Favorites:'[]',CompletedCount:0}}]})});
+    console.log('Buyer lookup response:', JSON.stringify(d).slice(0,300));
+    if(d.records&&d.records.length>0){
+      buyer.atId=d.records[0].id;
+      console.log('Existing buyer found:', buyer.atId);
+    } else {
+      // Only send fields that definitely exist — minimal safe set
+      const fields = { Name: name, Email: email, RealtorID: RID, ChecklistProgress: '[]' };
+      console.log('Creating buyer with fields:', JSON.stringify(fields));
+      const cr=await fetch(`${AT_URL}/Buyers?db=hub`,{method:'POST',headers:AT_H,body:JSON.stringify({records:[{fields}]})});
       const cd=await cr.json();
+      console.log('Create buyer response:', JSON.stringify(cd).slice(0,300));
       if(cd.records)buyer.atId=cd.records[0].id;
+      else console.error('Buyer create failed:', JSON.stringify(cd));
     }
-  }catch(e){console.log('upsert err',e);}
+  }catch(e){console.error('upsert err',e);}
 }
 
 async function saveProgress(){
@@ -1039,7 +1047,7 @@ async function saveProgress(){
   }
   setSS('saving');
   try{
-    await fetch(`${AT_URL}/Buyers/${buyer.atId}?db=hub`,{method:'PATCH',headers:AT_H,body:JSON.stringify({fields:{ChecklistProgress:JSON.stringify(c),CompletedCount:c.length,Favorites:JSON.stringify([...favs])}})});
+    await fetch(`${AT_URL}/Buyers/${buyer.atId}?db=hub`,{method:'PATCH',headers:AT_H,body:JSON.stringify({fields:{ChecklistProgress:JSON.stringify(c),CompletedCount:c.length}})});
     setSS('saved');
   }catch(e){
     // Airtable failed but localStorage backup exists
