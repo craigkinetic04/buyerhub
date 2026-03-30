@@ -65,6 +65,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .header-partner{font-size:12px;color:var(--muted);padding:4px 10px;background:var(--surface2);border-radius:20px;border:1px solid var(--border2);}
 .header-cta{background:var(--gold);color:var(--navy-dark);font-family:'Inter',sans-serif;font-size:11px;font-weight:700;padding:7px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background 0.2s;}
 .header-cta:hover{background:var(--gold-light);}
+.add-client-btn{background:var(--gold);color:var(--navy-dark);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.add-client-btn:hover{background:var(--gold-light);}
 
 /* LOGOUT BUTTON */
 button[onclick="logout()"]{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'Inter',sans-serif;font-size:11px;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.2s;}
@@ -809,8 +811,10 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-card">
+      <button class="add-client-btn" onclick="openAddModal()" style="width:100%;margin-bottom:4px;">+ Add Client</button>
+    </div>
+    <div class="sidebar-card">
       <h3>Pipeline</h3>
-      <div class="stage-filter">
         <button class="stage-btn active" onclick="filterStage('all',this)">All Clients <span class="stage-count" id="cnt-all">0</span></button>
         <button class="stage-btn" onclick="filterStage('lead',this)">Buyer Lead <span class="stage-count" id="cnt-lead">0</span></button>
         <button class="stage-btn" onclick="filterStage('preapproval',this)">Pre-Approval <span class="stage-count" id="cnt-preapproval">0</span></button>
@@ -854,9 +858,12 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
     <div class="content-header">
       <!-- DASHBOARD -->
       <div id="dashboardView" style="display:none;">
-        <div class="dash-greeting">
-          <h2 id="dashGreeting">Welcome back.</h2>
-          <p id="dashSubtext">Loading your clients...</p>
+        <div class="dash-greeting" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2 id="dashGreeting">Welcome back.</h2>
+            <p id="dashSubtext">Loading your clients...</p>
+          </div>
+          <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
         </div>
         <div class="dash-stats">
           <div class="dash-stat"><div class="dash-stat-label">Active Clients</div><div class="dash-stat-num" id="ds-active">0</div><div class="dash-stat-sub">Currently managed</div></div>
