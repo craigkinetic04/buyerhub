@@ -223,6 +223,9 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 .upload-btn:hover{background:var(--gold-light);}
 .upload-btn-secondary{background:transparent;border:1.5px solid var(--border);color:var(--gray);font-family:'Lato',sans-serif;font-size:11px;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;}
 .photo-filename{font-size:12px;color:var(--gray);font-style:italic;}
+
+.partner-avatar-initials{width:40px;height:40px;border-radius:50%;background:var(--navy);border:2px solid var(--gold);display:none;align-items:center;justify-content:center;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;color:var(--gold);flex-shrink:0;}
+.partner-avatar-initials.visible{display:flex;}
 </style>
 
   <!-- Open Graph / Rich Link Preview -->
@@ -378,7 +381,8 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
 
 <div class="partner-bar">
   <div class="partner-inner">
-    <img class="partner-photo" id="partnerPhoto" src="" alt="REALTOR">
+    <img class="partner-photo" id="partnerPhoto" src="" alt="REALTOR" onerror="handlePhotoError(this)">
+    <div class="partner-avatar-initials" id="partnerInitials"></div>
     <div id="partnerInfo"><div class="partner-empty">Your REALTOR® partner information will appear here.</div></div>
   </div>
 </div>
@@ -530,9 +534,17 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
         <div class="form-field"><label>Your Phone</label><input type="text" id="spPhone" placeholder="(405) 555-0100"></div>
         <div class="form-field"><label>Your Email</label><input type="text" id="spEmail" placeholder="you@brokerage.com"></div>
         <div class="form-field full">
-          <label>Your Headshot or Logo — Paste a direct image link</label>
-          <input type="text" id="spPhoto" placeholder="https://example.com/your-photo.jpg">
-          <div style="font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5;">Paste a direct link to your photo. To get one: upload your photo to Google Drive, right-click → Share → Anyone with the link → copy the link. Or use your LinkedIn profile photo URL.</div>
+          <label>Your Headshot or Logo</label>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;">
+            <img id="spPhotoPreview" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;flex-shrink:0;" src="" alt="Preview">
+            <div>
+              <button type="button" onclick="document.getElementById('spPhotoFileInput').click()" style="background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;">📷 Upload Photo or Logo</button>
+              <div id="spPhotoName" style="font-size:11px;color:var(--gray);margin-top:5px;">No photo uploaded yet</div>
+            </div>
+          </div>
+          <input type="file" id="spPhotoFileInput" accept="image/*" style="display:none;" onchange="handleProfilePhotoUpload(this)">
+          <input type="hidden" id="spPhoto">
+          <div style="font-size:11px;color:var(--gray);line-height:1.6;">Upload from your phone camera roll, computer, or any device. Your photo saves automatically and appears at the top of every buyer's hub.</div>
         </div>
       </div>
       <button class="setup-save-btn" onclick="saveProfile()">Save Profile & Update Buyer Link</button>
@@ -686,7 +698,32 @@ window.addEventListener('load',async()=>{
     if(P.get('company')) document.getElementById('spCompany').value=P.get('company');
     if(P.get('phone')) document.getElementById('spPhone').value=P.get('phone');
     if(P.get('email')) document.getElementById('spEmail').value=P.get('email');
-    if(P.get('photo')) document.getElementById('spPhoto').value=P.get('photo');
+    const savedPhotoVal = P.get('photo');
+  const setupRid = P.get('rid') || RID || 'default';
+  if(savedPhotoVal) {
+    document.getElementById('spPhoto').value = savedPhotoVal;
+  }
+  // Try to show existing photo in setup panel
+  const localPhoto = localStorage.getItem('bob_photo_local_' + setupRid);
+  if(localPhoto) {
+    const prev = document.getElementById('spPhotoPreview');
+    if(prev){ prev.src = localPhoto; prev.style.display = 'block'; }
+    const nm = document.getElementById('spPhotoName');
+    if(nm) nm.textContent = 'Photo loaded from previous upload';
+    document.getElementById('spPhoto').value = localPhoto;
+  } else if(savedPhotoVal === '__airtable__' || savedPhotoVal === '__local__' || savedPhotoVal === '__stored__') {
+    // Try Airtable
+    loadPhotoFromAirtable(setupRid).then(function(atPic) {
+      if(atPic) {
+        localStorage.setItem('bob_photo_local_' + setupRid, atPic);
+        const prev = document.getElementById('spPhotoPreview');
+        if(prev){ prev.src = atPic; prev.style.display = 'block'; }
+        const nm = document.getElementById('spPhotoName');
+        if(nm) nm.textContent = 'Photo loaded from previous upload';
+        document.getElementById('spPhoto').value = atPic;
+      }
+    });
+  }
     buildBuyerLink();
     // Show onboarding elements
     const ow = document.getElementById('onboardingWrap');
@@ -709,11 +746,124 @@ function buildBuyerLink(){
   document.getElementById('buyerLinkDisplay').dataset.link=l;
 }
 
+
+
+function handleProfilePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Photo is too large. Please choose a photo under 5MB.');
+    return;
+  }
+
+  const nameEl = document.getElementById('spPhotoName');
+  if (nameEl) nameEl.textContent = 'Processing photo...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Compress image using canvas before storing
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 400; // max width/height in pixels
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      const compressed = canvas.toDataURL('image/jpeg', 0.7);
+
+      // Show preview immediately
+      const preview = document.getElementById('spPhotoPreview');
+      if (preview) { preview.src = compressed; preview.style.display = 'block'; }
+      if (nameEl) nameEl.textContent = file.name + ' — saved';
+
+      // Store compressed base64 in hidden field and localStorage backup
+      document.getElementById('spPhoto').value = compressed;
+      const rid = P.get('rid') || RID || 'default';
+      localStorage.setItem('bob_photo_local_' + rid, compressed);
+
+      // Save to Airtable Partners table immediately
+      savePhotoToAirtable(compressed, rid);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function savePhotoToAirtable(photoData, rid) {
+  if (!rid || rid === 'default') return;
+  try {
+    // Find the partner record by RealtorID
+    const filter = encodeURIComponent('{RealtorID}="' + rid + '"');
+    const res = await fetch('https://buyerhub-proxy.craig-6da.workers.dev/Partners?filterByFormula=' + filter + '&db=crm');
+    const data = await res.json();
+    if (data.records && data.records.length > 0) {
+      const recordId = data.records[0].id;
+      await fetch('https://buyerhub-proxy.craig-6da.workers.dev/Partners/' + recordId + '?db=crm', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { Photo: photoData } })
+      });
+    }
+  } catch(e) {
+    console.log('Photo save to Airtable failed — using localStorage backup:', e);
+  }
+}
+
+async function loadPhotoFromAirtable(rid) {
+  if (!rid || rid === 'default') return null;
+  try {
+    const filter = encodeURIComponent('{RealtorID}="' + rid + '"');
+    const res = await fetch('https://buyerhub-proxy.craig-6da.workers.dev/Partners?filterByFormula=' + filter + '&db=crm');
+    const data = await res.json();
+    if (data.records && data.records.length > 0 && data.records[0].fields.Photo) {
+      return data.records[0].fields.Photo;
+    }
+  } catch(e) {
+    console.log('Photo load from Airtable failed:', e);
+  }
+  return null;
+}
+
+function handlePhotoError(img) {
+  // Photo failed to load — show initials fallback instead
+  img.classList.remove('visible');
+  img.style.display = 'none';
+  const initialsEl = document.getElementById('partnerInitials');
+  if (initialsEl) {
+    const name = P.get('name') || '';
+    const parts = name.trim().split(' ').filter(Boolean);
+    const initials = parts.length >= 2 ? parts[0][0] + parts[parts.length-1][0] : parts[0] ? parts[0][0] : '?';
+    initialsEl.textContent = initials.toUpperCase();
+    initialsEl.classList.add('visible');
+  }
+}
+
 function renderPartnerBar(){
   const name=P.get('name'),co=P.get('company'),ph=P.get('phone'),em=P.get('email');
   let pic=P.get('photo');
-  // Retrieve stored photo if it was saved to sessionStorage
-  if(pic==='__stored__') pic=sessionStorage.getItem('bob_photo_'+(P.get('rid')||RID))||'';
+  const rid = P.get('rid') || RID || 'default';
+
+  // Load photo — try Airtable first, fall back to localStorage
+  if(pic==='__local__' || pic==='__stored__' || pic==='__airtable__' || !pic) {
+    // Check localStorage first (instant, no network)
+    const localPic = localStorage.getItem('bob_photo_local_' + rid);
+    if(localPic) {
+      pic = localPic;
+    } else {
+      // Load from Airtable asynchronously
+      loadPhotoFromAirtable(rid).then(function(atPic) {
+        if(atPic) {
+          localStorage.setItem('bob_photo_local_' + rid, atPic); // cache locally
+          const i = document.getElementById('partnerPhoto');
+          if(i) { i.src = atPic; i.classList.add('visible'); }
+        }
+      });
+      pic = ''; // will load async above
+    }
+  }
   if(!name)return;
   let h=`<div class="partner-name">${name}</div>`;
   if(co)h+=`<div class="partner-company">${co}</div>`;
@@ -722,7 +872,25 @@ function renderPartnerBar(){
   if(em)h+=`<a href="mailto:${em}">${em}</a>`;
   h+='</div>';
   document.getElementById('partnerInfo').innerHTML=h;
-  if(pic){const i=document.getElementById('partnerPhoto');i.src=pic;i.classList.add('visible');}
+  if(pic){
+    // Convert Google Drive share links to direct image URLs
+    let imgSrc = pic;
+    // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    const driveMatch = pic.match(/\/file\/d\/([^/]+)\//);
+    if(driveMatch) imgSrc = 'https://drive.google.com/uc?export=view&id=' + driveMatch[1];
+    // Format: https://drive.google.com/open?id=FILE_ID
+    const driveOpen = pic.match(/[?&]id=([^&]+)/);
+    if(driveOpen && pic.includes('drive.google.com') && !driveMatch) imgSrc = 'https://drive.google.com/uc?export=view&id=' + driveOpen[1];
+
+    const i=document.getElementById('partnerPhoto');
+    i.src=imgSrc;
+    i.classList.add('visible');
+    // Pre-load to check if it actually works
+    const testImg = new Image();
+    testImg.onload = function(){ i.src = imgSrc; };
+    testImg.onerror = function(){ handlePhotoError(i); };
+    testImg.src = imgSrc;
+  }
 }
 
 async function loginBuyer(){
@@ -942,8 +1110,15 @@ function saveProfile(){
     const v=document.getElementById('sp'+k.charAt(0).toUpperCase()+k.slice(1)).value.trim();
     if(v)q.set(k,v);
   });
-  const photo=document.getElementById('spPhoto').value.trim();
-  if(photo)q.set('photo',photo);
+  const photoVal = document.getElementById('spPhoto').value.trim();
+  if(photoVal && photoVal !== '__local__') {
+    // Photo is base64 — too long for URL, flag as airtable-stored
+    q.set('photo','__airtable__');
+    // Also save to Airtable now if not already saved
+    savePhotoToAirtable(photoVal, P.get('rid') || RID || 'default');
+  } else if(photoVal === '__local__') {
+    q.set('photo','__airtable__');
+  }
   const link=HUB+'?'+q.toString();
   document.getElementById('buyerLinkDisplay').textContent=link;
   document.getElementById('buyerLinkDisplay').dataset.link=link;
