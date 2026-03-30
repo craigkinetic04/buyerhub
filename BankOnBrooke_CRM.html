@@ -200,6 +200,16 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
 /* DETAIL FORM */
 .detail-section{margin-bottom:20px;}
 .detail-section h3{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+/* BROOKE REFERRAL */
+.brooke-section{background:rgba(196,154,120,0.06);border:1px solid rgba(196,154,120,0.25);border-radius:10px;padding:14px;margin-bottom:16px;}
+.brooke-section h3{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(196,154,120,0.2);}
+.brooke-chk-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;cursor:pointer;transition:border-color .15s;margin-bottom:8px;}
+.brooke-chk-row:last-of-type{margin-bottom:0;}
+.brooke-chk-row:hover{border-color:var(--gold);}
+.brooke-chk-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--gold);flex-shrink:0;margin-top:2px;cursor:pointer;}
+.brooke-chk-label{font-size:12px;font-weight:600;color:var(--text);line-height:1.4;}
+.brooke-chk-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.brooke-flag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(196,154,120,0.12);color:var(--gold);border:1px solid rgba(196,154,120,0.3);margin-right:5px;margin-bottom:4px;}
 .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 .full{grid-column:1/-1;}
 .field-group{display:flex;flex-direction:column;gap:5px;}
@@ -625,6 +635,17 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
         <div class="field-group"><label>Close Date</label><input type="date" id="mCloseDate"></div>
         <div class="field-group modal-full"><label>Notes</label><textarea id="mNotes" placeholder="Any important details about this client..."></textarea></div>
       </div>
+      <div class="brooke-section" style="margin-top:4px;">
+        <h3 style="color:var(--gold);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(196,154,120,0.2);">Brooke Contact Preferences</h3>
+        <label class="brooke-chk-row">
+          <input type="checkbox" id="mBrookeOk">
+          <div><div class="brooke-chk-label">Brooke may contact this client</div><div class="brooke-chk-sub">This client has given permission for Brooke to reach out about their home loan.</div></div>
+        </label>
+        <label class="brooke-chk-row">
+          <input type="checkbox" id="mBrookeReq">
+          <div><div class="brooke-chk-label">Client requested Brooke's contact</div><div class="brooke-chk-sub">The client has specifically asked to connect with Brooke. Checking this sends Brooke an email notification with this client's info.</div></div>
+        </label>
+      </div>
       <button class="modal-save" onclick="saveClient()">Save Client</button>
     </div>
   </div>
@@ -690,6 +711,17 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
         <div class="field-group"><label>Contract Date</label><input type="date" id="dContractDate"></div>
         <div class="field-group"><label>Close Date</label><input type="date" id="dCloseDate"></div>
         <div class="field-group full"><label>Notes</label><textarea id="dNotes"></textarea></div>
+      </div>
+      <div class="brooke-section">
+        <h3>Brooke Contact Preferences</h3>
+        <label class="brooke-chk-row">
+          <input type="checkbox" id="dBrookeOk">
+          <div><div class="brooke-chk-label">Brooke may contact this client</div><div class="brooke-chk-sub">This client has given permission for Brooke to reach out about their home loan.</div></div>
+        </label>
+        <label class="brooke-chk-row">
+          <input type="checkbox" id="dBrookeReq">
+          <div><div class="brooke-chk-label">Client requested Brooke's contact</div><div class="brooke-chk-sub">Checking this sends Brooke an email notification with this client's info.</div></div>
+        </label>
       </div>
       <button class="save-btn" onclick="updateClient()">Save Changes</button>
       <button class="delete-btn" onclick="deleteClient()">Remove Client</button>
@@ -1383,6 +1415,8 @@ async function saveClientToAirtable(data, existingId) {
   if (data.realtorEmail) fields.RealtorEmail = data.realtorEmail;
   fields.RealtorID   = REALTOR_ID;
   fields.RealtorName = REALTOR_NAME;
+  fields.BrookeOk    = data.brookeOk  === true;
+  fields.BrookeReq   = data.brookeReq === true;
 
   if (existingId) {
     const res = await fetch(`${AT_URL}/Clients/${existingId}?db=crm`, {
@@ -1508,6 +1542,8 @@ function openAddModal(id) {
       document.getElementById('mContractDate').value = c.contractDate || '';
       document.getElementById('mCloseDate').value    = c.closeDate || '';
       document.getElementById('mNotes').value        = c.notes || '';
+      document.getElementById('mBrookeOk').checked  = !!c.brookeOk;
+      document.getElementById('mBrookeReq').checked = !!c.brookeReq;
     }
   } else {
     ['mName','mPhone','mEmail','mBudget','mPreapproval','mReferral','mAddress','mNotes'].forEach(id => document.getElementById(id).value = '');
@@ -1515,6 +1551,8 @@ function openAddModal(id) {
     document.getElementById('mLoan').value  = '';
     document.getElementById('mContractDate').value = '';
     document.getElementById('mCloseDate').value    = '';
+    document.getElementById('mBrookeOk').checked  = false;
+    document.getElementById('mBrookeReq').checked = false;
   }
   modal.classList.add('show');
 }
@@ -1524,6 +1562,10 @@ function closeAddModal() { document.getElementById('addModal').classList.remove(
 async function saveClient() {
   const name = document.getElementById('mName').value.trim();
   if (!name) { showToast('Please enter a client name.','error'); return; }
+
+  const brookeOk  = document.getElementById('mBrookeOk').checked;
+  const brookeReq = document.getElementById('mBrookeReq').checked;
+  const prevBrookeReq = editingId ? !!((clients.find(x=>x.id===editingId)||{}).brookeReq) : false;
 
   const data = {
     id:           editingId || genId(),
@@ -1539,6 +1581,8 @@ async function saveClient() {
     contractDate: document.getElementById('mContractDate').value,
     closeDate:    document.getElementById('mCloseDate').value,
     notes:        document.getElementById('mNotes').value.trim(),
+    brookeOk,
+    brookeReq,
     realtorId:    REALTOR_ID,
     created:      editingId ? (clients.find(x=>x.id===editingId)||{}).created : new Date().toISOString(),
     updated:      new Date().toISOString(),
@@ -1558,6 +1602,8 @@ async function saveClient() {
     updateCounts();
     closeAddModal();
     showToast(editingId ? 'Client updated.' : 'Client added!','success');
+    // Notify Brooke only when "client requested" is newly checked
+    if (brookeReq && !prevBrookeReq) notifyBrooke(data);
   } catch(e) {
     showToast('Could not save — check your connection.','error');
   }
@@ -2041,6 +2087,10 @@ function openDetail(id) {
   if (unsubChk) unsubChk.checked = !!(c.Unsubscribed);
   const unsubWarn = document.getElementById('unsubWarning');
   if (unsubWarn) unsubWarn.style.display = c.Unsubscribed ? 'block' : 'none';
+  const dBrookeOk  = document.getElementById('dBrookeOk');
+  const dBrookeReq = document.getElementById('dBrookeReq');
+  if (dBrookeOk)  dBrookeOk.checked  = !!(c.BrookeOk  || c.brookeOk);
+  if (dBrookeReq) dBrookeReq.checked = !!(c.BrookeReq || c.brookeReq);
 
   renderTemplates(c);
   renderWorkflowPanel(c);
@@ -2067,6 +2117,9 @@ async function updateClient() {
   if (!editingId) return;
   const idx = clients.findIndex(x => x.id === editingId);
   if (idx < 0) return;
+  const prevBrookeReq = !!(clients[idx].BrookeReq || clients[idx].brookeReq);
+  const brookeOk  = !!(document.getElementById('dBrookeOk')||{}).checked;
+  const brookeReq = !!(document.getElementById('dBrookeReq')||{}).checked;
   clients[idx] = {
     ...clients[idx],
     name:         document.getElementById('dName').value.trim(),
@@ -2081,6 +2134,8 @@ async function updateClient() {
     contractDate: document.getElementById('dContractDate').value,
     closeDate:    document.getElementById('dCloseDate').value,
     notes:        document.getElementById('dNotes').value.trim(),
+    brookeOk,
+    brookeReq,
     updated:      new Date().toISOString(),
   };
   try {
@@ -2090,6 +2145,8 @@ async function updateClient() {
     if (newStage !== prevStage) {
       await sendStageChangeNotification(clients[idx], newStage);
     }
+    // Notify Brooke only when "client requested" is newly checked
+    if (brookeReq && !prevBrookeReq) notifyBrooke(clients[idx]);
     renderClients();
     updateCounts();
     document.getElementById('detailName').textContent = clients[idx].name;
@@ -2097,6 +2154,64 @@ async function updateClient() {
   } catch(e) {
     showToast('Could not save — check your connection.','error');
   }
+}
+
+async function notifyBrooke(client) {
+  const realtorName = REALTOR_NAME || 'Your REALTOR® partner';
+  const clientName  = client.Name || client.name || '';
+  const clientPhone = client.Phone || client.phone || '';
+  const clientEmail = client.Email || client.email || '';
+  const clientBudget = client.Budget || client.budget || '';
+  const clientLoan   = client.LoanType || client.loan || '';
+  const clientNotes  = client.Notes || client.notes || '';
+  const subject = `New Client Referral — ${clientName} has requested your contact`;
+  const htmlBody = `<div style="font-family:sans-serif;font-size:14px;line-height:1.7;color:#222;max-width:560px;">
+    <div style="background:#1B2A4A;padding:20px 24px;border-radius:10px 10px 0 0;">
+      <div style="font-size:18px;font-weight:700;color:#F0E6D8;font-family:Georgia,serif;">New Client Referral</div>
+      <div style="font-size:13px;color:rgba(240,230,216,0.6);margin-top:4px;">Bank on Brooke · Partner Notification</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e8e2db;border-top:none;border-radius:0 0 10px 10px;padding:24px;">
+      <p style="margin:0 0 16px;">Hi Brooke,</p>
+      <p style="margin:0 0 16px;"><strong>${realtorName}</strong> has a client who has <strong>requested to be connected with you</strong> about their home loan. Here are their details:</p>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px;">
+        <tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;width:36%;border-radius:4px;">Name</td><td style="padding:8px 12px;">${clientName}</td></tr>
+        ${clientPhone ? `<tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Phone</td><td style="padding:8px 12px;"><a href="tel:${clientPhone}" style="color:#C49A78;">${clientPhone}</a></td></tr>` : ''}
+        ${clientEmail ? `<tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Email</td><td style="padding:8px 12px;"><a href="mailto:${clientEmail}" style="color:#C49A78;">${clientEmail}</a></td></tr>` : ''}
+        ${clientBudget ? `<tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Budget</td><td style="padding:8px 12px;">${clientBudget}</td></tr>` : ''}
+        ${clientLoan ? `<tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Loan Interest</td><td style="padding:8px 12px;">${clientLoan}</td></tr>` : ''}
+        ${clientNotes ? `<tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Notes</td><td style="padding:8px 12px;">${clientNotes}</td></tr>` : ''}
+        <tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Referred by</td><td style="padding:8px 12px;">${realtorName}</td></tr>
+        <tr><td style="padding:8px 12px;background:#F7F3EE;font-weight:700;border-radius:4px;">Permission</td><td style="padding:8px 12px;">✅ Brooke may contact this client</td></tr>
+      </table>
+      <p style="margin:0;font-size:12px;color:#aaa;">Sent automatically from the Bank on Brooke Partner CRM.</p>
+    </div>
+  </div>`;
+
+  const fallbackBody = `Hi Brooke,\n\n${realtorName} has a client who requested to connect with you.\n\nClient: ${clientName}\nPhone: ${clientPhone||'—'}\nEmail: ${clientEmail||'—'}\nBudget: ${clientBudget||'—'}\nLoan Interest: ${clientLoan||'—'}\nNotes: ${clientNotes||'—'}\n\nPermission to contact: Yes\nReferred by: ${realtorName}`;
+
+  // Try sending via the Cloudflare worker (same endpoint used for workflow emails)
+  try {
+    const res = await fetch(`${AT_URL}/email?db=crm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to:      'bgagliardi@fbhl.com',
+        toName:  'Brooke Gagliardi-Young',
+        subject,
+        html:    htmlBody,
+        from:    `${realtorName} via Bank on Brooke CRM <noreply@bankonbrooke.studio>`,
+        replyTo: clientEmail || ''
+      })
+    });
+    if (res.ok) { showToast('Brooke notified by email ✓', 'success'); return; }
+  } catch(e) { /* fall through to mailto */ }
+
+  // Fallback: open pre-filled mailto
+  window.open(
+    `mailto:bgagliardi@fbhl.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fallbackBody)}`,
+    '_blank'
+  );
+  showToast('Email opened for Brooke', 'success');
 }
 
 async function deleteClient() {
