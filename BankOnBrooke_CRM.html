@@ -811,9 +811,6 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-card">
-      <button class="add-client-btn" onclick="openAddModal()" style="width:100%;margin-bottom:4px;">+ Add Client</button>
-    </div>
-    <div class="sidebar-card">
       <h3>Pipeline</h3>
         <button class="stage-btn active" onclick="filterStage('all',this)">All Clients <span class="stage-count" id="cnt-all">0</span></button>
         <button class="stage-btn" onclick="filterStage('lead',this)">Buyer Lead <span class="stage-count" id="cnt-lead">0</span></button>
@@ -856,14 +853,16 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
   <div class="content">
 
     <div class="content-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:18px;">
+        <div id="contentTitle" class="content-title" style="display:none;">All Clients</div>
+        <div id="dashHeaderTitle" style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text);">Dashboard</div>
+        <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
+      </div>
       <!-- DASHBOARD -->
       <div id="dashboardView" style="display:none;">
-        <div class="dash-greeting" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-          <div>
-            <h2 id="dashGreeting">Welcome back.</h2>
-            <p id="dashSubtext">Loading your clients...</p>
-          </div>
-          <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
+        <div class="dash-greeting">
+          <h2 id="dashGreeting">Welcome back.</h2>
+          <p id="dashSubtext">Loading your clients...</p>
         </div>
         <div class="dash-stats">
           <div class="dash-stat"><div class="dash-stat-label">Active Clients</div><div class="dash-stat-num" id="ds-active">0</div><div class="dash-stat-sub">Currently managed</div></div>
@@ -884,8 +883,6 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
       </div>
       <!-- CLIENT LIST -->
       <div id="clientListView" style="display:none;">
-      <div class="content-title" id="contentTitle">All Clients</div>
-      <button class="add-client-btn" onclick="openAddModal()">+ Add Client</button>
     </div>
     <input class="search-bar" type="text" id="searchBar" placeholder="Search clients by name, email, or phone..." oninput="renderClients()">
     <div class="clients-grid" id="clientsGrid">
@@ -3240,6 +3237,10 @@ function showDashboard() {
   const cl=document.getElementById('clientListView');
   if(dv) dv.style.display='block';
   if(cl) cl.style.display='none';
+  const dt=document.getElementById('dashHeaderTitle');
+  const ct=document.getElementById('contentTitle');
+  if(dt) dt.style.display='block';
+  if(ct) ct.style.display='none';
   renderDashboard();
 }
 
@@ -3248,6 +3249,10 @@ function showClientListView() {
   const cl=document.getElementById('clientListView');
   if(dv) dv.style.display='none';
   if(cl) cl.style.display='block';
+  const dt=document.getElementById('dashHeaderTitle');
+  const ct=document.getElementById('contentTitle');
+  if(dt) dt.style.display='none';
+  if(ct) ct.style.display='block';
 }
 
 
