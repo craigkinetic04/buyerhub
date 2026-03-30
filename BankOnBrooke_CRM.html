@@ -238,6 +238,48 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   .main{gap:12px;}
   .detail-panel{max-width:100%;}
 }
+
+/* ── PLATFORM TABS ── */
+.platform-nav{display:flex;gap:4px;background:rgba(255,255,255,0.05);padding:4px;border-radius:10px;}
+.platform-tab{background:transparent;border:none;color:rgba(240,230,216,0.5);font-family:'Lato',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;padding:7px 16px;border-radius:7px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.platform-tab:hover{color:var(--cream);}
+.platform-tab.active{background:var(--navy-light);color:var(--white);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+
+/* ── PLATFORM PAGES ── */
+.platform-page{display:none;}
+.platform-page.active{display:block;}
+
+/* ── CLIENT DETAIL TABS ── */
+.client-tabs{display:flex;gap:2px;background:var(--light);padding:3px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);}
+.client-tab{flex:1;background:transparent;border:none;color:var(--gray);font-family:'Lato',sans-serif;font-size:12px;font-weight:600;padding:7px 8px;border-radius:6px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.client-tab.active{background:var(--white);color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.client-tab-panel{display:none;}
+.client-tab-panel.active{display:block;}
+
+/* ── CHECKLIST VIEW IN DETAIL ── */
+.checklist-progress-bar{background:var(--border);border-radius:20px;height:6px;margin:8px 0 4px;}
+.checklist-progress-fill{background:var(--gold);height:6px;border-radius:20px;transition:width 0.4s;}
+.buyer-checklist-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border);}
+.buyer-checklist-item:last-child{border-bottom:none;}
+.buyer-check-circle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--white);}
+.buyer-check-circle.done{background:var(--gold);border-color:var(--gold);}
+.buyer-check-label{font-size:13px;color:var(--navy);line-height:1.4;}
+.buyer-check-label.done{color:var(--gray);text-decoration:line-through;}
+.buyer-check-note{font-size:11px;color:var(--gray);margin-top:2px;line-height:1.5;}
+
+/* ── SHARE HUB TAB ── */
+.share-hub-card{background:var(--navy);border-radius:12px;padding:20px;margin-bottom:12px;}
+.share-hub-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--white);margin-bottom:6px;}
+.share-hub-sub{font-size:12px;color:rgba(240,230,216,0.6);margin-bottom:16px;line-height:1.6;}
+.share-hub-link{background:rgba(255,255,255,0.08);border:1px solid rgba(196,154,120,0.3);border-radius:8px;padding:10px 14px;font-size:11px;color:#3CE8A0;font-family:monospace;word-break:break-all;margin-bottom:12px;}
+.share-hub-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.share-hub-btn{flex:1;min-width:120px;background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:11px;cursor:pointer;transition:background 0.2s;text-decoration:none;text-align:center;display:block;}
+.share-hub-btn:hover{background:var(--gold-light);}
+.share-hub-btn.outline{background:transparent;border:1.5px solid var(--gold);color:var(--gold);}
+
+/* ── BUYER HUB PAGE (full embed) ── */
+.hub-page-wrap{background:var(--white);border-radius:14px;overflow:hidden;min-height:600px;}
+.hub-iframe-note{text-align:center;padding:60px 20px;color:var(--gray);}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
@@ -449,6 +491,17 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   </div>
   <div class="detail-body">
 
+    <!-- CLIENT TABS -->
+    <div class="client-tabs" id="clientTabsRow">
+      <button class="client-tab active" onclick="switchClientTab('info',this)">Info</button>
+      <button class="client-tab" onclick="switchClientTab('checklist',this)">Checklist</button>
+      <button class="client-tab" onclick="switchClientTab('workflow',this)">Workflow</button>
+      <button class="client-tab" onclick="switchClientTab('share',this)">Share Hub</button>
+      <button class="client-tab" onclick="switchClientTab('templates',this)">Emails</button>
+    </div>
+
+    <!-- INFO TAB -->
+    <div class="client-tab-panel active" id="tab-info">
     <div class="detail-section">
       <h3>Client Information</h3>
       <div class="field-grid">
@@ -487,16 +540,43 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
       <button class="delete-btn" onclick="deleteClient()">Remove Client</button>
     </div>
 
+    </div><!-- end tab-info -->
+
+    <!-- CHECKLIST TAB -->
+    <div class="client-tab-panel" id="tab-checklist">
+      <div class="detail-section">
+        <h3>Buyer Checklist Progress</h3>
+        <div id="clientChecklistView">
+          <div style="font-size:13px;color:var(--gray);padding:12px 0;">Open your buyer hub and share the link with this client so they can track their progress here.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKFLOW TAB -->
+    <div class="client-tab-panel" id="tab-workflow">
     <div class="detail-section">
       <h3>Workflow</h3>
       <div id="wfAssignWrap"></div>
     </div>
+    </div>
 
+    <!-- SHARE HUB TAB -->
+    <div class="client-tab-panel" id="tab-share">
+      <div class="detail-section">
+        <h3>Share Buyer Hub</h3>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.6;">Send your client a personalized link to their Buyer Hub — it has their homebuying checklist, your featured listings, and a property search. Save your profile in the Buyer Hub tab first.</p>
+        <div id="shareHubClientContent"></div>
+      </div>
+    </div>
+
+    <!-- TEMPLATES / EMAILS TAB -->
+    <div class="client-tab-panel" id="tab-templates">
     <div class="detail-section">
       <h3>Follow-Up Templates</h3>
       <p style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.6;">Click Send to email this template to your client from your email address. Templates auto-suggest based on the client's current stage.</p>
       <div class="template-list" id="templateList"></div>
     </div>
+    </div><!-- end tab-templates -->
 
   </div>
 </div>
@@ -506,7 +586,11 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   <div class="header-left">
     <img class="header-logo" src="brooke_logo.png" alt="Bank on Brooke">
     <div class="header-divider"></div>
-    <div class="header-title">Partner CRM</div>
+    <div class="platform-nav">
+      <button class="platform-tab active" onclick="switchPlatformTab('crm',this)">My Clients</button>
+      <button class="platform-tab" onclick="switchPlatformTab('hub',this)">Buyer Hub</button>
+      <button class="platform-tab" onclick="openTemplatesModal()">Templates</button>
+    </div>
   </div>
   <div class="header-right">
     <span class="header-partner" id="headerPartner"></span>
@@ -521,6 +605,9 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   <a onclick="exitTestMode()">Exit Test Mode</a>
 </div>
 
+
+<!-- PLATFORM PAGES -->
+<div id="platform-crm" class="platform-page active">
 
 <!-- MAIN -->
 
@@ -606,6 +693,78 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
     <input class="search-bar" type="text" id="searchBar" placeholder="Search clients by name, email, or phone..." oninput="renderClients()">
     <div class="clients-grid" id="clientsGrid">
       <div class="empty-state">No clients yet. Click "+ Add Client" to get started.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end platform-crm -->
+
+<!-- BUYER HUB PLATFORM PAGE -->
+<div id="platform-hub" class="platform-page">
+  <div style="max-width:1100px;margin:0 auto;padding:24px 20px 60px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);">Your Buyer Hub</div>
+        <div style="font-size:13px;color:var(--gray);margin-top:4px;">Set up your profile, add featured listings, and send your personalized link to buyers.</div>
+      </div>
+    </div>
+
+    <!-- Profile setup card -->
+    <div style="background:var(--white);border-radius:14px;padding:24px;margin-bottom:16px;box-shadow:0 2px 12px rgba(27,42,74,0.06);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Your REALTOR® Profile</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:5px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Your Name</label><input type="text" id="hub_name" placeholder="Jane Smith" style="border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Your Company</label><input type="text" id="hub_company" placeholder="Your brokerage" style="border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Phone</label><input type="text" id="hub_phone" placeholder="(405) 555-0100" style="border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></div>
+        <div style="display:flex;flex-direction:column;gap:5px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Email</label><input type="email" id="hub_email" placeholder="you@brokerage.com" style="border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">
+        <label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Your Headshot or Logo</label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <img id="hub_photo_preview" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);display:none;flex-shrink:0;" src="" alt="Preview">
+          <div>
+            <button type="button" onclick="document.getElementById('hub_photo_file').click()" style="background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;">📷 Upload Photo or Logo</button>
+            <div id="hub_photo_name" style="font-size:11px;color:var(--gray);margin-top:5px;">No photo uploaded yet</div>
+          </div>
+        </div>
+        <input type="file" id="hub_photo_file" accept="image/*" style="display:none;" onchange="handleHubPhotoUpload(this)">
+        <input type="hidden" id="hub_photo">
+      </div>
+      <button onclick="saveHubProfile()" style="background:var(--navy);color:var(--white);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:12px 24px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='var(--navy-light)'" onmouseout="this.style.background='var(--navy)'">Save Profile & Generate Buyer Link</button>
+      <span id="hub_saved" style="font-size:12px;color:#3a9e6e;margin-left:12px;display:none;">✓ Saved</span>
+    </div>
+
+    <!-- Buyer link share card -->
+    <div class="share-hub-card" id="hubShareCard" style="display:none;">
+      <div class="share-hub-title">Your Buyer Link is Ready</div>
+      <div class="share-hub-sub">Share this link with every buyer you work with. One link works for all of them — each person's checklist and experience is completely private to them.</div>
+      <div class="share-hub-link" id="hubBuyerLinkDisplay">—</div>
+      <div class="share-hub-btns">
+        <button onclick="copyHubBuyerLink()" class="share-hub-btn outline" id="hubCopyBtn">📋 Copy Link</button>
+        <a id="hubSmsBtn" href="#" class="share-hub-btn">💬 Send via Text</a>
+        <a id="hubEmailBtn" href="#" class="share-hub-btn">✉️ Send via Email</a>
+      </div>
+    </div>
+
+    <!-- Listings -->
+    <div style="background:var(--white);border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(27,42,74,0.06);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);">Featured Listings</div>
+        <button onclick="toggleHubAddForm()" style="background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:7px;padding:8px 16px;cursor:pointer;">+ Add Listing</button>
+      </div>
+      <div id="hubListingsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px;"></div>
+      <div id="hubAddForm" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-top:8px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Address</label><input type="text" id="hl_address" placeholder="123 Main St" style="border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"></div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">City</label><input type="text" id="hl_city" placeholder="Oklahoma City, OK" style="border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"></div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Price</label><input type="text" id="hl_price" placeholder="$285,000" style="border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"></div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Beds / Baths</label><div style="display:flex;gap:6px;"><input type="number" id="hl_beds" placeholder="3" min="1" max="10" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"><input type="number" id="hl_baths" placeholder="2" min="1" max="10" step="0.5" style="flex:1;border:1.5px solid var(--border);border-radius:7px;padding:8px 10px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"></div></div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Status</label><select id="hl_status" style="border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;background:var(--white);"><option>For Sale</option><option>Coming Soon</option><option>Under Contract</option><option>New Listing</option></select></div>
+          <div style="display:flex;flex-direction:column;gap:4px;"><label style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Listing Link</label><input type="text" id="hl_link" placeholder="https://zillow.com/..." style="border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:13px;color:var(--navy);outline:none;"></div>
+        </div>
+        <button onclick="addHubListing()" style="background:var(--gold);color:var(--navy);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:8px;padding:11px 24px;cursor:pointer;">Add Listing</button>
+        <button onclick="toggleHubAddForm()" style="background:transparent;border:1px solid var(--border);color:var(--gray);font-family:'Lato',sans-serif;font-size:13px;padding:11px 20px;border-radius:8px;cursor:pointer;margin-left:8px;">Cancel</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1103,6 +1262,380 @@ async function saveClient() {
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// PLATFORM TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+function switchPlatformTab(tab, btn) {
+  document.querySelectorAll('.platform-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.platform-tab').forEach(b => b.classList.remove('active'));
+  const page = document.getElementById('platform-' + tab);
+  if (page) page.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'hub') loadHubProfileFromStorage();
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLIENT DETAIL TABS
+// ═══════════════════════════════════════════════════════════
+function switchClientTab(tab, btn) {
+  document.querySelectorAll('.client-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.client-tab').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-' + tab);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'share') renderShareHubTab();
+  if (tab === 'checklist') renderClientChecklist();
+}
+
+// ═══════════════════════════════════════════════════════════
+// SHARE HUB TAB IN CLIENT DETAIL
+// ═══════════════════════════════════════════════════════════
+function renderShareHubTab() {
+  const container = document.getElementById('shareHubClientContent');
+  if (!container || !editingId) return;
+  const c = clients.find(x => x.id === editingId);
+  if (!c) return;
+
+  const rid = REALTOR_ID;
+  const params = new URLSearchParams();
+  params.set('mode', 'buyer');
+  params.set('rid', rid);
+  const hubName = localStorage.getItem('hub_name_' + rid) || REALTOR_NAME;
+  const hubCompany = localStorage.getItem('hub_company_' + rid) || '';
+  const hubPhone = localStorage.getItem('hub_phone_' + rid) || '';
+  const hubEmail = localStorage.getItem('hub_email_' + rid) || '';
+  if (hubName) params.set('name', hubName);
+  if (hubCompany) params.set('company', hubCompany);
+  if (hubPhone) params.set('phone', hubPhone);
+  if (hubEmail) params.set('email', hubEmail);
+  params.set('photo', '__airtable__');
+
+  const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
+  const buyerLink = HUB_BASE + '?' + params.toString();
+  const clientName = c.Name || c.name || 'your buyer';
+  const firstName = clientName.split(' ')[0];
+
+  const smsBody = encodeURIComponent(
+    'Hi ' + firstName + '! ' + hubName + ' here.\n\n' +
+    "I set up a personalized Buyer Hub just for you. It has your homebuying checklist, featured listings I want you to see, and an Oklahoma property search all in one place.\n\n" +
+    'Open it here:\n' + buyerLink + '\n\n' +
+    'Bookmark it — your checklist progress saves automatically every time you come back. Let me know if you have any questions!'
+  );
+
+  const emailSubject = encodeURIComponent('Your Personal Buyer Hub — ' + hubName);
+  const emailBody = encodeURIComponent(
+    'Hi ' + firstName + ',\n\n' +
+    'I created a personalized Buyer Hub just for you to help with your home search.\n\n' +
+    'It includes:\n' +
+    '• A step-by-step homebuying checklist\n' +
+    '• Featured listings I think you should see\n' +
+    '• An Oklahoma property search on Zillow, Realtor.com & Redfin\n' +
+    '• A full FAQ covering pre-approval, down payment assistance, and more\n\n' +
+    'Your personal link:\n' + buyerLink + '\n\n' +
+    'Bookmark it — your checklist progress saves automatically.\n\n' +
+    'Let me know if you have any questions!\n\n' + hubName
+  );
+
+  const clientEmail = c.Email || c.email || '';
+
+  container.innerHTML = `
+    <div class="share-hub-card">
+      <div class="share-hub-title">Buyer Hub Link for ${clientName}</div>
+      <div class="share-hub-sub">This link is personalized with your profile. Send it to ${firstName} and they'll see your photo, contact info, featured listings, and their private checklist.</div>
+      <div class="share-hub-link">${buyerLink}</div>
+      <div class="share-hub-btns">
+        <button onclick="copyTextToClipboard('${buyerLink}',this)" class="share-hub-btn outline">📋 Copy Link</button>
+        <a href="sms:${clientEmail ? '?&body=' + smsBody : '?body=' + smsBody}" class="share-hub-btn">💬 Text ${firstName}</a>
+        <a href="mailto:${clientEmail}?subject=${emailSubject}&body=${emailBody}" class="share-hub-btn">✉️ Email ${firstName}</a>
+      </div>
+    </div>
+    ${!hubName ? '<p style="font-size:12px;color:var(--red);margin-top:10px;">⚠ Save your profile in the Buyer Hub tab first to personalize this link.</p>' : ''}
+  `;
+}
+
+function copyTextToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = orig, 2500);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLIENT CHECKLIST VIEW
+// ═══════════════════════════════════════════════════════════
+const CHECKLIST_STEPS = [
+  { label: 'Understand your budget', note: 'Know what you can afford before you start searching.' },
+  { label: 'Get pre-approved for a mortgage', note: 'Talk to Brooke for a free consultation.' },
+  { label: 'Connect with your REALTOR®', note: 'Your agent guides you through every step.' },
+  { label: 'Start your home search', note: 'Use the property search to explore listings.' },
+  { label: 'Make an offer on a home', note: 'Your REALTOR® will help you write a competitive offer.' },
+  { label: 'Complete inspection & appraisal', note: 'Never skip the inspection.' },
+  { label: 'Close on your home', note: 'Sign the paperwork and get your keys!' },
+];
+
+function renderClientChecklist() {
+  const container = document.getElementById('clientChecklistView');
+  if (!container || !editingId) return;
+  const c = clients.find(x => x.id === editingId);
+  if (!c) return;
+
+  // Try to load buyer checklist from Airtable Buyers table
+  const clientEmail = c.Email || c.email || '';
+  if (!clientEmail) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--gray);padding:12px 0;">No email saved for this client. Add their email to see their checklist progress.</div>';
+    return;
+  }
+
+  // Show loading state then fetch
+  container.innerHTML = '<div style="font-size:13px;color:var(--gray);padding:12px 0;">Loading checklist...</div>';
+  loadBuyerChecklist(clientEmail).then(progress => {
+    const done = progress ? Object.values(progress).filter(Boolean).length : 0;
+    const total = CHECKLIST_STEPS.length;
+    const pct = Math.round(done / total * 100);
+
+    container.innerHTML = `
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;">${done} of ${total} steps completed</div>
+        <div class="checklist-progress-bar"><div class="checklist-progress-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:11px;color:var(--gray);">${pct}% complete</div>
+      </div>
+      ${CHECKLIST_STEPS.map((step, i) => {
+        const isDone = progress && progress[i];
+        return `<div class="buyer-checklist-item">
+          <div class="buyer-check-circle ${isDone ? 'done' : ''}">
+            ${isDone ? '<svg width="10" height="8" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="var(--navy)" stroke-width="2" fill="none"/></svg>' : ''}
+          </div>
+          <div>
+            <div class="buyer-check-label ${isDone ? 'done' : ''}">${step.label}</div>
+            <div class="buyer-check-note">${step.note}</div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:var(--gray);margin-top:10px;font-style:italic;">Progress updates automatically when your client checks off steps in their hub.</div>
+    `;
+  });
+}
+
+async function loadBuyerChecklist(email) {
+  if (IS_TEST_MODE) {
+    // Return fake progress in test mode
+    return { 0: true, 1: true, 2: true, 3: false, 4: false, 5: false, 6: false };
+  }
+  try {
+    const filter = encodeURIComponent('{Email}="' + email + '"');
+    const res = await fetch(AT_URL + '/Buyers?filterByFormula=' + filter + '&db=crm');
+    const data = await res.json();
+    if (data.records && data.records.length > 0) {
+      const fields = data.records[0].fields;
+      return fields.Progress ? JSON.parse(fields.Progress) : null;
+    }
+  } catch(e) { console.log('Checklist load error:', e); }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUYER HUB TAB — PROFILE & LISTINGS
+// ═══════════════════════════════════════════════════════════
+let hubListings = [];
+
+function loadHubProfileFromStorage() {
+  const rid = REALTOR_ID;
+  const fields = ['name','company','phone','email'];
+  fields.forEach(f => {
+    const el = document.getElementById('hub_' + f);
+    const val = localStorage.getItem('hub_' + f + '_' + rid);
+    if (el && val) el.value = val;
+  });
+  // Load photo
+  const photo = localStorage.getItem('bob_photo_local_' + rid);
+  if (photo) {
+    const prev = document.getElementById('hub_photo_preview');
+    if (prev) { prev.src = photo; prev.style.display = 'block'; }
+    document.getElementById('hub_photo').value = photo;
+    document.getElementById('hub_photo_name').textContent = 'Photo loaded';
+  }
+  // Load listings
+  const stored = localStorage.getItem('hub_listings_' + rid);
+  hubListings = stored ? JSON.parse(stored) : [];
+  renderHubListings();
+  // Build buyer link if profile exists
+  const name = localStorage.getItem('hub_name_' + rid);
+  if (name) buildHubBuyerLink();
+}
+
+function handleHubPhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Photo must be under 5MB.'); return; }
+  const nm = document.getElementById('hub_photo_name');
+  if (nm) nm.textContent = 'Processing...';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const compressed = canvas.toDataURL('image/jpeg', 0.7);
+      document.getElementById('hub_photo').value = compressed;
+      const prev = document.getElementById('hub_photo_preview');
+      if (prev) { prev.src = compressed; prev.style.display = 'block'; }
+      if (nm) nm.textContent = file.name;
+      const rid = REALTOR_ID;
+      localStorage.setItem('bob_photo_local_' + rid, compressed);
+      saveHubPhotoToAirtable(compressed, rid);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveHubPhotoToAirtable(photoData, rid) {
+  if (!rid || IS_TEST_MODE) return;
+  try {
+    const filter = encodeURIComponent('{RealtorID}="' + rid + '"');
+    const res = await fetch(AT_URL + '/Partners?filterByFormula=' + filter + '&db=crm');
+    const data = await res.json();
+    if (data.records && data.records.length > 0) {
+      await fetch(AT_URL + '/Partners/' + data.records[0].id + '?db=crm', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { Photo: photoData } })
+      });
+    }
+  } catch(e) { console.log('Hub photo save error:', e); }
+}
+
+function saveHubProfile() {
+  const rid = REALTOR_ID;
+  const fields = ['name','company','phone','email'];
+  fields.forEach(f => {
+    const val = (document.getElementById('hub_' + f)||{}).value || '';
+    if (val) localStorage.setItem('hub_' + f + '_' + rid, val);
+  });
+  buildHubBuyerLink();
+  const saved = document.getElementById('hub_saved');
+  if (saved) { saved.style.display = 'inline'; setTimeout(() => saved.style.display = 'none', 2500); }
+  showToast('Profile saved — buyer link updated!', 'success');
+}
+
+function buildHubBuyerLink() {
+  const rid = REALTOR_ID;
+  const params = new URLSearchParams();
+  params.set('mode', 'buyer');
+  params.set('rid', rid);
+  const name    = localStorage.getItem('hub_name_' + rid) || '';
+  const company = localStorage.getItem('hub_company_' + rid) || '';
+  const phone   = localStorage.getItem('hub_phone_' + rid) || '';
+  const email   = localStorage.getItem('hub_email_' + rid) || '';
+  if (name)    params.set('name', name);
+  if (company) params.set('company', company);
+  if (phone)   params.set('phone', phone);
+  if (email)   params.set('email', email);
+  params.set('photo', '__airtable__');
+
+  const HUB_BASE = 'https://buyerhub.bankonbrooke.studio/BuyerHub_BankOnBrooke.html';
+  const link = HUB_BASE + '?' + params.toString();
+
+  const display = document.getElementById('hubBuyerLinkDisplay');
+  const card    = document.getElementById('hubShareCard');
+  if (display) display.textContent = link;
+  if (card)    card.style.display = 'block';
+
+  // Build text/email share links
+  const smsBody = encodeURIComponent(
+    'Hi! ' + name + ' here.\n\n' +
+    "I set up a personalized Buyer Hub just for you — it has your homebuying checklist, featured listings I want you to see, and an Oklahoma property search all in one place.\n\n" +
+    'Open it here:\n' + link + '\n\nBookmark it — your progress saves automatically!'
+  );
+  const emailSubject = encodeURIComponent('Your Personal Buyer Hub is Ready!');
+  const emailBody = encodeURIComponent(
+    'Hi!\n\nI created a personalized Buyer Hub just for you.\n\n' +
+    'It includes:\n• A step-by-step homebuying checklist\n• Featured listings I want you to see\n' +
+    '• Oklahoma property search\n• Full FAQ on pre-approval, down payments, and more\n\n' +
+    'Your link:\n' + link + '\n\nBookmark it — progress saves automatically.\n\n' + name
+  );
+
+  const smsBtn   = document.getElementById('hubSmsBtn');
+  const emailBtn = document.getElementById('hubEmailBtn');
+  if (smsBtn)   smsBtn.href   = 'sms:?body=' + smsBody;
+  if (emailBtn) emailBtn.href = 'mailto:?subject=' + emailSubject + '&body=' + emailBody;
+}
+
+function copyHubBuyerLink() {
+  const link = (document.getElementById('hubBuyerLinkDisplay')||{}).textContent || '';
+  if (!link || link === '—') { showToast('Save your profile first to generate your link.','error'); return; }
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('hubCopyBtn');
+    if (btn) { btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = '📋 Copy Link', 2500); }
+    showToast('Link copied!', 'success');
+  });
+}
+
+function toggleHubAddForm() {
+  const f = document.getElementById('hubAddForm');
+  if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+function addHubListing() {
+  const address = (document.getElementById('hl_address')||{}).value?.trim();
+  if (!address) { showToast('Please enter an address.','error'); return; }
+  const listing = {
+    id: genId(),
+    address,
+    city:   (document.getElementById('hl_city')||{}).value?.trim()   || '',
+    price:  (document.getElementById('hl_price')||{}).value?.trim()  || '',
+    beds:   (document.getElementById('hl_beds')||{}).value           || '',
+    baths:  (document.getElementById('hl_baths')||{}).value          || '',
+    status: (document.getElementById('hl_status')||{}).value         || 'For Sale',
+    link:   (document.getElementById('hl_link')||{}).value?.trim()   || '',
+  };
+  hubListings.unshift(listing);
+  localStorage.setItem('hub_listings_' + REALTOR_ID, JSON.stringify(hubListings));
+  renderHubListings();
+  toggleHubAddForm();
+  ['hl_address','hl_city','hl_price','hl_beds','hl_baths','hl_link'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  showToast('Listing added!', 'success');
+}
+
+function removeHubListing(id) {
+  hubListings = hubListings.filter(l => l.id !== id);
+  localStorage.setItem('hub_listings_' + REALTOR_ID, JSON.stringify(hubListings));
+  renderHubListings();
+  showToast('Listing removed.', 'success');
+}
+
+function renderHubListings() {
+  const grid = document.getElementById('hubListingsGrid');
+  if (!grid) return;
+  if (!hubListings.length) {
+    grid.innerHTML = '<div style="font-size:13px;color:var(--gray);padding:8px 0;grid-column:1/-1;">No listings yet. Click + Add Listing to add homes you want buyers to see.</div>';
+    return;
+  }
+  grid.innerHTML = hubListings.map(l => `
+    <div style="background:var(--light);border:1px solid var(--border);border-radius:10px;padding:12px;">
+      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px;">${l.address}</div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:6px;">${l.city}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+        <span style="font-size:13px;font-weight:700;color:var(--gold);">${l.price}</span>
+        <span style="font-size:11px;color:var(--gray);">${l.beds || '?'} bd · ${l.baths || '?'} ba</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:6px;">
+        <span style="font-size:10px;font-weight:600;color:var(--gold);background:var(--gold-dim);padding:2px 8px;border-radius:20px;">${l.status}</span>
+        <button onclick="removeHubListing('${l.id}')" style="background:transparent;border:none;color:var(--gray);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:4px;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--gray)'">Remove</button>
+      </div>
+    </div>
+  `).join('');
+}
+
 // ═══════════════════════════════════════════════════════════
 // DETAIL PANEL
 // ═══════════════════════════════════════════════════════════
@@ -1128,6 +1661,14 @@ function openDetail(id) {
 
   renderTemplates(c);
   renderWorkflowPanel(c);
+
+  // Reset to Info tab when opening a new client
+  document.querySelectorAll('.client-tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.client-tab').forEach(b => b.classList.remove('active'));
+  const infoPanel = document.getElementById('tab-info');
+  const infoTab   = document.querySelector('.client-tab');
+  if (infoPanel) infoPanel.classList.add('active');
+  if (infoTab)   infoTab.classList.add('active');
 
   document.getElementById('detailOverlay').classList.add('show');
   document.getElementById('detailPanel').classList.add('open');
