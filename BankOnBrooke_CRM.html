@@ -73,6 +73,11 @@ button[onclick="logout()"]:hover{border-color:var(--red);color:var(--red);}
 /* PLATFORM PAGES */
 .platform-page{display:none;}
 .platform-page.active{display:block;}
+#platform-hub.active{display:flex;flex-direction:column;height:calc(100vh - 56px);overflow:hidden;}
+#platform-hub .main{flex:1;overflow:hidden;}
+#platform-hub .sidebar{overflow-y:auto;}
+#platform-hub .content-area{overflow-y:auto;height:100%;}
+
 
 /* MAIN LAYOUT */
 .main{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px);}
