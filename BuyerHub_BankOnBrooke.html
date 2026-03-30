@@ -357,11 +357,11 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
   <div class="buyer-login-card">
     <img class="buyer-login-logo" src="brooke_logo.png" alt="Bank on Brooke">
     <h2>Welcome to Your Buyer Hub</h2>
-    <p>Enter your name and email so your checklist progress saves automatically every time you come back.</p>
-    <div class="login-field"><label>Your Full Name</label><input type="text" id="buyerName" placeholder="e.g. Jane Smith"></div>
+    <p id="loginSubtext">Save your progress so your checklist picks up right where you left off every time you come back.</p>
+    <div class="login-field"><label>Your Name</label><input type="text" id="buyerName" placeholder="e.g. Jane Smith"></div>
     <div class="login-field"><label>Your Email</label><input type="email" id="buyerEmail" placeholder="jane@email.com"></div>
     <button class="login-btn" onclick="loginBuyer()">Save My Progress →</button>
-    <span class="login-skip" onclick="skipLogin()">Skip — don't save my progress</span>
+    <div style="font-size:11px;color:var(--gray);text-align:center;margin-top:10px;line-height:1.5;">We never share your information.</div>
   </div>
 </div>
 
@@ -373,7 +373,12 @@ body{background:var(--light);font-family:'Lato',sans-serif;color:var(--navy);min
       <div class="hub-label">First-Time Buyer Hub</div>
     </a>
     <div class="header-right">
-      <a class="site-link" href="https://bankonbrooke.studio" target="_blank">bankonbrooke.studio</a>
+      <span id="buyerNameDisplay" style="font-size:12px;color:var(--gray);display:none;"></span>
+      <button id="buyerLogoutBtn" onclick="buyerLogout()" style="display:none;background:transparent;border:1px solid rgba(196,154,120,0.3);color:rgba(240,230,216,0.5);font-family:'Lato',sans-serif;font-size:11px;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(196,154,120,0.3)';this.style.color='rgba(240,230,216,0.5)'">Log Out</button>
+      <div id="buyerHeaderInfo" style="display:none;align-items:center;gap:10px;">
+        <span id="buyerHeaderName" style="font-size:12px;color:var(--cream);font-family:'Lato',sans-serif;"></span>
+        <button onclick="logoutBuyer()" style="background:transparent;border:1px solid rgba(196,154,120,0.4);color:rgba(240,230,216,0.6);font-family:'Lato',sans-serif;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(196,154,120,0.4)';this.style.color='rgba(240,230,216,0.6)'">Switch Account</button>
+      </div>
       <a class="cta" href="https://bankonbrooke.studio/contact" target="_blank">Talk to Brooke →</a>
     </div>
   </div>
@@ -695,6 +700,8 @@ const P=new URLSearchParams(window.location.search);
 const MODE=P.get('mode')||'buyer';
 const RID=P.get('rid')||'';
 const IS_SETUP=MODE==='setup';
+const BUYER_NAME_PRESET  = P.get('buyerName')  || '';
+const BUYER_EMAIL_PRESET = P.get('buyerEmail') || '';
 let buyer=null,favs=new Set(),saveTimer=null;
 
 window.addEventListener('load',async()=>{
@@ -744,7 +751,8 @@ window.addEventListener('load',async()=>{
     const s=localStorage.getItem('bob_'+RID);
     if(s){
       buyer=JSON.parse(s);
-      // Restore checked state from localStorage immediately (no flicker)
+      showBuyerName(buyer.name);
+      // Restore from localStorage immediately
       const saved=localStorage.getItem('bob_progress_'+RID);
       if(saved){
         const checked=JSON.parse(saved);
@@ -753,10 +761,33 @@ window.addEventListener('load',async()=>{
         });
         updateProgress();updateSectionCounts();
       }
-      // Then sync with Airtable to get latest + ensure atId is set
+      // Sync with Airtable
       await loadProgress(buyer.email);
+    } else if(BUYER_NAME_PRESET && BUYER_EMAIL_PRESET) {
+      // REALTOR pre-filled buyer info — auto-login silently, no form needed
+      const bEmail = BUYER_EMAIL_PRESET.toLowerCase().trim();
+      const bName  = BUYER_NAME_PRESET.trim();
+      buyer = { name: bName, email: bEmail };
+      localStorage.setItem('bob_'+RID, JSON.stringify(buyer));
+      showBuyerName(bName);
+      // Restore any local progress backup
+      const saved=localStorage.getItem('bob_progress_'+RID);
+      if(saved){
+        const checked=JSON.parse(saved);
+        document.querySelectorAll('.item').forEach((el,i)=>{
+          if(checked.includes(i))el.classList.add('checked');
+        });
+        updateProgress();updateSectionCounts();
+      }
+      // Create/find Airtable record and load progress
+      await upsertBuyer(bName, bEmail);
+      await loadProgress(bEmail);
+    } else {
+      // No preset, no session — show login, pre-fill if available
+      if(BUYER_NAME_PRESET)  document.getElementById('buyerName').value  = BUYER_NAME_PRESET;
+      if(BUYER_EMAIL_PRESET) document.getElementById('buyerEmail').value = BUYER_EMAIL_PRESET;
+      document.getElementById('loginOverlay').classList.add('show');
     }
-    else{document.getElementById('loginOverlay').classList.add('show');}
   }
   await loadListings();
 });
@@ -938,17 +969,47 @@ function renderPartnerBar(){
   }
 }
 
+async 
+function showBuyerName(name) {
+  if (!name) return;
+  const el = document.getElementById('buyerNameDisplay');
+  if (el) {
+    el.textContent = 'Hi, ' + name.split(' ')[0] + ' • ';
+    el.style.display = 'inline';
+  }
+  const logoutBtn = document.getElementById('buyerLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = 'inline-block';
+}
+
+function buyerLogout() {
+  // Clear all buyer session data for this REALTOR's hub
+  localStorage.removeItem('bob_' + RID);
+  localStorage.removeItem('bob_progress_' + RID);
+  buyer = null;
+  favs = new Set();
+  // Uncheck all items
+  document.querySelectorAll('.item.checked').forEach(el => el.classList.remove('checked'));
+  updateProgress(); updateSectionCounts();
+  // Hide name and logout button
+  const el = document.getElementById('buyerNameDisplay');
+  if (el) { el.textContent = ''; el.style.display = 'none'; }
+  const logoutBtn = document.getElementById('buyerLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = 'none';
+  // Show login screen
+  document.getElementById('loginOverlay').classList.add('show');
+}
+
 async function loginBuyer(){
   const n=document.getElementById('buyerName').value.trim();
-  const e=document.getElementById('buyerEmail').value.trim();
-  if(!n||!e){showToast && showToast('Please enter your name and email.','error');return;}
+  const e=document.getElementById('buyerEmail').value.trim().toLowerCase();
   if(!n||!e){alert('Please enter your name and email.');return;}
   document.getElementById('loginOverlay').classList.remove('show');
   buyer={name:n,email:e,rid:RID};
-  setTimeout(function(){ showBuyerWelcome(); }, 500);
+  showBuyerName(n);
   localStorage.setItem('bob_'+RID,JSON.stringify(buyer));
-  await loadProgress(e);
+  setTimeout(function(){ showBuyerWelcome(); }, 500);
   await upsertBuyer(n,e);
+  await loadProgress(e);
 }
 function skipLogin(){document.getElementById('loginOverlay').classList.remove('show');setTimeout(function(){ showBuyerWelcome(); }, 400);}
 
@@ -1009,6 +1070,31 @@ function setSS(s){
   if(s==='saving')el.textContent='Saving...';
   else if(s==='saved'){el.textContent='✓ Progress saved';setTimeout(()=>{el.textContent='';el.className='save-status';},3000);}
   else if(s==='error')el.textContent='Could not save — check your connection';
+}
+
+function showBuyerHeader(name) {
+  const info = document.getElementById('buyerHeaderInfo');
+  const nameEl = document.getElementById('buyerHeaderName');
+  if (info && nameEl && name) {
+    nameEl.textContent = 'Hi, ' + name.split(' ')[0] + '!';
+    info.style.display = 'flex';
+  }
+}
+
+function logoutBuyer() {
+  if (!confirm('Switch to a different account? Your progress is saved and will be here when you log back in.')) return;
+  localStorage.removeItem('bob_' + RID);
+  localStorage.removeItem('bob_progress_' + RID);
+  buyer = null;
+  favs = new Set();
+  // Uncheck all items
+  document.querySelectorAll('.item.checked').forEach(el => el.classList.remove('checked'));
+  updateProgress(); updateSectionCounts();
+  // Hide header name
+  const info = document.getElementById('buyerHeaderInfo');
+  if (info) info.style.display = 'none';
+  // Show login again
+  document.getElementById('loginOverlay').classList.add('show');
 }
 
 function toggle(el){
