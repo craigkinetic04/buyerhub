@@ -378,6 +378,12 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
     <div class="contact-prefs">
       <div class="ttl">Brooke Contact Preferences</div>
+      <div id="brookeStatusBadge" style="display:none;margin-bottom:14px;padding:12px;background:var(--surface2);border-radius:9px;border-left:3px solid var(--gold);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">Brooke's Update</div>
+        <div style="font-size:13px;color:var(--text);font-weight:600;" id="brookeStatusLabel">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="brookeStatusTime">—</div>
+        <div id="brookeStatusNotes" style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;font-style:italic;display:none;"></div>
+      </div>
       <label class="cb-row">
         <input type="checkbox" id="cConsent">
         <div>
@@ -710,6 +716,9 @@ function openEdit(id) {
 
     // Load buyer activity (checklist progress, favorites)
     loadBuyerActivity(c.id);
+
+    // Load any Brooke status update for this buyer's contact request
+    loadBrookeStatus(c.id);
   } else {
     E('modalTitle').firstChild.textContent = 'Add Client ';
     QA('#clientModal input, #clientModal select, #clientModal textarea').forEach(i => {
@@ -719,6 +728,7 @@ function openEdit(id) {
     E('deleteBtn').style.display = 'none';
     E('buyerHubSection').style.display = 'none';
     E('activitySection').style.display = 'none';
+    E('brookeStatusBadge').style.display = 'none';
   }
   E('clientModal').classList.add('show');
 }
@@ -1246,6 +1256,55 @@ E('deleteListingBtn').onclick = async () => {
 // BUYER ACTIVITY (shown when editing a client)
 // ════════════════════════════════════════════════════════
 const TOTAL_CHECKLIST_STEPS = 43;  // Must match the BuyerHub
+
+async function loadBrookeStatus(buyerId) {
+  E('brookeStatusBadge').style.display = 'none';
+  try {
+    const { data } = await BobApi.raw
+      .from('brooke_contact_requests')
+      .select('status, actioned_at, notes, created_at')
+      .eq('buyer_id', buyerId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!data) return;
+    if (data.status === 'new' || !data.status) return;  // no update yet
+
+    const statusLabels = {
+      in_progress: { label: 'In Progress', color: 'var(--blue, #6FA8FF)' },
+      application_needed: { label: 'Application Needed', color: 'var(--orange, #FFB347)' },
+      approved: { label: '✓ Approved', color: 'var(--green, #2D9E6E)' },
+      not_approved: { label: 'Not Approved', color: 'var(--red, #C84545)' },
+      contacted: { label: 'Contacted', color: 'var(--gold)' },
+      converted: { label: '✓ Converted', color: 'var(--green, #2D9E6E)' },
+      declined: { label: 'Declined', color: 'var(--red, #C84545)' },
+    };
+    const info = statusLabels[data.status] || { label: data.status, color: 'var(--gold)' };
+    E('brookeStatusBadge').style.display = 'block';
+    E('brookeStatusBadge').style.borderLeftColor = info.color;
+    E('brookeStatusLabel').textContent = info.label;
+    E('brookeStatusLabel').style.color = info.color;
+    if (data.actioned_at) {
+      const d = new Date(data.actioned_at);
+      const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60));
+      let when;
+      if (diff < 1) when = 'just now';
+      else if (diff < 24) when = `${diff}h ago`;
+      else when = d.toLocaleDateString();
+      E('brookeStatusTime').textContent = `Updated ${when}`;
+    } else {
+      E('brookeStatusTime').textContent = '';
+    }
+    if (data.notes) {
+      E('brookeStatusNotes').style.display = 'block';
+      E('brookeStatusNotes').textContent = `"${data.notes}"`;
+    } else {
+      E('brookeStatusNotes').style.display = 'none';
+    }
+  } catch (e) {
+    console.warn('loadBrookeStatus failed:', e);
+  }
+}
 
 async function loadBuyerActivity(buyerId) {
   E('activitySection').style.display = 'block';

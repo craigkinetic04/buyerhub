@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brooke Admin · Bank on Brooke</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2A4A;--navy-light:#243860;--navy-dark:#131E35;--navy2:#2A3D63;
+  --gold:#C49A78;--gold-dim:rgba(196,154,120,0.12);
+  --cream:#F0E6D8;--white:#FFFFFF;
+  --bg:#0F1827;--surface:#1B2A4A;--surface2:#243860;--surface3:#2A3D63;
+  --border:rgba(196,154,120,0.18);--border2:rgba(196,154,120,0.3);
+  --text:#F0E6D8;--muted:rgba(240,230,216,0.6);--hint:rgba(240,230,216,0.35);
+  --green:#3CE8A0;--green-dim:rgba(60,232,160,0.12);
+  --red:#FF6B6B;--red-dim:rgba(255,107,107,0.12);
+  --orange:#FFB347;--orange-dim:rgba(255,179,71,0.12);
+  --blue:#6FA8FF;--blue-dim:rgba(111,168,255,0.12);
+}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:13px;-webkit-font-smoothing:antialiased;line-height:1.5;}
+
+/* LOGIN OVERLAY */
+.login-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.login-overlay.show{display:flex;}
+.login-box{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:36px 32px;max-width:420px;width:100%;}
+.login-box .accent{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;text-align:center;}
+.login-box h2{font-family:'Playfair Display',serif;font-size:24px;color:var(--white);margin-bottom:8px;text-align:center;}
+.login-box p{color:var(--muted);font-size:13px;margin-bottom:22px;text-align:center;}
+.login-field{margin-bottom:14px;}
+.login-field label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;display:block;margin-bottom:6px;}
+.login-field input{width:100%;background:var(--navy-dark);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;}
+.login-field input:focus{outline:none;border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy-dark);border:none;border-radius:9px;padding:12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px;}
+.login-btn:hover{background:#D4AA88;}
+.login-error{background:var(--red-dim);border:1px solid var(--red);color:var(--red);padding:10px;border-radius:8px;font-size:12px;margin-bottom:14px;}
+
+/* HEADER */
+.site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-brand{display:flex;align-items:center;gap:10px;}
+.header-brand .accent{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);display:block;line-height:1;}
+.header-brand .name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-user{font-size:12px;color:var(--muted);}
+.header-user strong{color:var(--text);}
+.btn-invite{background:var(--gold);color:var(--navy-dark);border:none;border-radius:7px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;}
+.btn-invite:hover{background:#D4AA88;}
+.btn-logout{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:7px 12px;color:var(--muted);font-size:12px;cursor:pointer;}
+.btn-logout:hover{color:var(--text);border-color:var(--gold);}
+
+/* TABS */
+.platform-nav{display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:3px;}
+.platform-tab{background:transparent;border:none;padding:7px 14px;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;}
+.platform-tab.active{background:var(--gold);color:var(--navy-dark);}
+.platform-tab:not(.active):hover{color:var(--text);}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:24px;}
+.page-h{font-family:'Playfair Display',serif;font-size:26px;color:var(--white);margin-bottom:6px;}
+.page-sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+
+/* DASH STATS */
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px 16px;}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--white);margin-top:4px;line-height:1;}
+.stat-num.gold{color:var(--gold);}
+.stat-num.green{color:var(--green);}
+.stat-num.orange{color:var(--orange);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.filter-pill{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:6px 14px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.filter-pill:hover{color:var(--text);border-color:var(--gold);}
+.filter-pill.active{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);}
+.filter-select{background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:7px 10px;cursor:pointer;}
+.filter-select:focus{outline:none;border-color:var(--gold);}
+
+/* REQUESTS LIST */
+.requests-list{display:flex;flex-direction:column;gap:10px;}
+.request-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color 0.15s;}
+.request-card:hover{border-color:var(--gold);}
+.request-card.new{border-left:3px solid var(--gold);}
+.request-row{display:flex;gap:18px;align-items:flex-start;}
+.request-info{flex:1;min-width:0;}
+.request-header{display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+.request-buyer-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--white);}
+.request-status-badge{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+.status-new{background:var(--gold-dim);color:var(--gold);}
+.status-application_needed{background:var(--orange-dim);color:var(--orange);}
+.status-in_progress{background:var(--blue-dim);color:var(--blue);}
+.status-approved{background:var(--green-dim);color:var(--green);}
+.status-not_approved{background:var(--red-dim);color:var(--red);}
+.status-converted{background:var(--green-dim);color:var(--green);}
+.status-declined{background:var(--red-dim);color:var(--red);}
+.request-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px 18px;margin-bottom:10px;}
+.request-meta-item{font-size:12px;color:var(--muted);}
+.request-meta-item strong{color:var(--text);font-weight:600;}
+.request-meta-item a{color:var(--gold);text-decoration:none;}
+.request-meta-item a:hover{text-decoration:underline;}
+.request-realtor{font-size:11px;color:var(--muted);background:var(--surface2);padding:5px 10px;border-radius:7px;display:inline-block;margin-bottom:10px;}
+.request-realtor strong{color:var(--text);font-weight:600;}
+.request-notes{font-size:12px;color:var(--muted);background:var(--surface2);padding:10px 12px;border-radius:7px;margin-top:8px;line-height:1.5;border-left:2px solid var(--gold);}
+.request-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.action-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:7px;padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.action-btn:hover{color:var(--text);border-color:var(--gold);}
+.action-btn.primary{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);}
+.action-btn.primary:hover{background:#D4AA88;}
+.action-btn.green{border-color:var(--green);color:var(--green);}
+.action-btn.green:hover{background:var(--green);color:var(--navy-dark);}
+.action-btn.red{border-color:var(--red);color:var(--red);}
+.action-btn.red:hover{background:var(--red);color:var(--white);}
+.action-btn.blue{border-color:var(--blue);color:var(--blue);}
+.action-btn.blue:hover{background:var(--blue);color:var(--navy-dark);}
+.action-btn.orange{border-color:var(--orange);color:var(--orange);}
+.action-btn.orange:hover{background:var(--orange);color:var(--navy-dark);}
+.action-btn.active{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);}
+
+/* REALTORS LIST */
+.realtors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.realtor-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.realtor-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.realtor-company{font-size:12px;color:var(--gold);margin-bottom:10px;}
+.realtor-stat-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.realtor-stat-row:last-child{border-bottom:none;}
+.realtor-stat-row span:first-child{color:var(--muted);}
+.realtor-stat-row span:last-child{color:var(--text);font-weight:600;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:28px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--white);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
+.modal h3 .x{cursor:pointer;color:var(--muted);font-size:24px;font-weight:300;line-height:1;}
+.modal h3 .x:hover{color:var(--text);}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.field input,.field textarea,.field select{width:100%;background:var(--navy-dark);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;}
+.field textarea{min-height:80px;resize:vertical;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--gold);}
+.modal-actions{display:flex;gap:8px;margin-top:18px;}
+.btn-primary{background:var(--gold);color:var(--navy-dark);border:none;border-radius:8px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;flex:1;}
+.btn-primary:hover{background:#D4AA88;}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:10px 18px;font-size:13px;cursor:pointer;}
+.btn-secondary:hover{border-color:var(--gold);}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .ic{font-size:42px;margin-bottom:12px;opacity:0.4;}
+.empty .h{font-size:16px;color:var(--text);margin-bottom:6px;font-weight:600;}
+.empty .s{font-size:13px;}
+
+/* TOAST */
+.toast-container{position:fixed;top:20px;right:20px;z-index:400;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:11px 16px;border-radius:9px;font-size:13px;font-weight:500;background:var(--gold);color:var(--navy-dark);box-shadow:0 6px 20px rgba(0,0,0,0.3);min-width:240px;animation:slideIn 0.25s ease-out;}
+.toast.error{background:var(--red);color:var(--white);}
+.toast.success{background:var(--green);color:var(--navy-dark);}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* LOADING */
+.loading-bar{position:fixed;top:0;left:0;height:2px;width:0;background:var(--gold);z-index:1000;transition:width 0.3s;}
+
+/* PAGE SECTIONS */
+.platform-page{display:none;}
+.platform-page.active{display:block;}
+
+/* MOBILE */
+@media (max-width:700px){
+  .site-header{flex-direction:column;gap:12px;align-items:stretch;padding:14px 16px;}
+  .header-right{justify-content:space-between;}
+  .main{padding:16px;}
+  .request-row{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay show" id="loginOverlay">
+  <div class="login-box">
+    <div class="accent">Bank on Brooke</div>
+    <h2>Admin Sign In</h2>
+    <p>This portal is for Brooke. Realtors should sign in at the Realtor CRM instead.</p>
+    <div class="login-error" id="loginError" style="display:none;"></div>
+    <div class="login-field"><label>Email</label><input id="loginEmail" type="email" placeholder="brooke@..."></div>
+    <div class="login-field"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••"></div>
+    <button class="login-btn" id="signinBtn">Sign In →</button>
+  </div>
+</div>
+
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- HEADER -->
+<header class="site-header" id="siteHeader" style="display:none;">
+  <div class="header-brand">
+    <div>
+      <div class="accent">Bank on Brooke</div>
+      <div class="name">Admin Portal</div>
+    </div>
+    <div class="platform-nav" style="margin-left:24px;">
+      <button class="platform-tab active" data-page="requests">Contact Requests</button>
+      <button class="platform-tab" data-page="realtors">Realtors</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="header-user">Signed in as <strong id="headerUser">—</strong></span>
+    <button class="btn-invite" id="inviteRealtorBtn">+ Invite Realtor</button>
+    <button class="btn-logout" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<!-- REQUESTS PAGE -->
+<div class="platform-page active" id="requestsPage">
+  <div class="main">
+    <h1 class="page-h">Contact Requests</h1>
+    <p class="page-sub">Buyers who asked their Realtor to connect with you about a loan. Mark each one as you handle them.</p>
+
+    <div class="dash-stats">
+      <div class="stat-card"><div class="stat-label">New</div><div class="stat-num gold" id="statNew">0</div><div class="stat-sub">Awaiting your contact</div></div>
+      <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-num" id="statInProgress" style="color:var(--blue);">0</div><div class="stat-sub">Currently working with</div></div>
+      <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-num green" id="statApproved">0</div><div class="stat-sub">Pre-approved this month</div></div>
+      <div class="stat-card"><div class="stat-label">Not Approved</div><div class="stat-num" id="statNotApproved" style="color:var(--red);">0</div><div class="stat-sub">Declined this month</div></div>
+    </div>
+
+    <div class="filters">
+      <span class="filter-label">Status:</span>
+      <div class="filter-pill active" data-filter-status="all">All</div>
+      <div class="filter-pill" data-filter-status="new">New</div>
+      <div class="filter-pill" data-filter-status="in_progress">In Progress</div>
+      <div class="filter-pill" data-filter-status="application_needed">App Needed</div>
+      <div class="filter-pill" data-filter-status="approved">Approved</div>
+      <div class="filter-pill" data-filter-status="not_approved">Not Approved</div>
+
+      <span class="filter-label" style="margin-left:14px;">Realtor:</span>
+      <select class="filter-select" id="filterRealtor">
+        <option value="all">All Realtors</option>
+      </select>
+    </div>
+
+    <div class="requests-list" id="requestsList">
+      <div class="empty"><div class="ic">⌛</div><div class="h">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- REALTORS PAGE -->
+<div class="platform-page" id="realtorsPage">
+  <div class="main">
+    <h1 class="page-h">Realtor Partners</h1>
+    <p class="page-sub">All Realtors connected to your Bank on Brooke system. Click + Invite Realtor to add new partners.</p>
+    <div class="realtors-grid" id="realtorsGrid">
+      <div class="empty"><div class="ic">⌛</div><div class="h">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVITE REALTOR MODAL -->
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal">
+    <h3>Invite a Realtor <span class="x" id="closeInviteModal">×</span></h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.5;">Enter the Realtor's info. They'll get an email with a one-click link to set their password and start using the CRM.</p>
+    <div class="field"><label>Full name *</label><input id="iName" placeholder="Sarah Realtor"></div>
+    <div class="field"><label>Email *</label><input id="iEmail" type="email" placeholder="sarah@brokerage.com"></div>
+    <div class="field"><label>Brokerage / Company</label><input id="iCompany" placeholder="Keller Williams OKC"></div>
+    <div class="field"><label>Phone</label><input id="iPhone" placeholder="(405) 555-0100"></div>
+    <div class="field">
+      <label>Personal note from Brooke (optional)</label>
+      <textarea id="iNote" placeholder="Hey Sarah, great meeting you yesterday — here's that login!"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelInviteBtn">Cancel</button>
+      <button class="btn-primary" id="sendInviteBtn">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- MARK REQUEST MODAL -->
+<div class="modal-overlay" id="markModal">
+  <div class="modal">
+    <h3>Update Request Status <span class="x" id="closeMarkModal">×</span></h3>
+    <div id="markBuyerInfo" style="background:var(--surface2);padding:12px;border-radius:9px;margin-bottom:16px;">
+      <div style="font-weight:700;font-size:14px;color:var(--white);" id="markBuyerName">—</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;" id="markBuyerMeta">—</div>
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="markStatus">
+        <option value="new">New (un-actioned)</option>
+        <option value="in_progress">In Progress</option>
+        <option value="application_needed">Application Needed</option>
+        <option value="approved">Approved</option>
+        <option value="not_approved">Not Approved</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Notes (optional, only you see these)</label>
+      <textarea id="markNotes" placeholder="Followed up via phone, sending application Monday…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancelMarkBtn">Cancel</button>
+      <button class="btn-primary" id="saveMarkBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- DEPS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="bob-auth.js"></script>
+<script src="bob-api.js"></script>
+
+<script>
+'use strict';
+
+// ── HELPERS ──────────────────────────────────────────
+const E  = id => document.getElementById(id);
+const QA = sel => document.querySelectorAll(sel);
+const escapeHtml = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+const STATUS_LABEL = {
+  new: 'New',
+  in_progress: 'In Progress',
+  application_needed: 'Application Needed',
+  approved: 'Approved',
+  not_approved: 'Not Approved',
+  contacted: 'Contacted',
+  converted: 'Converted',
+  declined: 'Declined',
+};
+
+function toast(msg, kind = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  E('toastContainer').appendChild(el);
+  setTimeout(() => { el.style.transition='opacity 0.3s';el.style.opacity='0';setTimeout(()=>el.remove(),300); }, 2500);
+}
+
+function loading(on) {
+  E('loadingBar').style.width = on ? '90%' : '0%';
+  if (!on) setTimeout(() => { E('loadingBar').style.width = '0%'; }, 200);
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  return d.toLocaleDateString() + ' · ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+// ── STATE ────────────────────────────────────────────
+let CURRENT_USER = null;
+let REQUESTS = [];
+let REALTORS = [];
+let BUYERS = {};  // keyed by id
+let FILTER_STATUS = 'all';
+let FILTER_REALTOR = 'all';
+let CURRENT_PAGE = 'requests';
+let EDITING_REQUEST_ID = null;
+
+// ════════════════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════════════════
+E('signinBtn').onclick = doSignin;
+E('loginPassword').onkeydown = (e) => { if (e.key === 'Enter') doSignin(); };
+
+async function doSignin() {
+  const email = E('loginEmail').value.trim();
+  const password = E('loginPassword').value;
+  if (!email || !password) {
+    showLoginError('Email and password required.');
+    return;
+  }
+  E('loginError').style.display = 'none';
+  E('signinBtn').textContent = 'Signing in…';
+  E('signinBtn').disabled = true;
+  try {
+    const { error } = await BobAuth.signIn(email, password);
+    if (error) { showLoginError(error.message); return; }
+    await checkAdminAndEnter();
+  } catch (e) {
+    showLoginError(e.message || 'Sign in failed.');
+  } finally {
+    E('signinBtn').textContent = 'Sign In →';
+    E('signinBtn').disabled = false;
+  }
+}
+
+function showLoginError(msg) {
+  E('loginError').textContent = msg;
+  E('loginError').style.display = 'block';
+}
+
+async function checkAdminAndEnter() {
+  const user = await BobAuth.currentUser();
+  if (!user) { showLoginError('Could not load user.'); return; }
+  const role = user?.app_metadata?.role;
+  if (role !== 'brooke_admin') {
+    await BobAuth.signOut();
+    showLoginError('This account is not authorized. Brooke admin access only.');
+    return;
+  }
+  CURRENT_USER = user;
+  E('loginOverlay').classList.remove('show');
+  E('siteHeader').style.display = 'flex';
+  E('headerUser').textContent = user.email;
+  await loadAll();
+}
+
+E('logoutBtn').onclick = async () => {
+  await BobAuth.signOut();
+  location.reload();
+};
+
+// ════════════════════════════════════════════════════════
+// DATA LOAD
+// ════════════════════════════════════════════════════════
+async function loadAll() {
+  loading(true);
+  try {
+    // Realtors
+    const { data: realtors } = await BobApi.raw.from('realtors').select('*').order('name');
+    REALTORS = realtors || [];
+
+    // Contact requests
+    const { data: requests } = await BobApi.raw
+      .from('brooke_contact_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    REQUESTS = requests || [];
+
+    // Buyers (gather all unique buyer IDs from requests)
+    const buyerIds = [...new Set(REQUESTS.map(r => r.buyer_id).filter(Boolean))];
+    if (buyerIds.length > 0) {
+      const { data: buyers } = await BobApi.raw.from('buyers').select('*').in('id', buyerIds);
+      (buyers || []).forEach(b => { BUYERS[b.id] = b; });
+    }
+
+    populateRealtorFilter();
+    renderRequests();
+    renderRealtors();
+    updateStats();
+  } catch (e) {
+    console.error('loadAll failed:', e);
+    toast('Could not load data: ' + (e.message || ''), 'error');
+  }
+  loading(false);
+}
+
+// ════════════════════════════════════════════════════════
+// PAGE TABS
+// ════════════════════════════════════════════════════════
+QA('.platform-tab').forEach(tab => {
+  tab.onclick = () => {
+    QA('.platform-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    CURRENT_PAGE = tab.dataset.page;
+    QA('.platform-page').forEach(p => p.classList.remove('active'));
+    E(CURRENT_PAGE + 'Page').classList.add('active');
+  };
+});
+
+// ════════════════════════════════════════════════════════
+// REQUESTS RENDERING
+// ════════════════════════════════════════════════════════
+function populateRealtorFilter() {
+  const sel = E('filterRealtor');
+  sel.innerHTML = '<option value="all">All Realtors</option>' +
+    REALTORS.map(r => `<option value="${r.id}">${escapeHtml(r.name)}</option>`).join('');
+  sel.onchange = () => {
+    FILTER_REALTOR = sel.value;
+    renderRequests();
+  };
+}
+
+QA('[data-filter-status]').forEach(pill => {
+  pill.onclick = () => {
+    QA('[data-filter-status]').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    FILTER_STATUS = pill.dataset.filterStatus;
+    renderRequests();
+  };
+});
+
+function getFilteredRequests() {
+  return REQUESTS.filter(r => {
+    if (FILTER_STATUS !== 'all' && r.status !== FILTER_STATUS) return false;
+    if (FILTER_REALTOR !== 'all' && r.realtor_id !== FILTER_REALTOR) return false;
+    return true;
+  });
+}
+
+function renderRequests() {
+  const filtered = getFilteredRequests();
+  const list = E('requestsList');
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="ic">📭</div><div class="h">No requests match your filters</div><div class="s">Try changing the status or realtor filter.</div></div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(r => requestCardHtml(r)).join('');
+  // Wire up action buttons
+  QA('.action-btn[data-action="mark"]').forEach(btn => {
+    btn.onclick = () => openMarkModal(btn.dataset.id);
+  });
+  QA('.action-btn[data-action="quick"]').forEach(btn => {
+    btn.onclick = () => quickMark(btn.dataset.id, btn.dataset.status);
+  });
+}
+
+function requestCardHtml(r) {
+  const buyer = BUYERS[r.buyer_id];
+  const realtor = REALTORS.find(x => x.id === r.realtor_id);
+  const status = r.status || 'new';
+  const isNew = status === 'new';
+  return `
+    <div class="request-card ${isNew ? 'new' : ''}">
+      <div class="request-row">
+        <div class="request-info">
+          <div class="request-header">
+            <div class="request-buyer-name">${escapeHtml(buyer?.name || 'Unknown buyer')}</div>
+            <span class="request-status-badge status-${status}">${escapeHtml(STATUS_LABEL[status] || status)}</span>
+          </div>
+
+          <div class="request-realtor">From <strong>${escapeHtml(realtor?.name || 'Unknown realtor')}</strong>${realtor?.company ? ' · ' + escapeHtml(realtor.company) : ''}</div>
+
+          <div class="request-meta">
+            ${buyer?.email ? `<div class="request-meta-item">📧 <a href="mailto:${escapeHtml(buyer.email)}">${escapeHtml(buyer.email)}</a></div>` : ''}
+            ${buyer?.phone ? `<div class="request-meta-item">📞 <a href="tel:${escapeHtml(buyer.phone)}">${escapeHtml(buyer.phone)}</a></div>` : ''}
+            ${buyer?.area_of_interest ? `<div class="request-meta-item"><strong>Area:</strong> ${escapeHtml(buyer.area_of_interest)}</div>` : ''}
+            ${buyer?.budget ? `<div class="request-meta-item"><strong>Budget:</strong> ${escapeHtml(buyer.budget)}</div>` : ''}
+            <div class="request-meta-item"><strong>Requested:</strong> ${formatDate(r.created_at)}</div>
+            ${r.actioned_at ? `<div class="request-meta-item"><strong>Last update:</strong> ${formatDate(r.actioned_at)}</div>` : ''}
+          </div>
+
+          ${r.notes ? `<div class="request-notes">${escapeHtml(r.notes)}</div>` : ''}
+
+          <div class="request-actions">
+            <button class="action-btn primary" data-action="mark" data-id="${r.id}">Update Status</button>
+            ${status === 'new' ? `
+              <button class="action-btn blue" data-action="quick" data-id="${r.id}" data-status="in_progress">Mark In Progress</button>
+              <button class="action-btn orange" data-action="quick" data-id="${r.id}" data-status="application_needed">App Needed</button>
+              <button class="action-btn green" data-action="quick" data-id="${r.id}" data-status="approved">Approved</button>
+              <button class="action-btn red" data-action="quick" data-id="${r.id}" data-status="not_approved">Not Approved</button>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function updateStats() {
+  const counts = { new: 0, in_progress: 0, approved: 0, not_approved: 0 };
+  // Filter to current month for approved/not_approved
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0,0,0,0);
+
+  REQUESTS.forEach(r => {
+    if (r.status === 'new') counts.new++;
+    if (r.status === 'in_progress') counts.in_progress++;
+
+    const actioned = r.actioned_at ? new Date(r.actioned_at) : null;
+    if (actioned && actioned >= startOfMonth) {
+      if (r.status === 'approved') counts.approved++;
+      if (r.status === 'not_approved') counts.not_approved++;
+    }
+  });
+  E('statNew').textContent = counts.new;
+  E('statInProgress').textContent = counts.in_progress;
+  E('statApproved').textContent = counts.approved;
+  E('statNotApproved').textContent = counts.not_approved;
+}
+
+// ════════════════════════════════════════════════════════
+// MARK / UPDATE STATUS
+// ════════════════════════════════════════════════════════
+async function quickMark(requestId, status) {
+  try {
+    const { error } = await BobApi.raw
+      .from('brooke_contact_requests')
+      .update({ status, actioned_at: new Date().toISOString() })
+      .eq('id', requestId);
+    if (error) throw error;
+    toast(`Marked as ${STATUS_LABEL[status]}`, 'success');
+    await loadAll();
+  } catch (e) {
+    toast('Could not update: ' + (e.message || ''), 'error');
+  }
+}
+
+function openMarkModal(requestId) {
+  EDITING_REQUEST_ID = requestId;
+  const r = REQUESTS.find(x => x.id === requestId);
+  if (!r) return;
+  const buyer = BUYERS[r.buyer_id];
+  const realtor = REALTORS.find(x => x.id === r.realtor_id);
+  E('markBuyerName').textContent = buyer?.name || 'Unknown buyer';
+  E('markBuyerMeta').innerHTML = `From <strong>${escapeHtml(realtor?.name || '—')}</strong>${buyer?.email ? ' · ' + escapeHtml(buyer.email) : ''}`;
+  E('markStatus').value = r.status || 'new';
+  E('markNotes').value = r.notes || '';
+  E('markModal').classList.add('show');
+}
+
+E('closeMarkModal').onclick = () => E('markModal').classList.remove('show');
+E('cancelMarkBtn').onclick = () => E('markModal').classList.remove('show');
+E('markModal').onclick = (e) => { if (e.target === E('markModal')) E('markModal').classList.remove('show'); };
+
+E('saveMarkBtn').onclick = async () => {
+  if (!EDITING_REQUEST_ID) return;
+  const btn = E('saveMarkBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const status = E('markStatus').value;
+    const notes = E('markNotes').value.trim() || null;
+    const { error } = await BobApi.raw
+      .from('brooke_contact_requests')
+      .update({ status, notes, actioned_at: new Date().toISOString() })
+      .eq('id', EDITING_REQUEST_ID);
+    if (error) throw error;
+    toast('Status updated', 'success');
+    E('markModal').classList.remove('show');
+    await loadAll();
+  } catch (e) {
+    toast('Save failed: ' + (e.message || ''), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save';
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// REALTORS PAGE
+// ════════════════════════════════════════════════════════
+function renderRealtors() {
+  const grid = E('realtorsGrid');
+  if (REALTORS.length === 0) {
+    grid.innerHTML = `<div class="empty"><div class="ic">👤</div><div class="h">No Realtors yet</div><div class="s">Click + Invite Realtor to add your first partner.</div></div>`;
+    return;
+  }
+  grid.innerHTML = REALTORS.map(r => {
+    const requestCount = REQUESTS.filter(req => req.realtor_id === r.id).length;
+    const newCount = REQUESTS.filter(req => req.realtor_id === r.id && req.status === 'new').length;
+    return `
+      <div class="realtor-card">
+        <div class="realtor-name">${escapeHtml(r.name)}</div>
+        <div class="realtor-company">${escapeHtml(r.company || 'Independent')}</div>
+        ${r.phone ? `<div class="realtor-stat-row"><span>Phone</span><span><a href="tel:${escapeHtml(r.phone)}" style="color:var(--gold);text-decoration:none;">${escapeHtml(r.phone)}</a></span></div>` : ''}
+        ${r.email ? `<div class="realtor-stat-row"><span>Email</span><span style="font-size:11px;"><a href="mailto:${escapeHtml(r.email)}" style="color:var(--gold);text-decoration:none;">${escapeHtml(r.email)}</a></span></div>` : ''}
+        <div class="realtor-stat-row"><span>Total Requests</span><span>${requestCount}</span></div>
+        <div class="realtor-stat-row"><span>New / Pending</span><span style="${newCount > 0 ? 'color:var(--gold);' : ''}">${newCount}</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// INVITE REALTOR
+// ════════════════════════════════════════════════════════
+E('inviteRealtorBtn').onclick = () => {
+  ['iName','iEmail','iCompany','iPhone','iNote'].forEach(id => E(id).value = '');
+  E('inviteModal').classList.add('show');
+};
+E('closeInviteModal').onclick = () => E('inviteModal').classList.remove('show');
+E('cancelInviteBtn').onclick = () => E('inviteModal').classList.remove('show');
+E('inviteModal').onclick = (e) => { if (e.target === E('inviteModal')) E('inviteModal').classList.remove('show'); };
+
+E('sendInviteBtn').onclick = async () => {
+  const name = E('iName').value.trim();
+  const email = E('iEmail').value.trim();
+  if (!name || !email) { toast('Name and email are required.', 'error'); return; }
+
+  const btn = E('sendInviteBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    // Call our Edge Function 'invite-realtor' which does the actual heavy lifting:
+    //   - Creates the auth user with a magic-link signup
+    //   - Inserts a row in realtors with name/company/phone
+    //   - Sends them a custom welcome email
+    const { data, error } = await BobApi.raw.functions.invoke('invite-realtor', {
+      body: {
+        name,
+        email,
+        company: E('iCompany').value.trim() || null,
+        phone: E('iPhone').value.trim() || null,
+        note: E('iNote').value.trim() || null,
+      },
+    });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    toast(`Invite sent to ${email}`, 'success');
+    E('inviteModal').classList.remove('show');
+    await loadAll();
+  } catch (e) {
+    console.error(e);
+    toast('Invite failed: ' + (e.message || ''), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send Invite';
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+(async () => {
+  loading(true);
+  try {
+    const user = await BobAuth.currentUser();
+    if (user) {
+      await checkAdminAndEnter();
+    }
+  } catch (e) {
+    console.error('Init error:', e);
+  }
+  loading(false);
+})();
+
+BobAuth.onAuthChange(({ event }) => {
+  if (event === 'SIGNED_OUT') location.reload();
+});
+</script>
+</body>
+</html>
