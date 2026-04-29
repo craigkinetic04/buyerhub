@@ -149,6 +149,19 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .toast.info{border-color:var(--gold);color:var(--gold);}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
 
+/* LISTINGS MANAGEMENT */
+.listings-mgmt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.listing-mgmt-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.listing-mgmt-card:hover{border-color:var(--gold);}
+.listing-mgmt-photo{aspect-ratio:4/3;background:var(--surface2);background-size:cover;background-position:center;position:relative;}
+.listing-mgmt-no-photo{display:flex;align-items:center;justify-content:center;color:var(--hint);font-size:12px;height:100%;}
+.listing-mgmt-fav-badge{position:absolute;top:10px;right:10px;background:rgba(196,154,120,0.95);color:var(--navy-dark);padding:4px 10px;border-radius:12px;font-size:11px;font-weight:700;}
+.listing-mgmt-body{padding:14px;}
+.listing-mgmt-price{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.listing-mgmt-address{font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:8px;}
+.listing-mgmt-stats{font-size:11px;color:var(--text);font-weight:600;display:flex;gap:10px;}
+.listing-mgmt-stats span{color:var(--muted);font-weight:400;}
+
 /* MOBILE */
 @media (max-width:760px){
   .main{grid-template-columns:1fr;}
@@ -211,10 +224,16 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 <header class="site-header" id="siteHeader" style="display:none;">
   <div class="header-left">
     <div class="header-brand"><span class="accent">Bank on Brooke</span>Client CRM</div>
+    <div class="header-divider"></div>
+    <div class="platform-nav">
+      <button class="platform-tab active" data-page="clients">Clients</button>
+      <button class="platform-tab" data-page="listings">Listings</button>
+    </div>
   </div>
   <div class="header-right">
     <span class="header-partner" id="headerPartner">—</span>
     <button class="add-client-btn" id="openAddBtn">+ Add Client</button>
+    <button class="add-client-btn" id="openAddListingBtn" style="display:none;">+ Add Listing</button>
     <button class="logout-btn" id="logoutBtn">Log out</button>
   </div>
 </header>
@@ -261,6 +280,13 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     </main>
 
   </div>
+</div>
+
+<!-- LISTINGS PAGE -->
+<div class="platform-page" id="listingsPage" style="padding:24px 28px;display:none;">
+  <h1 class="page-h">Featured Listings</h1>
+  <p class="page-sub">Listings you add here appear in every buyer's hub. Buyers can heart the ones they love.</p>
+  <div id="listingsGridManager" class="listings-mgmt-grid"></div>
 </div>
 
 <!-- ADD/EDIT CLIENT MODAL -->
@@ -332,9 +358,63 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
       </label>
     </div>
 
+    <!-- BUYER ACTIVITY (read-only, shown only when editing) -->
+    <div class="contact-prefs" id="activitySection" style="display:none;">
+      <div class="ttl">Buyer Activity</div>
+      <div id="activityChecklistSummary" style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <span style="font-size:12px;color:var(--muted);font-weight:600;">Checklist progress</span>
+          <span style="font-size:12px;color:var(--gold);font-weight:700;" id="activityProgress">— / —</span>
+        </div>
+        <div style="background:var(--surface);height:8px;border-radius:4px;overflow:hidden;border:1px solid var(--border2);">
+          <div id="activityProgressBar" style="background:var(--gold);height:100%;width:0%;transition:width 0.4s;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;" id="activityRecent"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px;">
+          Favorited listings <span id="activityFavCount" style="color:var(--gold);">(0)</span>
+        </div>
+        <div id="activityFavoritesList" style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text);"></div>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-primary" id="saveBtn">Save Client</button>
       <button class="btn-secondary" id="deleteBtn" style="display:none;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT LISTING MODAL -->
+<div class="modal-overlay" id="listingModal">
+  <div class="modal">
+    <h3 id="listingModalTitle">Add Listing <span class="x" id="closeListingModal">×</span></h3>
+    <div class="field-grid">
+      <div class="field full"><label>Address *</label><input id="lAddress" placeholder="123 Main St, Edmond, OK 73034"></div>
+      <div class="field"><label>Price ($)</label><input id="lPrice" type="number" placeholder="325000"></div>
+      <div class="field"><label>Sq Ft</label><input id="lSqft" type="number" placeholder="1800"></div>
+      <div class="field"><label>Beds</label><input id="lBeds" type="number" step="0.5" placeholder="3"></div>
+      <div class="field"><label>Baths</label><input id="lBaths" type="number" step="0.5" placeholder="2"></div>
+      <div class="field full"><label>MLS / Zillow Link</label><input id="lLink" placeholder="https://www.zillow.com/..."></div>
+      <div class="field full"><label>Description</label><textarea id="lDescription" placeholder="Charming 3-bedroom with updated kitchen, large backyard, top schools..."></textarea></div>
+      <div class="field full">
+        <label>Photo (max 5 MB, JPG/PNG)</label>
+        <div id="photoDropZone" style="border:2px dashed var(--border2);border-radius:9px;padding:18px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--surface2);">
+          <div id="photoPreview" style="display:none;margin-bottom:10px;">
+            <img id="photoImg" style="max-width:100%;max-height:200px;border-radius:8px;">
+          </div>
+          <input type="file" id="lPhotoFile" accept="image/jpeg,image/png,image/webp" style="display:none;">
+          <button type="button" id="choosePhotoBtn" class="btn-secondary" style="font-size:12px;padding:8px 16px;">Choose Photo</button>
+          <div style="font-size:11px;color:var(--muted);margin-top:8px;" id="photoStatus">No photo selected</div>
+          <button type="button" id="removePhotoBtn" class="btn-secondary" style="font-size:11px;padding:6px 12px;margin-top:8px;display:none;">Remove Photo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="saveListingBtn">Save Listing</button>
+      <button class="btn-secondary" id="deleteListingBtn" style="display:none;">Delete</button>
     </div>
   </div>
 </div>
@@ -563,6 +643,9 @@ function openEdit(id) {
     // BuyerHub link section — only available for existing clients
     E('buyerHubSection').style.display = 'block';
     setupBuyerHubLink(c);
+
+    // Load buyer activity (checklist progress, favorites)
+    loadBuyerActivity(c.id);
   } else {
     E('modalTitle').firstChild.textContent = 'Add Client ';
     QA('#clientModal input, #clientModal select, #clientModal textarea').forEach(i => {
@@ -571,6 +654,7 @@ function openEdit(id) {
     E('cStage').value = 'lead';
     E('deleteBtn').style.display = 'none';
     E('buyerHubSection').style.display = 'none';
+    E('activitySection').style.display = 'none';
   }
   E('clientModal').classList.add('show');
 }
@@ -702,6 +786,339 @@ BobAuth.onAuthChange(async ({ event }) => {
     E('loginOverlay').classList.add('show');
   }
 });
+
+// ════════════════════════════════════════════════════════
+// PAGE TABS (Clients / Listings)
+// ════════════════════════════════════════════════════════
+let CURRENT_PAGE = 'clients';
+let LISTINGS = [];
+let EDITING_LISTING_ID = null;
+let CURRENT_PHOTO_FILE = null;
+let CURRENT_PHOTO_URL = null;
+let FAVORITE_COUNTS = {}; // { listingId: count }
+
+QA('.platform-tab').forEach(tab => {
+  tab.onclick = () => {
+    QA('.platform-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    CURRENT_PAGE = tab.dataset.page;
+    if (CURRENT_PAGE === 'clients') {
+      E('mainLayout').style.display = 'grid';
+      E('listingsPage').style.display = 'none';
+      E('openAddBtn').style.display = 'inline-block';
+      E('openAddListingBtn').style.display = 'none';
+    } else {
+      E('mainLayout').style.display = 'none';
+      E('listingsPage').style.display = 'block';
+      E('openAddBtn').style.display = 'none';
+      E('openAddListingBtn').style.display = 'inline-block';
+      loadListings();
+    }
+  };
+});
+
+// ════════════════════════════════════════════════════════
+// LISTINGS MANAGEMENT
+// ════════════════════════════════════════════════════════
+async function loadListings() {
+  loading(true);
+  try {
+    LISTINGS = await BobApi.listings.list({ activeOnly: false });
+    // Also fetch favorite counts per listing for badge display
+    await loadFavoriteCounts();
+  } catch (e) {
+    console.error(e); toast('Could not load listings: ' + e.message, 'error');
+    LISTINGS = [];
+  }
+  renderListingsManager();
+  loading(false);
+}
+
+async function loadFavoriteCounts() {
+  // Get all favorites for buyers belonging to the current realtor
+  // RLS scopes this automatically via the favorites_realtor_read policy
+  try {
+    const { data } = await BobApi.raw.from('buyer_favorites').select('listing_id');
+    FAVORITE_COUNTS = {};
+    (data || []).forEach(row => {
+      FAVORITE_COUNTS[row.listing_id] = (FAVORITE_COUNTS[row.listing_id] || 0) + 1;
+    });
+  } catch (e) {
+    console.warn('Could not load favorite counts:', e);
+    FAVORITE_COUNTS = {};
+  }
+}
+
+function renderListingsManager() {
+  const grid = E('listingsGridManager');
+  if (LISTINGS.length === 0) {
+    grid.innerHTML = `<div class="empty"><div class="ic">⌂</div><div class="h">No listings yet</div><div class="s">Click + Add Listing to add your first featured property.</div></div>`;
+    return;
+  }
+  grid.innerHTML = LISTINGS.map(l => {
+    const photo = (l.photo_urls && l.photo_urls.length > 0) ? l.photo_urls[0] : null;
+    const favCount = FAVORITE_COUNTS[l.id] || 0;
+    return `
+      <div class="listing-mgmt-card" data-id="${l.id}">
+        <div class="listing-mgmt-photo" ${photo ? `style="background-image:url('${escapeAttr(photo)}');"` : ''}>
+          ${!photo ? `<div class="listing-mgmt-no-photo">No photo</div>` : ''}
+          ${favCount > 0 ? `<div class="listing-mgmt-fav-badge">♥ ${favCount}</div>` : ''}
+        </div>
+        <div class="listing-mgmt-body">
+          <div class="listing-mgmt-price">${l.price ? '$' + Number(l.price).toLocaleString() : 'Contact for price'}</div>
+          <div class="listing-mgmt-address">${escapeText(l.address || '')}</div>
+          <div class="listing-mgmt-stats">
+            ${l.beds ? `<span>${l.beds} bd</span>` : ''}
+            ${l.baths ? `<span>${l.baths} ba</span>` : ''}
+            ${l.sqft ? `<span>${Number(l.sqft).toLocaleString()} sqft</span>` : ''}
+            ${!l.is_active ? `<span style="color:var(--red);">Inactive</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  QA('.listing-mgmt-card').forEach(card => {
+    card.onclick = () => openListingEdit(card.dataset.id);
+  });
+}
+
+function escapeAttr(s) { return String(s ?? '').replace(/'/g, "&apos;").replace(/"/g, '&quot;'); }
+function escapeText(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+E('openAddListingBtn').onclick = () => openListingEdit(null);
+E('closeListingModal').onclick = closeListingModal;
+function closeListingModal() {
+  E('listingModal').classList.remove('show');
+  EDITING_LISTING_ID = null;
+  CURRENT_PHOTO_FILE = null;
+  CURRENT_PHOTO_URL = null;
+}
+
+E('listingModal').onclick = (e) => { if (e.target === E('listingModal')) closeListingModal(); };
+
+function openListingEdit(id) {
+  EDITING_LISTING_ID = id;
+  CURRENT_PHOTO_FILE = null;
+  CURRENT_PHOTO_URL = null;
+
+  if (id) {
+    const l = LISTINGS.find(x => x.id === id);
+    if (!l) return;
+    E('listingModalTitle').firstChild.textContent = 'Edit Listing ';
+    E('lAddress').value     = l.address || '';
+    E('lPrice').value       = l.price || '';
+    E('lSqft').value        = l.sqft || '';
+    E('lBeds').value        = l.beds || '';
+    E('lBaths').value       = l.baths || '';
+    E('lLink').value        = l.mls_link || '';
+    E('lDescription').value = l.description || '';
+    if (l.photo_urls && l.photo_urls.length > 0) {
+      CURRENT_PHOTO_URL = l.photo_urls[0];
+      showPhotoPreview(l.photo_urls[0]);
+    } else {
+      hidePhotoPreview();
+    }
+    E('deleteListingBtn').style.display = 'inline-block';
+  } else {
+    E('listingModalTitle').firstChild.textContent = 'Add Listing ';
+    QA('#listingModal input, #listingModal textarea').forEach(i => i.value = '');
+    hidePhotoPreview();
+    E('deleteListingBtn').style.display = 'none';
+  }
+  E('listingModal').classList.add('show');
+}
+
+// ── PHOTO UPLOAD HANDLERS ───────────────────────────
+E('choosePhotoBtn').onclick = () => E('lPhotoFile').click();
+E('photoDropZone').onclick = (e) => {
+  if (e.target.id === 'photoDropZone' || e.target.tagName === 'IMG' || e.target.id === 'photoPreview') {
+    E('lPhotoFile').click();
+  }
+};
+
+E('lPhotoFile').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    toast('Photo too big. Max is 5 MB.', 'error');
+    e.target.value = '';
+    return;
+  }
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+    toast('Photo must be JPG, PNG, or WebP.', 'error');
+    e.target.value = '';
+    return;
+  }
+  CURRENT_PHOTO_FILE = file;
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = (ev) => showPhotoPreview(ev.target.result);
+  reader.readAsDataURL(file);
+};
+
+E('removePhotoBtn').onclick = (e) => {
+  e.stopPropagation();
+  CURRENT_PHOTO_FILE = null;
+  CURRENT_PHOTO_URL = null;
+  E('lPhotoFile').value = '';
+  hidePhotoPreview();
+};
+
+function showPhotoPreview(src) {
+  E('photoImg').src = src;
+  E('photoPreview').style.display = 'block';
+  E('photoStatus').textContent = CURRENT_PHOTO_FILE ? 'New photo selected (will upload on save)' : 'Current photo';
+  E('removePhotoBtn').style.display = 'inline-block';
+  E('choosePhotoBtn').textContent = 'Change Photo';
+}
+
+function hidePhotoPreview() {
+  E('photoImg').src = '';
+  E('photoPreview').style.display = 'none';
+  E('photoStatus').textContent = 'No photo selected';
+  E('removePhotoBtn').style.display = 'none';
+  E('choosePhotoBtn').textContent = 'Choose Photo';
+}
+
+// ── SAVE LISTING ────────────────────────────────────
+E('saveListingBtn').onclick = async () => {
+  const address = E('lAddress').value.trim();
+  if (!address) { toast('Address is required.', 'error'); return; }
+
+  const realtor = await BobAuth.currentRealtor();
+  if (!realtor) { toast('Session expired, please log in again.', 'error'); return; }
+
+  const btn = E('saveListingBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    let photoUrls = CURRENT_PHOTO_URL ? [CURRENT_PHOTO_URL] : [];
+
+    // Upload new photo if one is selected
+    if (CURRENT_PHOTO_FILE) {
+      btn.textContent = 'Uploading photo…';
+      const ext = CURRENT_PHOTO_FILE.name.split('.').pop().toLowerCase();
+      const fileName = `${realtor.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+      const { data: upData, error: upErr } = await BobApi.raw.storage
+        .from('listing-photos')
+        .upload(fileName, CURRENT_PHOTO_FILE, { cacheControl: '3600', upsert: false });
+      if (upErr) throw upErr;
+      const { data: urlData } = BobApi.raw.storage.from('listing-photos').getPublicUrl(upData.path);
+      photoUrls = [urlData.publicUrl];
+    }
+
+    btn.textContent = 'Saving…';
+
+    const payload = {
+      address,
+      price:       E('lPrice').value ? parseInt(E('lPrice').value, 10) : null,
+      sqft:        E('lSqft').value  ? parseInt(E('lSqft').value, 10)  : null,
+      beds:        E('lBeds').value  ? parseFloat(E('lBeds').value)    : null,
+      baths:       E('lBaths').value ? parseFloat(E('lBaths').value)   : null,
+      mls_link:    E('lLink').value.trim() || null,
+      description: E('lDescription').value.trim() || null,
+      photo_urls:  photoUrls,
+      is_active:   true,
+    };
+
+    if (EDITING_LISTING_ID) {
+      await BobApi.listings.update(EDITING_LISTING_ID, payload);
+      toast('Listing updated', 'success');
+    } else {
+      payload.realtor_id = realtor.id;
+      await BobApi.listings.create(payload);
+      toast('Listing added', 'success');
+    }
+    closeListingModal();
+    await loadListings();
+  } catch (e) {
+    console.error(e);
+    toast('Save failed: ' + (e.message || 'unknown error'), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Listing';
+  }
+};
+
+E('deleteListingBtn').onclick = async () => {
+  if (!EDITING_LISTING_ID) return;
+  if (!confirm('Delete this listing? Buyers who favorited it will lose the favorite. This cannot be undone.')) return;
+  try {
+    await BobApi.listings.remove(EDITING_LISTING_ID);
+    toast('Listing deleted', 'success');
+    closeListingModal();
+    await loadListings();
+  } catch (e) {
+    toast('Delete failed: ' + e.message, 'error');
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// BUYER ACTIVITY (shown when editing a client)
+// ════════════════════════════════════════════════════════
+const TOTAL_CHECKLIST_STEPS = 43;  // Must match the BuyerHub
+
+async function loadBuyerActivity(buyerId) {
+  E('activitySection').style.display = 'block';
+  E('activityProgress').textContent = '— / —';
+  E('activityProgressBar').style.width = '0%';
+  E('activityRecent').textContent = '';
+  E('activityFavCount').textContent = '(0)';
+  E('activityFavoritesList').innerHTML = '<div style="color:var(--muted);font-size:12px;font-style:italic;">Loading…</div>';
+
+  try {
+    // Checklist progress
+    const { data: progress } = await BobApi.raw
+      .from('buyer_checklist_progress')
+      .select('*')
+      .eq('buyer_id', buyerId)
+      .eq('completed', true)
+      .order('completed_at', { ascending: false });
+    const completedCount = (progress || []).length;
+    E('activityProgress').textContent = `${completedCount} / ${TOTAL_CHECKLIST_STEPS}`;
+    E('activityProgressBar').style.width = `${Math.round(completedCount / TOTAL_CHECKLIST_STEPS * 100)}%`;
+    if (progress && progress.length > 0 && progress[0].completed_at) {
+      const last = new Date(progress[0].completed_at);
+      const diff = Math.floor((Date.now() - last.getTime()) / (1000 * 60 * 60));
+      let when;
+      if (diff < 1) when = 'just now';
+      else if (diff < 24) when = `${diff} hour${diff === 1 ? '' : 's'} ago`;
+      else when = `${Math.floor(diff / 24)} day${Math.floor(diff/24) === 1 ? '' : 's'} ago`;
+      E('activityRecent').textContent = `Last item completed ${when}.`;
+    } else if (completedCount === 0) {
+      E('activityRecent').textContent = 'No items completed yet.';
+    }
+
+    // Favorites
+    const { data: favs } = await BobApi.raw
+      .from('buyer_favorites')
+      .select('listing_id, favorited_at, featured_listings(address, price)')
+      .eq('buyer_id', buyerId)
+      .order('favorited_at', { ascending: false });
+
+    E('activityFavCount').textContent = `(${(favs || []).length})`;
+    if (!favs || favs.length === 0) {
+      E('activityFavoritesList').innerHTML = '<div style="color:var(--muted);font-size:12px;font-style:italic;">No favorites yet.</div>';
+    } else {
+      E('activityFavoritesList').innerHTML = favs.map(f => {
+        const l = f.featured_listings;
+        if (!l) return '';
+        const date = new Date(f.favorited_at).toLocaleDateString();
+        return `
+          <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 10px;background:var(--surface);border-radius:7px;border:1px solid var(--border2);">
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;color:var(--text);">${l.price ? '$' + Number(l.price).toLocaleString() : 'No price'}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">${escapeText(l.address || '')}</div>
+            </div>
+            <div style="font-size:10px;color:var(--muted);white-space:nowrap;align-self:center;">${date}</div>
+          </div>
+        `;
+      }).join('');
+    }
+  } catch (e) {
+    console.error('loadBuyerActivity failed:', e);
+    E('activityFavoritesList').innerHTML = '<div style="color:var(--red);font-size:12px;">Could not load activity.</div>';
+  }
+}
 </script>
 </body>
 </html>
