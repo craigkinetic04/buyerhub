@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client CRM — Bank on Brooke</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2A4A;--navy-light:#243860;--navy-dark:#131E35;
+  --gold:#C49A78;--gold-dim:rgba(196,154,120,0.12);--gold-light:#D4AA88;
+  --cream:#F0E6D8;--white:#FFFFFF;
+  --bg:#0F1117;--surface:#111318;--surface2:#1A1D24;--surface3:#1E2230;
+  --border:#1E2230;--border2:#2A2E38;
+  --text:#F0EDE8;--muted:#6B7280;--hint:#3A3F4E;
+  --green:#3CE8A0;--green-dim:rgba(60,232,160,0.1);
+  --blue:#4A9EFF;--blue-dim:rgba(74,158,255,0.1);
+  --amber:#FFB347;--amber-dim:rgba(255,179,71,0.1);
+  --red:#FF6B6B;--red-dim:rgba(255,107,107,0.1);
+  --purple:#A78BFA;--purple-dim:rgba(167,139,250,0.1);
+}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:13px;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* LOGIN */
+.login-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.login-overlay.show{display:flex;}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:36px;width:100%;max-width:400px;}
+.login-card h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);margin-bottom:6px;}
+.login-card .brand{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5;}
+.login-field{margin-bottom:14px;}
+.login-field label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.login-field input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color 0.2s;}
+.login-field input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);color:var(--navy-dark);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:10px;padding:13px;cursor:pointer;transition:background 0.2s;margin-top:4px;}
+.login-btn:hover{background:var(--gold-light);}
+.login-btn:disabled{opacity:0.6;cursor:wait;}
+.login-card p.switch{margin-top:18px;text-align:center;font-size:12px;}
+.login-card p.switch a{color:var(--gold);cursor:pointer;text-decoration:none;}
+#loginError,#setupError{font-size:12px;color:var(--red);margin-bottom:10px;padding:8px 12px;background:var(--red-dim);border-radius:8px;}
+
+/* HEADER */
+.site-header{background:var(--surface);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:100;}
+.header-left{display:flex;align-items:center;gap:16px;}
+.header-brand{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);}
+.header-brand .accent{color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-family:'Inter',sans-serif;font-weight:700;display:block;line-height:1;margin-bottom:2px;}
+.header-divider{width:1px;height:20px;background:var(--border2);}
+.platform-nav{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:10px;}
+.platform-tab{background:transparent;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:6px 16px;border-radius:7px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.platform-tab:hover{color:var(--text);}
+.platform-tab.active{background:var(--surface3);color:var(--text);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.header-partner{font-size:12px;color:var(--muted);padding:4px 10px;background:var(--surface2);border-radius:20px;border:1px solid var(--border2);}
+.logout-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'Inter',sans-serif;font-size:11px;padding:6px 12px;border-radius:8px;cursor:pointer;transition:all 0.2s;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+.add-client-btn{background:var(--gold);color:var(--navy-dark);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;white-space:nowrap;transition:background 0.2s;}
+.add-client-btn:hover{background:var(--gold-light);}
+
+/* PAGE */
+.platform-page{display:none;}
+.platform-page.active{display:block;}
+
+/* MAIN LAYOUT */
+.main{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px);}
+
+/* SIDEBAR */
+.sidebar{border-right:1px solid var(--border);padding:18px;background:var(--surface);}
+.sb-section{margin-bottom:24px;}
+.sb-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--hint);margin-bottom:10px;padding-left:8px;}
+.sb-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all 0.12s;margin-bottom:2px;}
+.sb-item:hover{background:var(--surface2);color:var(--text);}
+.sb-item.active{background:var(--surface2);color:var(--text);}
+.sb-item .ct{background:var(--surface3);color:var(--muted);font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;}
+.sb-item.active .ct{background:var(--gold);color:var(--navy-dark);}
+.sb-stat{display:flex;justify-content:space-between;padding:6px 8px;font-size:12px;color:var(--muted);}
+.sb-stat .num{color:var(--text);font-weight:600;}
+
+/* CONTENT */
+.content{padding:24px 28px;overflow-y:auto;}
+.page-h{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:6px;}
+.page-sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+
+/* DASHBOARD STATS */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.stat-num{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--text);line-height:1;}
+.stat-num.gold{color:var(--gold);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:6px;}
+
+/* CLIENT LIST */
+.clients-grid{display:flex;flex-direction:column;gap:6px;}
+.client-row{display:grid;grid-template-columns:36px 1fr auto auto;gap:12px;align-items:center;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.12s;}
+.client-row:hover{border-color:var(--border2);background:var(--surface2);}
+.avatar{width:36px;height:36px;border-radius:9px;background:var(--surface3);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.client-name{font-size:14px;font-weight:600;}
+.client-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.stage-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.stage-lead{background:var(--blue-dim);color:var(--blue);}
+.stage-pre_approval{background:var(--amber-dim);color:var(--amber);}
+.stage-searching{background:var(--purple-dim);color:var(--purple);}
+.stage-under_contract{background:var(--gold-dim);color:var(--gold);}
+.stage-closed{background:var(--green-dim);color:var(--green);}
+.stage-seller_lead{background:var(--red-dim);color:var(--red);}
+.flag-icon{font-size:12px;color:var(--gold);}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .ic{font-size:32px;margin-bottom:12px;opacity:0.4;}
+.empty .h{font-size:15px;color:var(--text);margin-bottom:6px;font-weight:600;}
+.empty .s{font-size:12px;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:560px;padding:24px;}
+.modal h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;}
+.modal h3 .x{cursor:pointer;color:var(--muted);font-weight:400;font-size:22px;}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.full{grid-column:1/-1;}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color 0.15s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field textarea{min-height:80px;resize:vertical;font-family:'Inter',sans-serif;}
+.contact-prefs{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;margin-top:12px;margin-bottom:12px;}
+.contact-prefs .ttl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.cb-row{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;background:var(--surface);margin-bottom:8px;transition:border-color 0.15s;}
+.cb-row:last-child{margin-bottom:0;}
+.cb-row:hover{border-color:var(--gold);}
+.cb-row input{margin-top:2px;accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;}
+.cb-row .lbl{font-size:13px;font-weight:600;color:var(--text);}
+.cb-row .desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.modal-actions{display:flex;gap:8px;margin-top:18px;}
+.btn-primary{background:var(--gold);color:var(--navy-dark);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;border:none;border-radius:9px;padding:11px 18px;cursor:pointer;flex:1;transition:background 0.2s;}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-primary:disabled{opacity:0.6;cursor:wait;}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border-radius:9px;padding:11px 18px;cursor:pointer;transition:all 0.15s;}
+.btn-secondary:hover{border-color:var(--red);color:var(--red);}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:11px 16px;border-radius:9px;font-size:13px;font-weight:500;background:var(--surface);border:1px solid var(--border2);box-shadow:0 6px 20px rgba(0,0,0,0.3);min-width:240px;animation:slideIn 0.25s ease-out;}
+.toast.success{border-color:var(--green);color:var(--green);}
+.toast.error{border-color:var(--red);color:var(--red);}
+.toast.info{border-color:var(--gold);color:var(--gold);}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* MOBILE */
+@media (max-width:760px){
+  .main{grid-template-columns:1fr;}
+  .sidebar{border-right:none;border-bottom:1px solid var(--border);overflow-x:auto;display:flex;gap:6px;padding:10px;}
+  .sb-section{margin-bottom:0;flex-shrink:0;}
+  .sb-label{display:none;}
+  .sb-item{white-space:nowrap;}
+  .sb-stat{display:none;}
+  .dash-stats{grid-template-columns:1fr 1fr;}
+  .field-grid{grid-template-columns:1fr;}
+  .header-brand{font-size:14px;}
+  .platform-nav{display:none;}
+  .content{padding:16px;}
+}
+
+/* LOADING */
+.loading-bar{position:fixed;top:0;left:0;right:0;height:2px;background:var(--gold);transform-origin:left;transform:scaleX(0);transition:transform 0.3s;z-index:500;}
+.loading-bar.active{animation:loadbar 1.5s ease-in-out infinite;}
+@keyframes loadbar{0%{transform:scaleX(0);}50%{transform:scaleX(0.7);}100%{transform:scaleX(1);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay show" id="loginOverlay">
+
+  <!-- SIGN UP -->
+  <div class="login-card" id="setupScreen" style="display:none;">
+    <div class="brand">Bank on Brooke · Realtor Partner</div>
+    <h2>Create your account</h2>
+    <p>Welcome! Set up your CRM in 30 seconds. You'll log in with your email and password from any device.</p>
+    <div id="setupError" style="display:none;"></div>
+    <div class="login-field"><label>Full name</label><input id="setupName" placeholder="Jane Smith"></div>
+    <div class="login-field"><label>Company</label><input id="setupCompany" placeholder="Smith Realty Group"></div>
+    <div class="login-field"><label>Phone</label><input id="setupPhone" placeholder="(405) 555-0100"></div>
+    <div class="login-field"><label>Email</label><input id="setupEmail" type="email" placeholder="jane@smithrealty.com"></div>
+    <div class="login-field"><label>Password (min 8)</label><input id="setupPassword" type="password" placeholder="••••••••"></div>
+    <button class="login-btn" id="signupBtn">Create Account →</button>
+    <p class="switch">Already have an account? <a id="goLogin">Log in</a></p>
+  </div>
+
+  <!-- LOG IN -->
+  <div class="login-card" id="loginScreen">
+    <div class="brand">Bank on Brooke · Realtor Partner</div>
+    <h2>Welcome back</h2>
+    <p>Log in to your CRM to manage your clients.</p>
+    <div id="loginError" style="display:none;"></div>
+    <div class="login-field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@yourbrokerage.com"></div>
+    <div class="login-field"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••"></div>
+    <button class="login-btn" id="signinBtn">Log In →</button>
+    <p class="switch">New here? <a id="goSetup">Create an account</a></p>
+    <p class="switch" style="margin-top:8px;"><a id="goReset">Forgot password?</a></p>
+  </div>
+
+</div>
+
+<div class="loading-bar" id="loadingBar"></div>
+
+<!-- HEADER -->
+<header class="site-header" id="siteHeader" style="display:none;">
+  <div class="header-left">
+    <div class="header-brand"><span class="accent">Bank on Brooke</span>Client CRM</div>
+  </div>
+  <div class="header-right">
+    <span class="header-partner" id="headerPartner">—</span>
+    <button class="add-client-btn" id="openAddBtn">+ Add Client</button>
+    <button class="logout-btn" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="platform-page active" id="appPage">
+  <div class="main" id="mainLayout" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Pipeline</div>
+        <div class="sb-item active" data-stage="all">All Clients <span class="ct" id="ctAll">0</span></div>
+        <div class="sb-item" data-stage="lead">Buyer Lead <span class="ct" id="ctLead">0</span></div>
+        <div class="sb-item" data-stage="pre_approval">Pre-Approval <span class="ct" id="ctPre">0</span></div>
+        <div class="sb-item" data-stage="searching">Home Search <span class="ct" id="ctSearch">0</span></div>
+        <div class="sb-item" data-stage="under_contract">Under Contract <span class="ct" id="ctUC">0</span></div>
+        <div class="sb-item" data-stage="closed">Closed <span class="ct" id="ctClosed">0</span></div>
+        <div class="sb-item" data-stage="seller_lead">Seller Lead <span class="ct" id="ctSeller">0</span></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Overview</div>
+        <div class="sb-stat"><span>Total Clients</span><span class="num" id="totalClients">0</span></div>
+        <div class="sb-stat"><span>Active</span><span class="num" id="totalActive">0</span></div>
+        <div class="sb-stat"><span>Closed</span><span class="num" id="totalClosed">0</span></div>
+        <div class="sb-stat"><span>Brooke flagged</span><span class="num" id="totalFlagged">0</span></div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <h1 class="page-h" id="greeting">Dashboard</h1>
+      <p class="page-sub" id="subline">Manage your clients and pipeline.</p>
+
+      <div class="dash-stats">
+        <div class="stat-card"><div class="stat-label">Active Clients</div><div class="stat-num gold" id="dashActive">0</div><div class="stat-sub">Currently in pipeline</div></div>
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-num" id="dashMonth">0</div><div class="stat-sub">New clients added</div></div>
+        <div class="stat-card"><div class="stat-label">Closed</div><div class="stat-num" id="dashClosed">0</div><div class="stat-sub">Total closings</div></div>
+        <div class="stat-card"><div class="stat-label">Brooke Flagged</div><div class="stat-num" id="dashFlagged">0</div><div class="stat-sub">Need her contact</div></div>
+      </div>
+
+      <h2 style="font-family:Playfair Display,serif;font-size:18px;margin-bottom:14px;" id="listTitle">All Clients</h2>
+      <div class="clients-grid" id="clientsGrid"></div>
+    </main>
+
+  </div>
+</div>
+
+<!-- ADD/EDIT CLIENT MODAL -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal">
+    <h3 id="modalTitle">Add Client <span class="x" id="closeModal">×</span></h3>
+    <div class="field-grid">
+      <div class="field full"><label>Full name *</label><input id="cName" placeholder="Sarah Johnson"></div>
+      <div class="field"><label>Phone</label><input id="cPhone" placeholder="(405) 555-0100"></div>
+      <div class="field"><label>Email</label><input id="cEmail" type="email" placeholder="sarah@email.com"></div>
+      <div class="field"><label>Stage *</label>
+        <select id="cStage">
+          <option value="lead">Buyer Lead</option>
+          <option value="pre_approval">Pre-Approval</option>
+          <option value="searching">Home Search</option>
+          <option value="under_contract">Under Contract</option>
+          <option value="closed">Closed</option>
+          <option value="seller_lead">Seller Lead</option>
+        </select>
+      </div>
+      <div class="field"><label>Loan Type</label>
+        <select id="cLoan">
+          <option value="">Not sure yet</option>
+          <option value="conventional">Conventional</option>
+          <option value="fha">FHA</option>
+          <option value="va">VA</option>
+          <option value="usda">USDA</option>
+          <option value="jumbo">Jumbo</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Budget / Price Range</label><input id="cBudget" placeholder="$250,000 – $320,000"></div>
+      <div class="field"><label>Pre-Approval Amount</label><input id="cPreApproval" placeholder="$310,000"></div>
+      <div class="field"><label>Referral Source</label><input id="cReferral" placeholder="Instagram, Open House, etc."></div>
+      <div class="field full"><label>Home Address / Area of Interest</label><input id="cArea" placeholder="Edmond, OK — 3bd 2ba, good schools"></div>
+      <div class="field"><label>Contract Date</label><input id="cContract" type="date"></div>
+      <div class="field"><label>Close Date</label><input id="cClose" type="date"></div>
+      <div class="field full"><label>Notes</label><textarea id="cNotes" placeholder="Any important details about this client..."></textarea></div>
+    </div>
+
+    <div class="contact-prefs" id="buyerHubSection" style="display:none;">
+      <div class="ttl">BuyerHub Link</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Send this client their personalized hub. They can track their checklist, see your listings, and favorite the ones they love.</p>
+      <div style="display:flex;gap:8px;align-items:stretch;">
+        <input id="buyerHubUrl" readonly style="flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:11px;color:var(--text);">
+        <button type="button" id="copyHubBtn" class="btn-primary" style="flex:0;padding:10px 16px;font-size:11px;">Copy</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <a id="smsHubBtn" class="btn-secondary" style="flex:1;padding:10px;font-size:12px;text-align:center;text-decoration:none;color:var(--text);border-color:var(--border2);" href="#">📱 Text it</a>
+        <a id="emailHubBtn" class="btn-secondary" style="flex:1;padding:10px;font-size:12px;text-align:center;text-decoration:none;color:var(--text);border-color:var(--border2);" href="#">✉ Email it</a>
+      </div>
+    </div>
+
+    <div class="contact-prefs">
+      <div class="ttl">Brooke Contact Preferences</div>
+      <label class="cb-row">
+        <input type="checkbox" id="cConsent">
+        <div>
+          <div class="lbl">Brooke may contact this client</div>
+          <div class="desc">This client has given permission for Brooke to reach out about their home loan.</div>
+        </div>
+      </label>
+      <label class="cb-row">
+        <input type="checkbox" id="cRequest">
+        <div>
+          <div class="lbl">Client requested Brooke's contact</div>
+          <div class="desc">The client has specifically asked to connect with Brooke. Checking this sends Brooke an email notification with this client's info.</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="saveBtn">Save Client</button>
+      <button class="btn-secondary" id="deleteBtn" style="display:none;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- DEPS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="bob-auth.js"></script>
+<script src="bob-api.js"></script>
+
+<script>
+'use strict';
+
+// ── HELPERS ──────────────────────────────────────────
+const E  = id => document.getElementById(id);
+const Q  = sel => document.querySelector(sel);
+const QA = sel => document.querySelectorAll(sel);
+
+let CLIENTS = [];
+let CURRENT_FILTER = 'all';
+let EDITING_ID = null;
+
+const STAGE_LABELS = {
+  lead: 'Buyer Lead', pre_approval: 'Pre-Approval', searching: 'Home Search',
+  under_contract: 'Under Contract', closed: 'Closed', seller_lead: 'Seller Lead'
+};
+
+function toast(msg, kind='info', duration=3000) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  E('toastContainer').appendChild(el);
+  setTimeout(() => { el.style.transition='opacity 0.3s';el.style.opacity='0';setTimeout(()=>el.remove(), 300); }, duration);
+}
+
+function loading(on) { E('loadingBar').classList.toggle('active', on); }
+
+function avatar(name) { return (name || '?').split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase(); }
+
+function formatStageBadge(stage) {
+  return `<span class="stage-badge stage-${stage}">${STAGE_LABELS[stage] || stage}</span>`;
+}
+
+// ── AUTH SCREENS ─────────────────────────────────────
+E('goLogin').onclick  = () => { E('setupScreen').style.display='none'; E('loginScreen').style.display='block'; };
+E('goSetup').onclick  = () => { E('loginScreen').style.display='none'; E('setupScreen').style.display='block'; };
+E('goReset').onclick  = async () => {
+  const email = prompt('Enter your email to receive a password reset link:');
+  if (!email) return;
+  try {
+    await BobAuth.resetPassword(email);
+    toast('Password reset email sent. Check your inbox.', 'success');
+  } catch (e) { toast(e.message, 'error'); }
+};
+
+// ── SIGN UP ──────────────────────────────────────────
+E('signupBtn').onclick = async () => {
+  const btn = E('signupBtn'), errEl = E('setupError');
+  btn.disabled = true; btn.textContent = 'Creating…'; errEl.style.display='none';
+  try {
+    await BobAuth.signUp({
+      name:     E('setupName').value.trim(),
+      company:  E('setupCompany').value.trim(),
+      phone:    E('setupPhone').value.trim(),
+      email:    E('setupEmail').value.trim(),
+      password: E('setupPassword').value,
+    });
+    toast('Welcome to Bank on Brooke!', 'success');
+    await enterCRM();
+  } catch (e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account →';
+  }
+};
+
+// ── SIGN IN ──────────────────────────────────────────
+E('signinBtn').onclick = async () => {
+  const btn = E('signinBtn'), errEl = E('loginError');
+  btn.disabled = true; btn.textContent = 'Logging in…'; errEl.style.display='none';
+  try {
+    await BobAuth.signIn({
+      email:    E('loginEmail').value.trim(),
+      password: E('loginPassword').value,
+    });
+    await enterCRM();
+  } catch (e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Log In →';
+  }
+};
+
+E('logoutBtn').onclick = async () => {
+  await BobAuth.signOut();
+  CLIENTS = []; EDITING_ID = null;
+  E('mainLayout').style.display = 'none';
+  E('siteHeader').style.display = 'none';
+  E('loginOverlay').classList.add('show');
+  E('loginEmail').value = ''; E('loginPassword').value = '';
+};
+
+// ── ENTER CRM ────────────────────────────────────────
+async function enterCRM() {
+  const realtor = await BobAuth.currentRealtor();
+  if (!realtor) {
+    toast('Could not load your profile. Try logging in again.', 'error');
+    return;
+  }
+  E('headerPartner').textContent = realtor.name;
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  E('greeting').textContent = greet + ', ' + realtor.name.split(' ')[0];
+  E('subline').textContent = 'Here is what is happening with your clients today.';
+
+  E('loginOverlay').classList.remove('show');
+  E('siteHeader').style.display = 'flex';
+  E('mainLayout').style.display = 'grid';
+  await loadClients();
+}
+
+// ── LOAD CLIENTS ─────────────────────────────────────
+async function loadClients() {
+  loading(true);
+  try {
+    CLIENTS = await BobApi.buyers.list();
+  } catch (e) {
+    console.error(e); toast('Could not load clients: ' + e.message, 'error');
+    CLIENTS = [];
+  }
+  renderClients();
+  updateCounts();
+  loading(false);
+}
+
+function renderClients() {
+  const filtered = CURRENT_FILTER === 'all' ? CLIENTS : CLIENTS.filter(c => c.stage === CURRENT_FILTER);
+  const grid = E('clientsGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty"><div class="ic">⚘</div><div class="h">No clients yet</div><div class="s">Click + Add Client to get started.</div></div>`;
+    E('listTitle').textContent = CURRENT_FILTER === 'all' ? 'All Clients' : STAGE_LABELS[CURRENT_FILTER];
+    return;
+  }
+  E('listTitle').textContent = CURRENT_FILTER === 'all' ? 'All Clients' : STAGE_LABELS[CURRENT_FILTER];
+  grid.innerHTML = filtered.map(c => `
+    <div class="client-row" data-id="${c.id}">
+      <div class="avatar">${avatar(c.name)}</div>
+      <div>
+        <div class="client-name">${c.name}${c.contact_brooke_flag ? ' <span class="flag-icon" title="Brooke contact requested">★</span>' : ''}</div>
+        <div class="client-meta">${[c.phone, c.email, c.area_of_interest].filter(Boolean).join(' · ') || 'No contact info'}</div>
+      </div>
+      <div>${formatStageBadge(c.stage)}</div>
+      <div style="font-size:11px;color:var(--muted);">${c.budget || ''}</div>
+    </div>
+  `).join('');
+  QA('.client-row').forEach(r => r.onclick = () => openEdit(r.dataset.id));
+}
+
+function updateCounts() {
+  const counts = { lead: 0, pre_approval: 0, searching: 0, under_contract: 0, closed: 0, seller_lead: 0 };
+  let flagged = 0, monthCount = 0;
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  for (const c of CLIENTS) {
+    if (counts[c.stage] !== undefined) counts[c.stage]++;
+    if (c.contact_brooke_flag) flagged++;
+    if (c.created_at && new Date(c.created_at) >= monthStart) monthCount++;
+  }
+  E('ctAll').textContent    = CLIENTS.length;
+  E('ctLead').textContent   = counts.lead;
+  E('ctPre').textContent    = counts.pre_approval;
+  E('ctSearch').textContent = counts.searching;
+  E('ctUC').textContent     = counts.under_contract;
+  E('ctClosed').textContent = counts.closed;
+  E('ctSeller').textContent = counts.seller_lead;
+
+  E('totalClients').textContent = CLIENTS.length;
+  E('totalActive').textContent  = CLIENTS.length - counts.closed;
+  E('totalClosed').textContent  = counts.closed;
+  E('totalFlagged').textContent = flagged;
+
+  E('dashActive').textContent  = CLIENTS.length - counts.closed;
+  E('dashMonth').textContent   = monthCount;
+  E('dashClosed').textContent  = counts.closed;
+  E('dashFlagged').textContent = flagged;
+}
+
+// ── SIDEBAR FILTERING ────────────────────────────────
+QA('.sb-item[data-stage]').forEach(item => {
+  item.onclick = () => {
+    QA('.sb-item[data-stage]').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    CURRENT_FILTER = item.dataset.stage;
+    renderClients();
+  };
+});
+
+// ── ADD / EDIT MODAL ─────────────────────────────────
+E('openAddBtn').onclick = () => openEdit(null);
+E('closeModal').onclick = closeModal;
+function closeModal() { E('clientModal').classList.remove('show'); EDITING_ID = null; }
+
+function openEdit(id) {
+  EDITING_ID = id;
+  if (id) {
+    const c = CLIENTS.find(x => x.id === id);
+    if (!c) return;
+    E('modalTitle').firstChild.textContent = 'Edit Client ';
+    E('cName').value        = c.name || '';
+    E('cPhone').value       = c.phone || '';
+    E('cEmail').value       = c.email || '';
+    E('cStage').value       = c.stage || 'lead';
+    E('cLoan').value        = c.loan_type || '';
+    E('cBudget').value      = c.budget || '';
+    E('cPreApproval').value = c.pre_approval_amount || '';
+    E('cReferral').value    = c.referral_source || '';
+    E('cArea').value        = c.area_of_interest || '';
+    E('cContract').value    = c.contract_date || '';
+    E('cClose').value       = c.close_date || '';
+    E('cNotes').value       = c.notes || '';
+    E('cConsent').checked   = !!c.contact_brooke_consent;
+    E('cRequest').checked   = !!c.contact_brooke_flag;
+    E('deleteBtn').style.display = 'inline-block';
+
+    // BuyerHub link section — only available for existing clients
+    E('buyerHubSection').style.display = 'block';
+    setupBuyerHubLink(c);
+  } else {
+    E('modalTitle').firstChild.textContent = 'Add Client ';
+    QA('#clientModal input, #clientModal select, #clientModal textarea').forEach(i => {
+      if (i.type === 'checkbox') i.checked = false; else i.value = '';
+    });
+    E('cStage').value = 'lead';
+    E('deleteBtn').style.display = 'none';
+    E('buyerHubSection').style.display = 'none';
+  }
+  E('clientModal').classList.add('show');
+}
+
+// ── BUYERHUB LINK SETUP ─────────────────────────────
+// Configure where the BuyerHub is hosted. This is the URL pattern
+// the buyer will tap to open their personalized hub. Edit this to
+// match your deployment (GitHub Pages, custom domain, etc.).
+const BUYERHUB_BASE_URL = 'https://buyerhub.bankonbrooke.studio/buyerhub.html';
+
+async function setupBuyerHubLink(client) {
+  const url = `${BUYERHUB_BASE_URL}?b=${client.id}`;
+  E('buyerHubUrl').value = url;
+
+  E('copyHubBtn').onclick = (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(url).then(() => {
+      const orig = E('copyHubBtn').textContent;
+      E('copyHubBtn').textContent = 'Copied!';
+      setTimeout(() => { E('copyHubBtn').textContent = orig; }, 1500);
+    }).catch(() => toast('Could not copy. Tap the link to select it.', 'error'));
+  };
+
+  // Build SMS and email share links
+  const realtor = await BobAuth.currentRealtor();
+  const realtorName = realtor?.name?.split(' ')[0] || 'Your REALTOR®';
+  const firstName = (client.name || '').split(' ')[0] || 'there';
+
+  const smsBody = `Hi ${firstName}! It's ${realtorName}. I set up your personalized home buying hub — your checklist, the listings I'm sending you, and a direct line to talk to Brooke about your loan. Tap to open: ${url}`;
+  const emailSubject = `Your home buying hub is ready, ${firstName}`;
+  const emailBody = `Hi ${firstName},\n\nI set up your personalized home buying hub. It has:\n\n- Your homebuying checklist (saves your progress)\n- Featured listings I'm sending you\n- Heart any listing you love and I'll see it\n- My contact info always at the top\n- A direct line to Brooke for any loan questions\n\nTap to open: ${url}\n\nBookmark it on your phone — your progress saves automatically.\n\n— ${realtorName}`;
+
+  E('smsHubBtn').href = `sms:${client.phone || ''}?body=${encodeURIComponent(smsBody)}`;
+  E('emailHubBtn').href = `mailto:${client.email || ''}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+}
+
+// ── SAVE CLIENT ──────────────────────────────────────
+E('saveBtn').onclick = async () => {
+  const name = E('cName').value.trim();
+  if (!name) { toast('Name is required.', 'error'); return; }
+
+  const realtor = await BobAuth.currentRealtor();
+  if (!realtor) { toast('Session expired, please log in again.', 'error'); return; }
+
+  const payload = {
+    realtor_id:           realtor.id,
+    name:                 name,
+    phone:                E('cPhone').value.trim() || null,
+    email:                E('cEmail').value.trim() || null,
+    stage:                E('cStage').value,
+    loan_type:            E('cLoan').value || null,
+    budget:               E('cBudget').value.trim() || null,
+    pre_approval_amount:  E('cPreApproval').value.trim() || null,
+    referral_source:      E('cReferral').value.trim() || null,
+    area_of_interest:     E('cArea').value.trim() || null,
+    contract_date:        E('cContract').value || null,
+    close_date:           E('cClose').value || null,
+    notes:                E('cNotes').value.trim() || null,
+    contact_brooke_consent: E('cConsent').checked,
+    contact_brooke_flag:    E('cRequest').checked,
+  };
+
+  const btn = E('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    if (EDITING_ID) {
+      // Don't send realtor_id on update (RLS doesn't allow changing ownership)
+      const { realtor_id, ...updateFields } = payload;
+      // Detect if the contact_brooke_flag flipped from false to true (so we know the email was triggered)
+      const previous = CLIENTS.find(c => c.id === EDITING_ID);
+      const flagFlippedOn = previous && !previous.contact_brooke_flag && payload.contact_brooke_flag;
+      await BobApi.buyers.update(EDITING_ID, updateFields);
+      toast('Client updated' + (flagFlippedOn ? ' — Brooke has been notified' : ''), 'success');
+    } else {
+      const created = await BobApi.buyers.create(payload);
+      const flagOnAtCreation = !!payload.contact_brooke_flag;
+      toast('Client added' + (flagOnAtCreation ? ' — Brooke has been notified' : ''), 'success');
+    }
+    closeModal();
+    await loadClients();
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Client';
+  }
+};
+
+// ── DELETE CLIENT ────────────────────────────────────
+E('deleteBtn').onclick = async () => {
+  if (!EDITING_ID) return;
+  if (!confirm('Delete this client? This cannot be undone.')) return;
+  try {
+    await BobApi.buyers.remove(EDITING_ID);
+    toast('Client deleted', 'success');
+    closeModal();
+    await loadClients();
+  } catch (e) { toast('Delete failed: ' + e.message, 'error'); }
+};
+
+// ── CLOSE MODAL ON BACKDROP CLICK ────────────────────
+E('clientModal').onclick = (e) => { if (e.target === E('clientModal')) closeModal(); };
+
+// ── INITIAL AUTH STATE CHECK ─────────────────────────
+(async function init() {
+  loading(true);
+  try {
+    const user = await BobAuth.currentUser();
+    if (user) {
+      await enterCRM();
+    } else {
+      // Show login screen by default
+      E('setupScreen').style.display = 'none';
+      E('loginScreen').style.display = 'block';
+    }
+  } catch (e) {
+    console.error('Init error:', e);
+    E('setupScreen').style.display = 'none';
+    E('loginScreen').style.display = 'block';
+  }
+  loading(false);
+})();
+
+// React to auth changes (e.g. token refresh, logout from another tab)
+BobAuth.onAuthChange(async ({ event }) => {
+  if (event === 'SIGNED_OUT') {
+    CLIENTS = [];
+    E('mainLayout').style.display = 'none';
+    E('siteHeader').style.display = 'none';
+    E('loginOverlay').classList.add('show');
+  }
+});
+</script>
+</body>
+</html>
