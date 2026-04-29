@@ -412,6 +412,18 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
       </div>
     </div>
 
+    <div class="contact-prefs">
+      <div class="ttl">Show this listing to which buyers?</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Pick the buyers this listing fits. Only the buyers you check will see it in their hub.</p>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button type="button" id="selectAllBuyersBtn" class="btn-secondary" style="font-size:11px;padding:6px 12px;flex:1;">Select all</button>
+        <button type="button" id="deselectAllBuyersBtn" class="btn-secondary" style="font-size:11px;padding:6px 12px;flex:1;">Deselect all</button>
+      </div>
+      <div id="buyerAssignList" style="max-height:240px;overflow-y:auto;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:6px;">
+        <div style="text-align:center;color:var(--muted);font-size:12px;padding:14px;">Loading buyers…</div>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-primary" id="saveListingBtn">Save Listing</button>
       <button class="btn-secondary" id="deleteListingBtn" style="display:none;">Delete</button>
@@ -796,6 +808,7 @@ let EDITING_LISTING_ID = null;
 let CURRENT_PHOTO_FILE = null;
 let CURRENT_PHOTO_URL = null;
 let FAVORITE_COUNTS = {}; // { listingId: count }
+let ASSIGNMENT_COUNTS = {}; // { listingId: count of buyers it's assigned to }
 
 QA('.platform-tab').forEach(tab => {
   tab.onclick = () => {
@@ -826,12 +839,27 @@ async function loadListings() {
     LISTINGS = await BobApi.listings.list({ activeOnly: false });
     // Also fetch favorite counts per listing for badge display
     await loadFavoriteCounts();
+    // And assignment counts so we can show "Visible to X buyers"
+    await loadAssignmentCounts();
   } catch (e) {
     console.error(e); toast('Could not load listings: ' + e.message, 'error');
     LISTINGS = [];
   }
   renderListingsManager();
   loading(false);
+}
+
+async function loadAssignmentCounts() {
+  try {
+    const { data } = await BobApi.raw.from('listing_assignments').select('listing_id');
+    ASSIGNMENT_COUNTS = {};
+    (data || []).forEach(row => {
+      ASSIGNMENT_COUNTS[row.listing_id] = (ASSIGNMENT_COUNTS[row.listing_id] || 0) + 1;
+    });
+  } catch (e) {
+    console.warn('Could not load assignment counts:', e);
+    ASSIGNMENT_COUNTS = {};
+  }
 }
 
 async function loadFavoriteCounts() {
@@ -858,6 +886,7 @@ function renderListingsManager() {
   grid.innerHTML = LISTINGS.map(l => {
     const photo = (l.photo_urls && l.photo_urls.length > 0) ? l.photo_urls[0] : null;
     const favCount = FAVORITE_COUNTS[l.id] || 0;
+    const assignCount = ASSIGNMENT_COUNTS[l.id] || 0;
     return `
       <div class="listing-mgmt-card" data-id="${l.id}">
         <div class="listing-mgmt-photo" ${photo ? `style="background-image:url('${escapeAttr(photo)}');"` : ''}>
@@ -872,6 +901,9 @@ function renderListingsManager() {
             ${l.baths ? `<span>${l.baths} ba</span>` : ''}
             ${l.sqft ? `<span>${Number(l.sqft).toLocaleString()} sqft</span>` : ''}
             ${!l.is_active ? `<span style="color:var(--red);">Inactive</span>` : ''}
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:${assignCount === 0 ? 'var(--red)' : 'var(--muted)'};font-weight:600;">
+            ${assignCount === 0 ? '⚠ Not assigned to any buyer' : `Visible to ${assignCount} buyer${assignCount === 1 ? '' : 's'}`}
           </div>
         </div>
       </div>
@@ -925,7 +957,108 @@ function openListingEdit(id) {
     hidePhotoPreview();
     E('deleteListingBtn').style.display = 'none';
   }
+
+  // Load buyer assignments for this listing
+  populateBuyerAssignments(id);
+
   E('listingModal').classList.add('show');
+}
+
+// ── BUYER ASSIGNMENT FOR LISTINGS ───────────────────
+async function populateBuyerAssignments(listingId) {
+  const list = E('buyerAssignList');
+  list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:14px;">Loading buyers…</div>';
+
+  try {
+    // Make sure CLIENTS is loaded
+    if (!CLIENTS || CLIENTS.length === 0) {
+      const fresh = await BobApi.buyers.list();
+      if (fresh) CLIENTS = fresh;
+    }
+
+    if (!CLIENTS || CLIENTS.length === 0) {
+      list.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:12px;padding:18px;">You haven't added any buyers yet.<br>Add buyers in the Clients tab first.</div>`;
+      return;
+    }
+
+    // Get existing assignments for this listing (if editing)
+    let assignedIds = new Set();
+    if (listingId) {
+      const { data } = await BobApi.raw
+        .from('listing_assignments')
+        .select('buyer_id')
+        .eq('listing_id', listingId);
+      assignedIds = new Set((data || []).map(a => a.buyer_id));
+    }
+
+    // Render checkbox per buyer
+    list.innerHTML = CLIENTS.map(c => {
+      const checked = assignedIds.has(c.id) ? 'checked' : '';
+      const stageLabel = STAGE_LABELS[c.stage] || c.stage;
+      const budget = c.budget ? ` · ${escapeText(c.budget)}` : '';
+      return `
+        <label style="display:flex;gap:10px;align-items:center;padding:9px 10px;border-radius:7px;cursor:pointer;transition:background 0.1s;" class="assign-row" data-buyer-id="${c.id}">
+          <input type="checkbox" ${checked} style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">${escapeText(c.name)}</div>
+            <div style="font-size:11px;color:var(--muted);">${stageLabel}${budget}</div>
+          </div>
+        </label>
+      `;
+    }).join('');
+
+    // Hover style
+    QA('.assign-row').forEach(r => {
+      r.onmouseenter = () => r.style.background = 'var(--surface2)';
+      r.onmouseleave = () => r.style.background = '';
+    });
+  } catch (e) {
+    console.error('populateBuyerAssignments failed:', e);
+    list.innerHTML = `<div style="text-align:center;color:var(--red);font-size:12px;padding:14px;">Could not load buyers.</div>`;
+  }
+}
+
+E('selectAllBuyersBtn').onclick = (e) => {
+  e.preventDefault();
+  E('buyerAssignList').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+};
+
+E('deselectAllBuyersBtn').onclick = (e) => {
+  e.preventDefault();
+  E('buyerAssignList').querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+};
+
+function getCheckedBuyerIds() {
+  return Array.from(E('buyerAssignList').querySelectorAll('.assign-row input[type="checkbox"]:checked'))
+    .map(cb => cb.closest('.assign-row').dataset.buyerId);
+}
+
+async function syncListingAssignments(listingId, buyerIds) {
+  // Remove old assignments not in the new set, add new ones not yet assigned.
+  const { data: existing } = await BobApi.raw
+    .from('listing_assignments')
+    .select('id, buyer_id')
+    .eq('listing_id', listingId);
+
+  const existingMap = new Map((existing || []).map(r => [r.buyer_id, r.id]));
+  const newSet = new Set(buyerIds);
+
+  // Delete assignments no longer wanted
+  const toDelete = [];
+  existingMap.forEach((id, buyerId) => {
+    if (!newSet.has(buyerId)) toDelete.push(id);
+  });
+  if (toDelete.length > 0) {
+    await BobApi.raw.from('listing_assignments').delete().in('id', toDelete);
+  }
+
+  // Insert new assignments
+  const toInsert = buyerIds
+    .filter(bId => !existingMap.has(bId))
+    .map(bId => ({ listing_id: listingId, buyer_id: bId }));
+  if (toInsert.length > 0) {
+    await BobApi.raw.from('listing_assignments').insert(toInsert);
+  }
 }
 
 // ── PHOTO UPLOAD HANDLERS ───────────────────────────
@@ -1023,11 +1156,16 @@ E('saveListingBtn').onclick = async () => {
 
     if (EDITING_LISTING_ID) {
       await BobApi.listings.update(EDITING_LISTING_ID, payload);
+      await syncListingAssignments(EDITING_LISTING_ID, getCheckedBuyerIds());
       toast('Listing updated', 'success');
     } else {
       payload.realtor_id = realtor.id;
-      await BobApi.listings.create(payload);
-      toast('Listing added', 'success');
+      const created = await BobApi.listings.create(payload);
+      const checkedIds = getCheckedBuyerIds();
+      if (checkedIds.length > 0) {
+        await syncListingAssignments(created.id, checkedIds);
+      }
+      toast('Listing added' + (checkedIds.length ? ` — visible to ${checkedIds.length} buyer${checkedIds.length === 1 ? '' : 's'}` : ' — not yet assigned to any buyers'), 'success');
     }
     closeListingModal();
     await loadListings();

@@ -365,9 +365,25 @@ async function load() {
     if (!realtor) { showError('Your REALTOR®\'s profile is not set up yet. Reach out to them directly.'); return; }
     REALTOR = realtor;
 
-    // 3. Fetch listings (Realtor's active featured listings)
-    const { data: listings } = await sb.from('featured_listings').select('*').eq('realtor_id', buyer.realtor_id).eq('is_active', true).order('created_at', { ascending: false });
-    LISTINGS = listings || [];
+    // 3. Fetch listings ASSIGNED to this specific buyer (not all of the realtor's listings)
+    //    The Realtor curates which listings each buyer sees in their CRM.
+    const { data: assignments } = await sb
+      .from('listing_assignments')
+      .select('listing_id')
+      .eq('buyer_id', buyerId);
+    const assignedIds = (assignments || []).map(a => a.listing_id);
+
+    if (assignedIds.length === 0) {
+      LISTINGS = [];
+    } else {
+      const { data: listings } = await sb
+        .from('featured_listings')
+        .select('*')
+        .in('id', assignedIds)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      LISTINGS = listings || [];
+    }
 
     // 4. Fetch this buyer's checklist progress
     const { data: progressRows } = await sb.from('buyer_checklist_progress').select('*').eq('buyer_id', buyerId);
@@ -467,7 +483,7 @@ function renderChecklist() {
 function renderListings() {
   const grid = E('listingsGrid');
   if (LISTINGS.length === 0) {
-    grid.innerHTML = `<div class="empty"><div class="ic">⌂</div><div class="h">No listings yet</div><div class="s">${escapeHtml(REALTOR.name)} hasn't added any featured listings yet. Check back soon.</div></div>`;
+    grid.innerHTML = `<div class="empty"><div class="ic">⌂</div><div class="h">No listings yet</div><div class="s">${escapeHtml(REALTOR.name)} hasn't sent you any listings to look at yet. They'll show up here as soon as ${escapeHtml(REALTOR.name.split(' ')[0])} adds them.</div></div>`;
     return;
   }
   grid.innerHTML = LISTINGS.map(l => listingCardHtml(l)).join('');
