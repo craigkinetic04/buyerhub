@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Client CRM — Bank on Brooke</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -20,7 +22,7 @@
   --red:#FF6B6B;--red-dim:rgba(255,107,107,0.1);
   --purple:#A78BFA;--purple-dim:rgba(167,139,250,0.1);
 }
-body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:13px;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;font-size:13px;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
@@ -198,19 +200,219 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .sp-item.done .sp-item-label{color:var(--muted);text-decoration:line-through;}
 .sp-item-when{font-size:10px;color:var(--green);margin-top:2px;}
 
-/* MOBILE */
+/* MOBILE — Phone-friendly experience */
 @media (max-width:760px){
-  .main{grid-template-columns:1fr;}
-  .sidebar{border-right:none;border-bottom:1px solid var(--border);overflow-x:auto;display:flex;gap:6px;padding:10px;}
-  .sb-section{margin-bottom:0;flex-shrink:0;}
-  .sb-label{display:none;}
-  .sb-item{white-space:nowrap;}
-  .sb-stat{display:none;}
-  .dash-stats{grid-template-columns:1fr 1fr;}
-  .field-grid{grid-template-columns:1fr;}
-  .header-brand{font-size:14px;}
-  .platform-nav{display:none;}
-  .content{padding:16px;}
+  /* Header: stack and shrink */
+  .site-header{
+    flex-wrap:wrap;
+    padding:10px 14px;
+    gap:8px;
+    position:sticky;
+    top:0;
+    z-index:90;
+  }
+  .header-left{flex:1;min-width:0;}
+  .header-brand{font-size:13px;}
+  .header-divider{display:none;}
+
+  /* Hide platform-nav from header — we'll show as bottom tab bar instead */
+  .platform-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    border-radius:0;
+    display:flex;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+    z-index:80;
+    gap:0;
+    box-shadow:0 -4px 16px rgba(0,0,0,0.2);
+  }
+  .platform-tab{
+    flex:1;
+    padding:10px 8px;
+    font-size:11px;
+    border-radius:8px;
+    min-height:44px;
+  }
+
+  /* Header right section: just keep logout + add buttons */
+  .header-right{gap:6px;flex-wrap:wrap;}
+  .header-partner{display:none;}
+  .add-client-btn,.btn-invite{
+    padding:8px 12px;
+    font-size:11px;
+    min-height:36px;
+  }
+  .logout-btn{
+    padding:7px 10px;
+    font-size:11px;
+    min-height:36px;
+  }
+
+  /* Main layout: single column, hide sidebar */
+  .main{grid-template-columns:1fr;padding-bottom:80px;}
+  .sidebar{display:none;}
+  .content{padding:16px 14px;}
+
+  /* Mobile sidebar menu (hamburger-triggered) */
+  .mobile-menu-btn{
+    display:flex !important;
+    background:transparent;
+    border:1px solid var(--border2);
+    color:var(--text);
+    padding:6px 10px;
+    border-radius:7px;
+    font-size:11px;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    min-height:36px;
+  }
+  .mobile-menu-btn:hover{border-color:var(--gold);}
+
+  /* Mobile sidebar drawer */
+  .mobile-sidebar-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    z-index:150;
+  }
+  .mobile-sidebar-overlay.show{display:block;}
+  .mobile-sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    width:80%;
+    max-width:300px;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    z-index:160;
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    overflow-y:auto;
+    padding-top:env(safe-area-inset-top);
+  }
+  .mobile-sidebar.show{transform:translateX(0);}
+  .mobile-sidebar .sb-section{margin:18px 14px;}
+  .mobile-sidebar .sb-label{display:block;}
+  .mobile-sidebar .sb-item{white-space:normal;padding:11px 12px;min-height:44px;display:flex;align-items:center;justify-content:space-between;}
+  .mobile-sidebar .sb-stat{display:flex;}
+
+  /* Page heading */
+  .page-h{font-size:22px;}
+  .page-sub{font-size:12px;margin-bottom:14px;}
+
+  /* Dashboard stats — 2 columns on phone */
+  .dash-stats{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .stat-card{padding:11px 12px;}
+  .stat-num{font-size:22px;}
+  .stat-label{font-size:9px;letter-spacing:1px;}
+  .stat-sub{font-size:10px;}
+
+  /* Clients grid — single column cards */
+  .clients-grid{grid-template-columns:1fr;gap:10px;}
+  .client-card{padding:14px;}
+  .client-name{font-size:14px;}
+  .client-card .meta-row{font-size:11px;}
+
+  /* Listings grid — single column */
+  .listings-mgmt-grid{grid-template-columns:1fr;gap:10px;}
+  .listings-mgmt-grid .listing-mgmt-card{display:flex;flex-direction:row;}
+  .listings-mgmt-grid .listing-mgmt-photo{width:130px;flex-shrink:0;aspect-ratio:1;}
+  .listings-mgmt-grid .listing-mgmt-body{flex:1;padding:11px 13px;min-width:0;}
+  .listing-mgmt-price{font-size:16px;}
+  .listing-mgmt-address{font-size:11px;}
+
+  /* Modals: full-screen on mobile */
+  .modal-overlay{padding:0;align-items:stretch;}
+  .modal{
+    max-width:none;
+    max-height:none;
+    width:100%;
+    border-radius:0;
+    padding:18px 16px calc(60px + env(safe-area-inset-bottom));
+    overflow-y:auto;
+  }
+  .modal h3{font-size:18px;}
+  .field-grid{grid-template-columns:1fr;gap:10px;}
+  .field input,.field select,.field textarea{
+    font-size:16px; /* Prevents iOS zoom on focus */
+    padding:11px 13px;
+    min-height:44px;
+  }
+  .field textarea{min-height:80px;}
+  .field label{font-size:10px;}
+
+  /* Modal action buttons stack vertically */
+  .modal-actions{
+    flex-direction:column-reverse;
+    gap:8px;
+    position:sticky;
+    bottom:env(safe-area-inset-bottom);
+    background:var(--surface);
+    margin:14px -16px -10px;
+    padding:14px 16px;
+    border-top:1px solid var(--border);
+  }
+  .btn-primary,.btn-secondary{
+    width:100%;
+    padding:13px;
+    font-size:14px;
+    min-height:48px;
+  }
+
+  /* Side panel: full-screen on mobile */
+  .side-panel{max-width:100%;}
+  .side-panel-header{padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));}
+  .side-panel-body{padding:12px 14px;}
+
+  /* Filters: scroll horizontally on mobile */
+  .filters{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    padding-bottom:6px;
+    margin-bottom:12px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .filters::-webkit-scrollbar{display:none;}
+  .filter-pill{flex-shrink:0;font-size:11px;padding:6px 11px;}
+  .filter-label{flex-shrink:0;font-size:10px;}
+  .filter-select{flex-shrink:0;font-size:11px;}
+
+  /* Brooke status badge */
+  #brookeStatusBadge{padding:10px;}
+
+  /* Photo upload area: smaller on mobile */
+  #photoDropZone{padding:14px;}
+  #photoImg{max-height:160px;}
+
+  /* Buyer activity section */
+  .contact-prefs{padding:12px;}
+  .contact-prefs .ttl{font-size:13px;}
+
+  /* Loading bar visible above bottom tab bar */
+  .loading-bar{top:0;}
+
+  /* Toasts: position above bottom tab bar */
+  .toast-container{bottom:calc(70px + env(safe-area-inset-bottom));}
+}
+
+/* Hide mobile menu button by default (only show on mobile) */
+.mobile-menu-btn{display:none;}
+
+/* Tablet adjustments */
+@media (min-width:761px) and (max-width:1024px){
+  .main{grid-template-columns:200px 1fr;}
+  .clients-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
 }
 
 /* LOADING */
@@ -259,6 +461,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 <!-- HEADER -->
 <header class="site-header" id="siteHeader" style="display:none;">
   <div class="header-left">
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menu</button>
     <div class="header-brand"><span class="accent">Bank on Brooke</span>Client CRM</div>
     <div class="header-divider"></div>
     <div class="platform-nav">
@@ -276,6 +479,29 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
 <!-- MAIN -->
 <div class="platform-page active" id="appPage">
+
+  <!-- MOBILE SIDEBAR DRAWER -->
+  <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
+  <aside class="mobile-sidebar" id="mobileSidebar">
+    <div class="sb-section">
+      <div class="sb-label">Pipeline</div>
+      <div class="sb-item active" data-stage="all">All Clients <span class="ct" id="ctAllMobile">0</span></div>
+      <div class="sb-item" data-stage="lead">Buyer Lead <span class="ct" id="ctLeadMobile">0</span></div>
+      <div class="sb-item" data-stage="pre_approval">Pre-Approval <span class="ct" id="ctPreMobile">0</span></div>
+      <div class="sb-item" data-stage="searching">Home Search <span class="ct" id="ctSearchMobile">0</span></div>
+      <div class="sb-item" data-stage="under_contract">Under Contract <span class="ct" id="ctUCMobile">0</span></div>
+      <div class="sb-item" data-stage="closed">Closed <span class="ct" id="ctClosedMobile">0</span></div>
+      <div class="sb-item" data-stage="seller_lead">Seller Lead <span class="ct" id="ctSellerMobile">0</span></div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-label">Overview</div>
+      <div class="sb-stat"><span>Total Clients</span><span class="num" id="totalClientsMobile">0</span></div>
+      <div class="sb-stat"><span>Active</span><span class="num" id="totalActiveMobile">0</span></div>
+      <div class="sb-stat"><span>Closed</span><span class="num" id="totalClosedMobile">0</span></div>
+      <div class="sb-stat"><span>Brooke flagged</span><span class="num" id="totalFlaggedMobile">0</span></div>
+    </div>
+  </aside>
+
   <div class="main" id="mainLayout" style="display:none;">
 
     <!-- SIDEBAR -->
@@ -654,18 +880,25 @@ function updateCounts() {
     if (c.contact_brooke_flag) flagged++;
     if (c.created_at && new Date(c.created_at) >= monthStart) monthCount++;
   }
-  E('ctAll').textContent    = CLIENTS.length;
-  E('ctLead').textContent   = counts.lead;
-  E('ctPre').textContent    = counts.pre_approval;
-  E('ctSearch').textContent = counts.searching;
-  E('ctUC').textContent     = counts.under_contract;
-  E('ctClosed').textContent = counts.closed;
-  E('ctSeller').textContent = counts.seller_lead;
+  // Helper to set a value on multiple ids (desktop + mobile)
+  const setBoth = (baseId, val) => {
+    const a = document.getElementById(baseId);
+    const b = document.getElementById(baseId + 'Mobile');
+    if (a) a.textContent = val;
+    if (b) b.textContent = val;
+  };
+  setBoth('ctAll',    CLIENTS.length);
+  setBoth('ctLead',   counts.lead);
+  setBoth('ctPre',    counts.pre_approval);
+  setBoth('ctSearch', counts.searching);
+  setBoth('ctUC',     counts.under_contract);
+  setBoth('ctClosed', counts.closed);
+  setBoth('ctSeller', counts.seller_lead);
 
-  E('totalClients').textContent = CLIENTS.length;
-  E('totalActive').textContent  = CLIENTS.length - counts.closed;
-  E('totalClosed').textContent  = counts.closed;
-  E('totalFlagged').textContent = flagged;
+  setBoth('totalClients', CLIENTS.length);
+  setBoth('totalActive',  CLIENTS.length - counts.closed);
+  setBoth('totalClosed',  counts.closed);
+  setBoth('totalFlagged', flagged);
 
   E('dashActive').textContent  = CLIENTS.length - counts.closed;
   E('dashMonth').textContent   = monthCount;
@@ -676,12 +909,29 @@ function updateCounts() {
 // ── SIDEBAR FILTERING ────────────────────────────────
 QA('.sb-item[data-stage]').forEach(item => {
   item.onclick = () => {
-    QA('.sb-item[data-stage]').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    CURRENT_FILTER = item.dataset.stage;
+    // Sync ALL sb-items (both desktop and mobile drawer)
+    const stage = item.dataset.stage;
+    QA('.sb-item[data-stage]').forEach(i => {
+      i.classList.toggle('active', i.dataset.stage === stage);
+    });
+    CURRENT_FILTER = stage;
     renderClients();
+    // Close mobile drawer if open
+    closeMobileSidebar();
   };
 });
+
+// ── MOBILE MENU ──────────────────────────────────────
+function openMobileSidebar() {
+  E('mobileSidebar').classList.add('show');
+  E('mobileSidebarOverlay').classList.add('show');
+}
+function closeMobileSidebar() {
+  E('mobileSidebar').classList.remove('show');
+  E('mobileSidebarOverlay').classList.remove('show');
+}
+E('mobileMenuBtn').onclick = openMobileSidebar;
+E('mobileSidebarOverlay').onclick = closeMobileSidebar;
 
 // ── ADD / EDIT MODAL ─────────────────────────────────
 E('openAddBtn').onclick = () => openEdit(null);
