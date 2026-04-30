@@ -29,7 +29,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .full-msg p{color:var(--muted);font-size:14px;line-height:1.6;}
 
 /* REALTOR HEADER (sticky) */
-.realtor-bar{background:var(--navy);color:var(--cream);padding:14px 20px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(196,154,120,0.2);}
+.realtor-bar{background:var(--navy);color:var(--cream);padding:calc(14px + env(safe-area-inset-top)) 20px 14px 20px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(196,154,120,0.2);}
 .realtor-bar-inner{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:14px;}
 .realtor-avatar{width:46px;height:46px;border-radius:12px;background:var(--gold);color:var(--navy-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;font-family:'Playfair Display',serif;flex-shrink:0;overflow:hidden;}
 .realtor-avatar img{width:100%;height:100%;object-fit:cover;}
