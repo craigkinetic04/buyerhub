@@ -202,17 +202,27 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
 /* MOBILE — Phone-friendly experience */
 @media (max-width:760px){
-  /* Header: stack and shrink */
+  /* HEADER: Compact, clean, single row */
   .site-header{
-    flex-wrap:wrap;
     padding:10px 14px;
+    padding-top:calc(10px + env(safe-area-inset-top));
     gap:8px;
     position:sticky;
     top:0;
     z-index:90;
+    flex-wrap:nowrap;
+    align-items:center;
+    min-height:52px;
   }
-  .header-left{flex:1;min-width:0;}
-  .header-brand{font-size:13px;}
+  .header-left{
+    flex:1;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  /* Hide the desktop "Bank on Brooke Client CRM" stacked text */
+  .header-brand{display:none;}
   .header-divider{display:none;}
 
   /* Hide platform-nav from header — we'll show as bottom tab bar instead */
@@ -236,24 +246,73 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     font-size:11px;
     border-radius:8px;
     min-height:44px;
+    background:transparent !important;
+  }
+  .platform-tab.active{
+    background:var(--gold-dim) !important;
+    color:var(--gold) !important;
   }
 
-  /* Header right section: just keep logout + add buttons */
-  .header-right{gap:6px;flex-wrap:wrap;}
+  /* Center title in header — shows "Closing Day" or current section */
+  .mobile-title{
+    display:block !important;
+    flex:1;
+    text-align:center;
+    font-family:'Playfair Display',serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--white);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* Header right section: only keep logout — Add Client moves to floating button */
+  .header-right{
+    gap:6px;
+    flex-wrap:nowrap;
+    flex-shrink:0;
+  }
   .header-partner{display:none;}
-  .add-client-btn,.btn-invite{
-    padding:8px 12px;
-    font-size:11px;
-    min-height:36px;
+  .add-client-btn{
+    /* Hide the textual button on mobile — we'll add a floating + button */
+    display:none !important;
   }
   .logout-btn{
-    padding:7px 10px;
+    padding:7px 12px;
     font-size:11px;
     min-height:36px;
+    background:transparent;
+    border:1px solid var(--border2);
+    color:var(--muted);
+    border-radius:7px;
   }
 
+  /* Floating Action Button (FAB) for + Add */
+  .fab{
+    display:flex !important;
+    position:fixed;
+    bottom:calc(80px + env(safe-area-inset-bottom));
+    right:18px;
+    width:54px;
+    height:54px;
+    background:var(--gold);
+    color:var(--navy-dark);
+    border:none;
+    border-radius:50%;
+    font-size:26px;
+    font-weight:300;
+    cursor:pointer;
+    z-index:75;
+    box-shadow:0 4px 14px rgba(196,154,120,0.4);
+    align-items:center;
+    justify-content:center;
+    line-height:1;
+  }
+  .fab:active{transform:scale(0.96);}
+
   /* Main layout: single column, hide sidebar */
-  .main{grid-template-columns:1fr;padding-bottom:80px;}
+  .main{grid-template-columns:1fr;padding-bottom:90px;}
   .sidebar{display:none;}
   .content{padding:16px 14px;}
 
@@ -261,17 +320,19 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   .mobile-menu-btn{
     display:flex !important;
     background:transparent;
-    border:1px solid var(--border2);
+    border:none;
     color:var(--text);
-    padding:6px 10px;
+    padding:8px;
     border-radius:7px;
-    font-size:11px;
+    font-size:18px;
     align-items:center;
-    gap:5px;
+    justify-content:center;
     cursor:pointer;
-    min-height:36px;
+    min-height:40px;
+    min-width:40px;
+    flex-shrink:0;
   }
-  .mobile-menu-btn:hover{border-color:var(--gold);}
+  .mobile-menu-btn:hover{background:var(--surface2);}
 
   /* Mobile sidebar drawer */
   .mobile-sidebar-overlay{
@@ -295,7 +356,8 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     transform:translateX(-100%);
     transition:transform 0.25s ease;
     overflow-y:auto;
-    padding-top:env(safe-area-inset-top);
+    padding-top:calc(20px + env(safe-area-inset-top));
+    padding-bottom:env(safe-area-inset-bottom);
   }
   .mobile-sidebar.show{transform:translateX(0);}
   .mobile-sidebar .sb-section{margin:18px 14px;}
@@ -324,7 +386,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   .client-name{font-size:14px;}
   .client-card .meta-row{font-size:11px;}
 
-  /* Listings grid — single column */
+  /* Listings grid — single column with horizontal cards */
   .listings-mgmt-grid{grid-template-columns:1fr;gap:10px;}
   .listings-mgmt-grid .listing-mgmt-card{display:flex;flex-direction:row;}
   .listings-mgmt-grid .listing-mgmt-photo{width:130px;flex-shrink:0;aspect-ratio:1;}
@@ -340,28 +402,24 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     width:100%;
     border-radius:0;
     padding:18px 16px calc(60px + env(safe-area-inset-bottom));
+    padding-top:calc(18px + env(safe-area-inset-top));
     overflow-y:auto;
   }
   .modal h3{font-size:18px;}
   .field-grid{grid-template-columns:1fr;gap:10px;}
   .field input,.field select,.field textarea{
-    font-size:16px; /* Prevents iOS zoom on focus */
+    font-size:16px;
     padding:11px 13px;
     min-height:44px;
   }
   .field textarea{min-height:80px;}
   .field label{font-size:10px;}
 
-  /* Modal action buttons stack vertically */
+  /* Modal action buttons stack vertically at bottom of modal */
   .modal-actions{
     flex-direction:column-reverse;
     gap:8px;
-    position:sticky;
-    bottom:env(safe-area-inset-bottom);
-    background:var(--surface);
-    margin:14px -16px -10px;
-    padding:14px 16px;
-    border-top:1px solid var(--border);
+    margin-top:18px;
   }
   .btn-primary,.btn-secondary{
     width:100%;
@@ -373,7 +431,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   /* Side panel: full-screen on mobile */
   .side-panel{max-width:100%;}
   .side-panel-header{padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));}
-  .side-panel-body{padding:12px 14px;}
+  .side-panel-body{padding:12px 14px;padding-bottom:calc(60px + env(safe-area-inset-bottom));}
 
   /* Filters: scroll horizontally on mobile */
   .filters{
@@ -399,15 +457,29 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   .contact-prefs{padding:12px;}
   .contact-prefs .ttl{font-size:13px;}
 
-  /* Loading bar visible above bottom tab bar */
-  .loading-bar{top:0;}
-
   /* Toasts: position above bottom tab bar */
   .toast-container{bottom:calc(70px + env(safe-area-inset-bottom));}
+
+  /* Login screen mobile */
+  .login-overlay{padding:0;}
+  .login-card{
+    border-radius:0;
+    max-height:100vh;
+    height:100vh;
+    width:100%;
+    max-width:none;
+    padding:24px 22px;
+    padding-top:calc(40px + env(safe-area-inset-top));
+    padding-bottom:calc(24px + env(safe-area-inset-bottom));
+    overflow-y:auto;
+    border:none;
+  }
 }
 
-/* Hide mobile menu button by default (only show on mobile) */
+/* Hide mobile-only elements on desktop */
 .mobile-menu-btn{display:none;}
+.mobile-title{display:none;}
+.fab{display:none;}
 
 /* Tablet adjustments */
 @media (min-width:761px) and (max-width:1024px){
@@ -461,7 +533,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 <!-- HEADER -->
 <header class="site-header" id="siteHeader" style="display:none;">
   <div class="header-left">
-    <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menu</button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     <div class="header-brand"><span class="accent">Bank on Brooke</span>Client CRM</div>
     <div class="header-divider"></div>
     <div class="platform-nav">
@@ -469,6 +541,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
       <button class="platform-tab" data-page="listings">Listings</button>
     </div>
   </div>
+  <div class="mobile-title" id="mobileTitle">Closing Day</div>
   <div class="header-right">
     <span class="header-partner" id="headerPartner">—</span>
     <button class="add-client-btn" id="openAddBtn">+ Add Client</button>
@@ -476,6 +549,9 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     <button class="logout-btn" id="logoutBtn">Log out</button>
   </div>
 </header>
+
+<!-- FLOATING ACTION BUTTON (mobile only) -->
+<button class="fab" id="fabAddBtn">+</button>
 
 <!-- MAIN -->
 <div class="platform-page active" id="appPage">
@@ -650,6 +726,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
     <div class="modal-actions">
       <button class="btn-primary" id="saveBtn">Save Client</button>
+      <button class="btn-secondary" id="inviteBuyerBtn" style="display:none;">Send App Invite</button>
       <button class="btn-secondary" id="deleteBtn" style="display:none;">Delete</button>
     </div>
   </div>
@@ -808,11 +885,7 @@ E('signinBtn').onclick = async () => {
 
 E('logoutBtn').onclick = async () => {
   await BobAuth.signOut();
-  CLIENTS = []; EDITING_ID = null;
-  E('mainLayout').style.display = 'none';
-  E('siteHeader').style.display = 'none';
-  E('loginOverlay').classList.add('show');
-  E('loginEmail').value = ''; E('loginPassword').value = '';
+  window.location.replace('index.html');
 };
 
 // ── ENTER CRM ────────────────────────────────────────
@@ -831,6 +904,7 @@ async function enterCRM() {
   E('loginOverlay').classList.remove('show');
   E('siteHeader').style.display = 'flex';
   E('mainLayout').style.display = 'grid';
+  E('mobileTitle').textContent = 'Clients';
   await loadClients();
 }
 
@@ -960,6 +1034,17 @@ function openEdit(id) {
     E('cRequest').checked   = !!c.contact_brooke_flag;
     E('deleteBtn').style.display = 'inline-block';
 
+    // Show "Send App Invite" if buyer has email but no auth account yet
+    if (c.email && !c.auth_user_id) {
+      E('inviteBuyerBtn').style.display = 'inline-block';
+      E('inviteBuyerBtn').textContent = 'Send App Invite';
+    } else if (c.auth_user_id) {
+      E('inviteBuyerBtn').style.display = 'inline-block';
+      E('inviteBuyerBtn').textContent = 'Resend Invite';
+    } else {
+      E('inviteBuyerBtn').style.display = 'none';
+    }
+
     // BuyerHub link section — only available for existing clients
     E('buyerHubSection').style.display = 'block';
     setupBuyerHubLink(c);
@@ -976,6 +1061,7 @@ function openEdit(id) {
     });
     E('cStage').value = 'lead';
     E('deleteBtn').style.display = 'none';
+    E('inviteBuyerBtn').style.display = 'none';
     E('buyerHubSection').style.display = 'none';
     E('activitySection').style.display = 'none';
     E('brookeStatusBadge').style.display = 'none';
@@ -1078,10 +1164,56 @@ E('deleteBtn').onclick = async () => {
   } catch (e) { toast('Delete failed: ' + e.message, 'error'); }
 };
 
+// ── SEND APP INVITE ──────────────────────────────────
+// Calls the invite-buyer Edge Function which:
+//   1. Creates a Supabase auth user (role: buyer)
+//   2. Links it to this buyer row
+//   3. Emails the buyer an invite link to set their password
+E('inviteBuyerBtn').onclick = async () => {
+  if (!EDITING_ID) return;
+  const c = CLIENTS.find(x => x.id === EDITING_ID);
+  if (!c) return;
+  const email = E('cEmail').value.trim();
+  const name = E('cName').value.trim();
+  const phone = E('cPhone').value.trim();
+  if (!email || !name) {
+    toast('Buyer needs a name and email before inviting.', 'error');
+    return;
+  }
+  if (!confirm(`Send a Closing Day invite email to ${email}?`)) return;
+
+  E('inviteBuyerBtn').disabled = true;
+  E('inviteBuyerBtn').textContent = 'Sending…';
+  try {
+    const sb = BobAuth.client();
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch('https://fegzfjftfgqjjgatihyi.supabase.co/functions/v1/invite-buyer', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, phone, buyer_id: EDITING_ID }),
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Invite failed');
+    toast(`Invite email sent to ${email}`, 'success');
+    closeModal();
+    await loadClients();
+  } catch (e) {
+    toast('Invite failed: ' + e.message, 'error');
+  } finally {
+    E('inviteBuyerBtn').disabled = false;
+    E('inviteBuyerBtn').textContent = 'Send App Invite';
+  }
+};
+
 // ── CLOSE MODAL ON BACKDROP CLICK ────────────────────
 E('clientModal').onclick = (e) => { if (e.target === E('clientModal')) closeModal(); };
 
 // ── INITIAL AUTH STATE CHECK ─────────────────────────
+// All authentication happens in index.html (the unified Closing Day login).
+// If we land here without auth, bounce back to index.html.
 (async function init() {
   loading(true);
   try {
@@ -1089,14 +1221,14 @@ E('clientModal').onclick = (e) => { if (e.target === E('clientModal')) closeModa
     if (user) {
       await enterCRM();
     } else {
-      // Show login screen by default
-      E('setupScreen').style.display = 'none';
-      E('loginScreen').style.display = 'block';
+      // Not logged in — redirect to unified login
+      window.location.replace('index.html');
+      return;
     }
   } catch (e) {
     console.error('Init error:', e);
-    E('setupScreen').style.display = 'none';
-    E('loginScreen').style.display = 'block';
+    window.location.replace('index.html');
+    return;
   }
   loading(false);
 })();
@@ -1104,10 +1236,7 @@ E('clientModal').onclick = (e) => { if (e.target === E('clientModal')) closeModa
 // React to auth changes (e.g. token refresh, logout from another tab)
 BobAuth.onAuthChange(async ({ event }) => {
   if (event === 'SIGNED_OUT') {
-    CLIENTS = [];
-    E('mainLayout').style.display = 'none';
-    E('siteHeader').style.display = 'none';
-    E('loginOverlay').classList.add('show');
+    window.location.replace('index.html');
   }
 });
 
@@ -1132,15 +1261,26 @@ QA('.platform-tab').forEach(tab => {
       E('listingsPage').style.display = 'none';
       E('openAddBtn').style.display = 'inline-block';
       E('openAddListingBtn').style.display = 'none';
+      E('mobileTitle').textContent = 'Clients';
     } else {
       E('mainLayout').style.display = 'none';
       E('listingsPage').style.display = 'block';
       E('openAddBtn').style.display = 'none';
       E('openAddListingBtn').style.display = 'inline-block';
+      E('mobileTitle').textContent = 'Listings';
       loadListings();
     }
   };
 });
+
+// FAB (mobile + button) — does Add Client or Add Listing depending on page
+E('fabAddBtn').onclick = () => {
+  if (CURRENT_PAGE === 'clients') {
+    openEdit(null);
+  } else {
+    openListingEdit(null);
+  }
+};
 
 // ════════════════════════════════════════════════════════
 // LISTINGS MANAGEMENT

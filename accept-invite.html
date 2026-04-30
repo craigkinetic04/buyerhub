@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Set Up Your Account · Closing Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0A0A;--surface:#111318;--border:#2A2E38;
+  --cyan:#26B9DA;--cyan-hover:#3FCBE8;
+  --gold:#C49A78;
+  --text:#F0F0F0;--muted:#8B909E;--dim:#5F5E5A;
+  --red:#E24B4A;--red-dim:rgba(226,75,74,0.12);
+  --green:#3CE8A0;--green-dim:rgba(60,232,160,0.12);
+}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  font-family:'Inter',sans-serif;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 24px;
+  padding-top:calc(32px + env(safe-area-inset-top));
+  padding-bottom:calc(32px + env(safe-area-inset-bottom));
+  position:relative;
+}
+.brand{text-align:center;margin-bottom:36px;}
+.brand-mark{
+  font-family:'Playfair Display',serif;
+  font-size:36px;font-weight:600;
+  color:var(--text);letter-spacing:-0.5px;
+  display:inline-flex;align-items:baseline;gap:2px;line-height:1;
+}
+.brand-mark .star{width:14px;height:14px;margin-left:1px;flex-shrink:0;}
+.brand-tag{
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);font-weight:500;margin-top:14px;
+}
+
+.card{width:100%;max-width:380px;display:flex;flex-direction:column;}
+
+.welcome{
+  font-family:'Playfair Display',serif;
+  font-size:24px;color:var(--text);
+  margin-bottom:8px;text-align:center;
+}
+.intro{
+  color:var(--muted);font-size:13px;line-height:1.5;
+  margin-bottom:24px;text-align:center;
+}
+.error,.success{
+  padding:10px 12px;border-radius:8px;
+  font-size:12px;margin-bottom:14px;display:none;
+  border:0.5px solid;
+}
+.error{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.success{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.error.show,.success.show{display:block;}
+
+.field{margin-bottom:14px;}
+.field label{
+  display:block;font-size:9px;font-weight:600;
+  color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.field input{
+  width:100%;background:var(--surface);
+  border:0.5px solid var(--border);border-radius:8px;
+  padding:13px 14px;color:var(--text);
+  font-family:'Inter',sans-serif;font-size:16px;min-height:46px;
+  transition:border-color 0.15s ease;
+}
+.field input:focus{outline:none;border-color:var(--cyan);}
+.field input::placeholder{color:var(--dim);}
+.requirement{font-size:11px;color:var(--muted);margin-top:6px;}
+
+.btn{
+  width:100%;background:var(--cyan);color:var(--bg);
+  border:none;border-radius:8px;padding:14px;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:8px;min-height:48px;
+  transition:background 0.15s ease;
+}
+.btn:hover{background:var(--cyan-hover);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+.btn:active{transform:scale(0.98);}
+
+.platform-credit{
+  position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));
+  left:0;right:0;text-align:center;
+  font-size:9px;letter-spacing:2px;color:var(--dim);font-weight:500;
+}
+
+.spinner{
+  width:32px;height:32px;
+  border:3px solid rgba(38,185,218,0.18);
+  border-top-color:var(--cyan);
+  border-radius:50%;animation:spin 0.8s linear infinite;
+  margin:32px auto;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="brand-mark">Closing Day<img class="star" src="kinetic_star.png" alt=""></div>
+  <div class="brand-tag">Less chasing. More closing.</div>
+</div>
+
+<div class="card" id="card">
+  <h1 class="welcome">Welcome!</h1>
+  <p class="intro" id="intro">Set up your password to access your homebuying hub.</p>
+
+  <div class="error" id="errorBox"></div>
+  <div class="success" id="successBox"></div>
+
+  <div class="field">
+    <label for="password">Create Password</label>
+    <input id="password" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+    <div class="requirement">Use at least 8 characters with a mix of letters and numbers.</div>
+  </div>
+  <div class="field">
+    <label for="passwordConfirm">Confirm Password</label>
+    <input id="passwordConfirm" type="password" placeholder="Re-enter your password" autocomplete="new-password">
+  </div>
+  <button class="btn" id="submitBtn" type="button">Set Password & Continue →</button>
+</div>
+
+<div class="loading" id="loading" style="display:none;text-align:center;">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:13px;">Verifying your invite...</p>
+</div>
+
+<div class="platform-credit">POWERED BY KINETIC MANAGEMENT</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="bob-auth.js"></script>
+<script>
+'use strict';
+const E = id => document.getElementById(id);
+
+function showError(msg) {
+  E('errorBox').textContent = msg;
+  E('errorBox').classList.add('show');
+  E('successBox').classList.remove('show');
+}
+function showSuccess(msg) {
+  E('successBox').textContent = msg;
+  E('successBox').classList.add('show');
+  E('errorBox').classList.remove('show');
+}
+
+// ════════════════════════════════════════════════════════
+// On page load:
+// Supabase recovery links land here with auth tokens in the URL hash.
+// supabase-js automatically picks them up and signs the user in.
+// We just wait for the session, then show the password form.
+// ════════════════════════════════════════════════════════
+(async () => {
+  try {
+    // Give supabase-js a moment to process the hash
+    await new Promise(r => setTimeout(r, 300));
+    const user = await BobAuth.currentUser();
+    if (!user) {
+      showError('Invite link is invalid or expired. Ask your realtor to send a new one.');
+      E('submitBtn').disabled = true;
+      return;
+    }
+    // Personalize the welcome
+    const name = user.user_metadata?.name;
+    if (name) {
+      E('intro').textContent = `Hi ${name.split(' ')[0]}, set up your password to access your homebuying hub.`;
+    }
+  } catch (e) {
+    console.error('Init error:', e);
+    showError('Something went wrong. Please try the link again.');
+  }
+})();
+
+E('submitBtn').onclick = doSubmit;
+E('passwordConfirm').onkeydown = (e) => { if (e.key === 'Enter') doSubmit(); };
+
+async function doSubmit() {
+  const password = E('password').value || '';
+  const confirm = E('passwordConfirm').value || '';
+
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters.');
+    return;
+  }
+  if (password !== confirm) {
+    showError('Passwords do not match.');
+    return;
+  }
+
+  E('errorBox').classList.remove('show');
+  E('submitBtn').textContent = 'Saving…';
+  E('submitBtn').disabled = true;
+
+  try {
+    // Update the user's password using their active session
+    const sb = BobAuth.client();
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) {
+      showError(error.message || 'Could not set password.');
+      return;
+    }
+    showSuccess('All set! Taking you to your hub…');
+    setTimeout(() => {
+      window.location.replace('buyerhub.html');
+    }, 800);
+  } catch (e) {
+    showError(e.message || 'Could not set password.');
+  } finally {
+    E('submitBtn').textContent = 'Set Password & Continue →';
+    E('submitBtn').disabled = false;
+  }
+}
+</script>
+</body>
+</html>

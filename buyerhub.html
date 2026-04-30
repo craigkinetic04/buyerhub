@@ -341,13 +341,42 @@ let FAV_LISTING_IDS = new Set();
 // LOAD
 // ════════════════════════════════════════════════════════
 async function load() {
-  // Get buyer ID from URL: ?b=<uuid>
+  // Two ways to get the buyer ID:
+  //   1. URL param ?b=<uuid> — legacy magic link access
+  //   2. Authenticated buyer session — new app-based flow
   const params = new URLSearchParams(location.search);
-  const buyerId = params.get('b');
+  let buyerId = params.get('b');
 
+  // No URL param? Try auth-based access.
   if (!buyerId) {
-    showError('No buyer ID in the link. Please contact your REALTOR® for a fresh link.');
-    return;
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) {
+        // Not authenticated and no link — bounce to login
+        window.location.replace('index.html');
+        return;
+      }
+      if (user.app_metadata?.role !== 'buyer') {
+        // Logged in but not a buyer — wrong app
+        window.location.replace('index.html');
+        return;
+      }
+      // Look up the buyers row by auth_user_id
+      const { data: buyerRow } = await sb
+        .from('buyers')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+      if (!buyerRow) {
+        showError('Your buyer profile is not set up yet. Please contact your REALTOR®.');
+        return;
+      }
+      buyerId = buyerRow.id;
+    } catch (e) {
+      console.error('Auth-based buyer load failed:', e);
+      showError('Could not load your account. Please try logging in again.');
+      return;
+    }
   }
 
   // Validate UUID shape
