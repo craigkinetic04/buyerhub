@@ -171,6 +171,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
       <div class="realtor-actions">
         <a class="realtor-action" id="realtorPhone" href="#" title="Call">📞</a>
         <a class="realtor-action" id="realtorEmail" href="#" title="Email">✉</a>
+        <a class="realtor-action" id="buyerLogoutBtn" href="#" title="Log out" style="display:none;">⏻</a>
       </div>
     </div>
   </div>
@@ -372,6 +373,17 @@ async function load() {
         return;
       }
       buyerId = buyerRow.id;
+      // This buyer logged in with auth — show the logout button and wire it up
+      const logoutBtn = document.getElementById('buyerLogoutBtn');
+      if (logoutBtn) {
+        logoutBtn.style.display = 'flex';
+        logoutBtn.onclick = async (e) => {
+          e.preventDefault();
+          if (!confirm('Log out of Closing Day?')) return;
+          await sb.auth.signOut();
+          window.location.replace('index.html');
+        };
+      }
     } catch (e) {
       console.error('Auth-based buyer load failed:', e);
       showError('Could not load your account. Please try logging in again.');
