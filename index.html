@@ -10,18 +10,12 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0A0A0A;
-  --surface:#111318;
-  --surface-2:#1A1D24;
-  --border:#2A2E38;
-  --cyan:#26B9DA;
-  --cyan-hover:#3FCBE8;
-  --gold:#C49A78;
-  --text:#F0F0F0;
-  --muted:#8B909E;
-  --dim:#5F5E5A;
-  --red:#E24B4A;
-  --red-dim:rgba(226,75,74,0.12);
+  --bg:#0A0A0A;--surface:#111318;--border:#2A2E38;
+  --cyan:#26B9DA;--cyan-hover:#3FCBE8;
+  --gold:#C49A78;--gold-hover:#D4AC8A;
+  --text:#F0F0F0;--muted:#8B909E;--dim:#5F5E5A;
+  --red:#E24B4A;--red-dim:rgba(226,75,74,0.12);
+  --green:#3CE8A0;--green-dim:rgba(60,232,160,0.12);
 }
 html,body{height:100%;}
 body{
@@ -29,195 +23,170 @@ body{
   font-family:'Inter',sans-serif;
   color:var(--text);
   -webkit-font-smoothing:antialiased;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
   padding:32px 24px;
   padding-top:calc(32px + env(safe-area-inset-top));
   padding-bottom:calc(32px + env(safe-area-inset-bottom));
   position:relative;
+  min-height:100vh;
 }
 
-/* SPLASH */
-.splash{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;}
-.splash-mark{
-  font-family:'Playfair Display',serif;
-  font-size:36px;
-  font-weight:600;
-  color:var(--text);
-  letter-spacing:-0.5px;
-  display:flex;
-  align-items:baseline;
-  gap:2px;
-}
-.splash-mark .star{
-  width:14px;
-  height:14px;
-  margin-left:1px;
-  flex-shrink:0;
-}
-.splash-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);font-weight:500;}
-.spinner{
-  width:22px;height:22px;
-  border:2px solid rgba(38,185,218,0.18);
-  border-top-color:var(--cyan);
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
-  margin-top:6px;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* LOGIN */
-.login-card{
-  width:100%;
-  max-width:380px;
-  display:none;
-  flex-direction:column;
-}
-.login-card.show{display:flex;}
-
-.brand{
-  text-align:center;
-  margin-bottom:36px;
-}
+/* ─── Brand ─────────────────────────────────────────────── */
+.brand{text-align:center;margin-bottom:48px;}
 .brand-mark{
   font-family:'Playfair Display',serif;
-  font-size:36px;
-  font-weight:600;
-  color:var(--text);
-  letter-spacing:-0.5px;
-  display:inline-flex;
-  align-items:baseline;
-  gap:2px;
-  line-height:1;
+  font-size:42px;font-weight:600;
+  color:var(--text);letter-spacing:-0.5px;
+  display:inline-flex;align-items:baseline;gap:2px;line-height:1;
 }
 .brand-mark .star{
-  width:14px;
-  height:14px;
-  margin-left:1px;
-  flex-shrink:0;
+  width:14px;height:14px;margin-left:1px;flex-shrink:0;
 }
 .brand-tag{
-  font-size:10px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  color:var(--muted);
-  font-weight:500;
-  margin-top:14px;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);font-weight:500;margin-top:14px;
 }
 
-.login-error{
-  background:var(--red-dim);
-  border:0.5px solid var(--red);
-  color:var(--red);
-  padding:10px 12px;
-  border-radius:8px;
-  font-size:12px;
-  margin-bottom:14px;
-  display:none;
+/* ─── Card ─────────────────────────────────────────────── */
+.card{width:100%;max-width:380px;display:flex;flex-direction:column;}
+
+/* ─── Messages ─────────────────────────────────────── */
+.error,.success{
+  padding:10px 12px;border-radius:8px;
+  font-size:12px;margin-bottom:14px;display:none;
+  border:0.5px solid;
 }
+.error{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.success{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.error.show,.success.show{display:block;}
+
+/* ─── Form fields ─────────────────────────────────────── */
 .field{margin-bottom:14px;}
 .field label{
-  display:block;
-  font-size:9px;
-  font-weight:600;
-  color:var(--muted);
-  letter-spacing:1.5px;
-  text-transform:uppercase;
+  display:block;font-size:9px;font-weight:600;
+  color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;
   margin-bottom:6px;
 }
 .field input{
-  width:100%;
-  background:var(--surface);
-  border:0.5px solid var(--border);
-  border-radius:8px;
-  padding:13px 14px;
-  color:var(--text);
-  font-family:'Inter',sans-serif;
-  font-size:16px;
-  min-height:46px;
+  width:100%;background:var(--surface);
+  border:0.5px solid var(--border);border-radius:8px;
+  padding:13px 14px;color:var(--text);
+  font-family:'Inter',sans-serif;font-size:16px;min-height:46px;
   transition:border-color 0.15s ease;
 }
-.field input:focus{
-  outline:none;
-  border-color:var(--cyan);
-}
+.field input:focus{outline:none;border-color:var(--cyan);}
 .field input::placeholder{color:var(--dim);}
 
+/* ─── Buttons ─────────────────────────────────────── */
 .btn{
-  width:100%;
-  background:var(--cyan);
-  color:var(--bg);
-  border:none;
-  border-radius:8px;
-  padding:14px;
-  font-family:'Inter',sans-serif;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:8px;
-  min-height:48px;
+  width:100%;background:var(--cyan);color:var(--bg);
+  border:none;border-radius:8px;padding:14px;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;margin-top:8px;min-height:48px;
   transition:background 0.15s ease;
 }
 .btn:hover{background:var(--cyan-hover);}
 .btn:disabled{opacity:0.5;cursor:not-allowed;}
 .btn:active{transform:scale(0.98);}
 
-.switch{text-align:center;font-size:12px;margin-top:18px;}
-.switch a{
-  color:var(--gold);
-  cursor:pointer;
-  text-decoration:none;
-  font-weight:500;
+/* ─── Forgot password ─────────────────────────────────────── */
+.forgot-link{
+  display:block;text-align:center;
+  margin-top:18px;font-size:13px;
+  color:var(--gold);text-decoration:none;
+  font-weight:500;padding:6px;
+  background:none;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;letter-spacing:0.2px;
 }
-.switch a:hover{text-decoration:underline;}
+.forgot-link:hover{color:var(--gold-hover);text-decoration:underline;}
 
-.platform-credit{
-  position:absolute;
-  bottom:calc(20px + env(safe-area-inset-bottom));
-  left:0;right:0;
-  text-align:center;
-  font-size:9px;
-  letter-spacing:2px;
-  color:var(--dim);
-  font-weight:500;
+/* ─── Request Access ─────────────────────────────────────── */
+.divider{
+  display:flex;align-items:center;
+  margin:28px 0 20px;gap:12px;
 }
+.divider::before,.divider::after{
+  content:'';flex:1;height:0.5px;background:var(--border);
+}
+.divider span{
+  font-size:10px;letter-spacing:2px;color:var(--dim);
+  text-transform:uppercase;font-weight:500;
+}
+.request-access-link{
+  display:block;text-align:center;
+  font-size:13px;color:var(--gold);
+  text-decoration:none;font-weight:500;
+  padding:12px;letter-spacing:0.2px;
+  border:0.5px solid var(--border);
+  border-radius:8px;
+  transition:all 0.15s ease;
+}
+.request-access-link:hover{
+  color:var(--gold-hover);
+  border-color:var(--gold);
+  background:rgba(196,154,120,0.05);
+}
+
+/* ─── Footer credit ─────────────────────────────────────── */
+.platform-credit{
+  position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));
+  left:0;right:0;text-align:center;
+  font-size:9px;letter-spacing:2px;color:var(--dim);font-weight:500;
+}
+
+/* ─── Loading spinner ─────────────────────────────────────── */
+.loading{display:none;text-align:center;}
+.loading.show{display:block;}
+.spinner{
+  width:32px;height:32px;
+  border:3px solid rgba(38,185,218,0.18);
+  border-top-color:var(--cyan);
+  border-radius:50%;animation:spin 0.8s linear infinite;
+  margin:32px auto;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 
-<!-- SPLASH (initial loading state) -->
-<div class="splash" id="splash">
-  <div class="splash-mark">
-    Closing Day<img class="star" src="kinetic_star.png" alt="">
-  </div>
-  <div class="splash-tag">Less chasing. More closing.</div>
-  <div class="spinner"></div>
+<div class="brand">
+  <div class="brand-mark">Closing Day<img class="star" src="kinetic_star.png" alt=""></div>
+  <div class="brand-tag">Less chasing. More closing.</div>
 </div>
 
-<!-- UNIFIED LOGIN -->
-<div class="login-card" id="loginCard">
-  <div class="brand">
-    <div class="brand-mark">
-      Closing Day<img class="star" src="kinetic_star.png" alt="">
-    </div>
-    <div class="brand-tag">Less chasing. More closing.</div>
-  </div>
-
-  <div class="login-error" id="loginError"></div>
+<!-- ─── Login form ─────────────────────────────────────────── -->
+<div class="card" id="loginCard">
+  <div class="error" id="errorBox"></div>
+  <div class="success" id="successBox"></div>
 
   <div class="field">
-    <label for="loginEmail">Email</label>
-    <input id="loginEmail" type="text" autocapitalize="none" autocorrect="off" inputmode="email" placeholder="you@email.com">
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="you@email.com" autocomplete="email" autocapitalize="none" autocorrect="off" inputmode="email">
   </div>
   <div class="field">
-    <label for="loginPassword">Password</label>
-    <input id="loginPassword" type="password" placeholder="••••••••">
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
   </div>
-  <button class="btn" id="signinBtn" type="button">Sign In →</button>
 
-  <div class="switch"><a id="forgotLink">Forgot password?</a></div>
+  <button class="btn" id="signInBtn" type="button">Sign In →</button>
+
+  <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+
+  <div class="divider"><span>New to Closing Day</span></div>
+
+  <a href="https://buyerhub.bankonbrooke.studio/request-access.html"
+     class="request-access-link"
+     target="_blank"
+     rel="noopener">
+    Request access →
+  </a>
+</div>
+
+<!-- ─── Loading state (when checking session on app start) ─── -->
+<div class="loading" id="loadingState">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:13px;">Loading…</p>
 </div>
 
 <div class="platform-credit">POWERED BY KINETIC MANAGEMENT</div>
@@ -228,74 +197,141 @@ body{
 'use strict';
 const E = id => document.getElementById(id);
 
+function showError(msg) {
+  E('errorBox').textContent = msg;
+  E('errorBox').classList.add('show');
+  E('successBox').classList.remove('show');
+}
+function showSuccess(msg) {
+  E('successBox').textContent = msg;
+  E('successBox').classList.add('show');
+  E('errorBox').classList.remove('show');
+}
+function clearMessages() {
+  E('errorBox').classList.remove('show');
+  E('successBox').classList.remove('show');
+}
+
+// ════════════════════════════════════════════════════════════
+// Smart router — on page load, check if user is already signed in.
+// If yes, route them to the right page based on their role.
+// If no, show the login form (default).
+// ════════════════════════════════════════════════════════════
 (async () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('b')) {
-    window.location.replace('buyerhub.html' + window.location.search);
-    return;
-  }
   try {
+    E('loadingState').classList.add('show');
+    E('loginCard').style.display = 'none';
+
     const user = await BobAuth.currentUser();
-    if (user) { routeByRole(user); return; }
-  } catch (e) { console.warn('Auth check failed:', e); }
-  showLogin();
+    if (!user) {
+      // Not signed in — show login form
+      E('loadingState').classList.remove('show');
+      E('loginCard').style.display = 'flex';
+      return;
+    }
+
+    // Signed in — figure out which role and route
+    const sb = BobAuth.client();
+
+    // Check if they're a buyer (most common)
+    const { data: buyer } = await sb
+      .from('buyers')
+      .select('id')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    if (buyer) {
+      window.location.replace('buyerhub.html');
+      return;
+    }
+
+    // Check if they're a lender admin (Brooke)
+    const { data: lender } = await sb
+      .from('lenders')
+      .select('id')
+      .eq('admin_user_id', user.id)
+      .maybeSingle();
+    if (lender) {
+      window.location.replace('brooke-admin.html');
+      return;
+    }
+
+    // Default: realtor (CRM)
+    window.location.replace('crm.html');
+
+  } catch (e) {
+    console.error('Router error:', e);
+    E('loadingState').classList.remove('show');
+    E('loginCard').style.display = 'flex';
+    showError('Could not load. Please try signing in.');
+  }
 })();
 
-function routeByRole(user) {
-  const role = user?.app_metadata?.role;
-  if (role === 'brooke_admin' || role === 'lender_admin') {
-    window.location.replace('brooke-admin.html');
-  } else if (role === 'buyer') {
-    window.location.replace('buyerhub.html');
-  } else {
-    window.location.replace('crm.html');
+// ════════════════════════════════════════════════════════════
+// Sign in handler
+// ════════════════════════════════════════════════════════════
+E('signInBtn').onclick = doSignIn;
+E('password').onkeydown = (e) => { if (e.key === 'Enter') doSignIn(); };
+E('email').onkeydown = (e) => { if (e.key === 'Enter') doSignIn(); };
+
+async function doSignIn() {
+  const email = E('email').value.trim().toLowerCase();
+  const password = E('password').value;
+
+  if (!email || !password) {
+    showError('Please enter your email and password.');
+    return;
   }
-}
 
-function showLogin() {
-  E('splash').style.display = 'none';
-  E('loginCard').classList.add('show');
-}
+  clearMessages();
+  E('signInBtn').textContent = 'Signing in…';
+  E('signInBtn').disabled = true;
 
-function showError(msg, color) {
-  E('loginError').textContent = msg;
-  E('loginError').style.display = 'block';
-  E('loginError').style.color = color || '';
-  E('loginError').style.borderColor = color || '';
-}
-
-E('signinBtn').onclick = doSignin;
-E('loginPassword').onkeydown = (e) => { if (e.key === 'Enter') doSignin(); };
-E('loginEmail').onkeydown = (e) => { if (e.key === 'Enter') doSignin(); };
-
-async function doSignin() {
-  const email = (document.getElementById('loginEmail').value || '').trim();
-  const password = document.getElementById('loginPassword').value || '';
-  console.log('Sign in attempt — email length:', email.length, 'pw length:', password.length);
-  if (!email || !password) { showError('Email and password required.'); return; }
-  E('loginError').style.display = 'none';
-  E('signinBtn').textContent = 'Signing in…';
-  E('signinBtn').disabled = true;
   try {
     const { error } = await BobAuth.signIn({ email, password });
-    if (error) { showError(error.message || 'Could not sign in.'); return; }
-    const user = await BobAuth.currentUser();
-    if (user) routeByRole(user);
+    if (error) {
+      showError(error.message || 'Could not sign in. Please try again.');
+      return;
+    }
+
+    // Reload to trigger smart router
+    showSuccess('Signed in! Loading your hub…');
+    setTimeout(() => window.location.reload(), 400);
   } catch (e) {
-    showError(e.message || 'Sign in failed.');
+    console.error('Sign-in error:', e);
+    showError(e.message || 'Could not sign in. Please try again.');
   } finally {
-    E('signinBtn').textContent = 'Sign In →';
-    E('signinBtn').disabled = false;
+    E('signInBtn').textContent = 'Sign In →';
+    E('signInBtn').disabled = false;
   }
 }
 
-E('forgotLink').onclick = async () => {
-  const email = (document.getElementById('loginEmail').value || '').trim();
-  if (!email) { showError('Enter your email first, then tap Forgot password.'); return; }
+// ════════════════════════════════════════════════════════════
+// Forgot password handler
+// ════════════════════════════════════════════════════════════
+E('forgotLink').onclick = async (ev) => {
+  ev.preventDefault();
+  const email = E('email').value.trim().toLowerCase();
+  if (!email) {
+    showError('Enter your email above first, then tap "Forgot password?"');
+    E('email').focus();
+    return;
+  }
+
+  clearMessages();
   try {
-    await BobAuth.resetPassword(email);
-    showError('Password reset email sent. Check your inbox.', 'var(--gold)');
-  } catch (e) { showError('Could not send reset: ' + (e.message || e)); }
+    const sb = BobAuth.client();
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://buyerhub.bankonbrooke.studio/accept-invite.html'
+    });
+    if (error) {
+      showError(error.message || 'Could not send reset email.');
+      return;
+    }
+    showSuccess('Password reset email sent. Check your inbox.');
+  } catch (e) {
+    console.error('Forgot password error:', e);
+    showError(e.message || 'Could not send reset email.');
+  }
 };
 </script>
 </body>
