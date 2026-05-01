@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Request Access — Closing Day</title>
+<meta name="description" content="Request access to Closing Day, the homebuying productivity platform for residential mortgage and real estate professionals." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-deep: #0F1A33;
+    --rose-gold: #C49A78;
+    --rose-gold-soft: #D4B098;
+    --cream: #F0E6D8;
+    --cream-soft: #FAF4EA;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  .site-header {
+    padding: 32px 0;
+    border-bottom: 1px solid rgba(196, 154, 120, 0.2);
+  }
+  .site-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--cream);
+    letter-spacing: -0.5px;
+  }
+  .brand .dot { color: var(--rose-gold); }
+  .nav-back {
+    color: var(--rose-gold);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+  .nav-back:hover { color: var(--cream); }
+
+  /* Hero */
+  .hero {
+    padding: 80px 0 48px;
+    text-align: center;
+  }
+  .eyebrow {
+    color: var(--rose-gold);
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 20px;
+    letter-spacing: -1.5px;
+  }
+  .hero h1 .accent {
+    color: var(--rose-gold);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .hero p {
+    font-size: 1.15rem;
+    max-width: 640px;
+    margin: 0 auto;
+    color: rgba(240, 230, 216, 0.85);
+  }
+
+  /* Tab switcher */
+  .tab-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin: 56px 0 32px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 6px;
+    border-radius: 999px;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    padding: 14px 24px;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .tab-btn.active {
+    background: var(--rose-gold);
+    color: var(--navy);
+  }
+  .tab-btn:not(.active):hover { color: var(--rose-gold); }
+
+  /* Form panel */
+  .form-panel {
+    background: var(--cream-soft);
+    color: var(--navy);
+    border-radius: 24px;
+    padding: 48px;
+    margin-bottom: 48px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+  }
+  .form-panel.hidden { display: none; }
+
+  .form-intro {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(27, 42, 74, 0.1);
+  }
+  .form-intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--navy);
+  }
+  .form-intro p {
+    color: rgba(27, 42, 74, 0.7);
+    font-size: 0.98rem;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .field-row.single { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+  }
+  .field label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    padding: 14px 16px;
+    border: 1.5px solid rgba(27, 42, 74, 0.15);
+    border-radius: 8px;
+    background: var(--white);
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: var(--navy);
+    transition: border-color 0.2s ease;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--rose-gold);
+  }
+  .field textarea { resize: vertical; min-height: 100px; }
+  .field .hint {
+    font-size: 0.82rem;
+    color: rgba(27, 42, 74, 0.55);
+    margin-top: 6px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--navy);
+    color: var(--cream);
+    border: none;
+    padding: 18px;
+    border-radius: 10px;
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.2s ease;
+  }
+  .submit-btn:hover { background: var(--navy-deep); }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.9rem;
+    color: rgba(27, 42, 74, 0.6);
+  }
+  .form-footer a {
+    color: var(--rose-gold);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  /* Info section */
+  .info-section {
+    padding: 40px 0 80px;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .info-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(196, 154, 120, 0.2);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .info-card .step {
+    font-family: 'Playfair Display', serif;
+    color: var(--rose-gold);
+    font-size: 2rem;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .info-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--cream);
+  }
+  .info-card p {
+    color: rgba(240, 230, 216, 0.75);
+    font-size: 0.95rem;
+  }
+
+  /* Footer */
+  .site-footer {
+    border-top: 1px solid rgba(196, 154, 120, 0.2);
+    padding: 32px 0;
+    text-align: center;
+    font-size: 0.88rem;
+    color: rgba(240, 230, 216, 0.6);
+  }
+  .site-footer a { color: var(--rose-gold); text-decoration: none; }
+
+  /* Success state */
+  .success-state {
+    text-align: center;
+    padding: 60px 24px;
+    display: none;
+  }
+  .success-state.visible { display: block; }
+  .success-state .check {
+    width: 72px;
+    height: 72px;
+    background: var(--rose-gold);
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  .success-state h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: var(--navy);
+  }
+  .success-state p {
+    color: rgba(27, 42, 74, 0.7);
+    max-width: 460px;
+    margin: 0 auto 24px;
+  }
+
+  @media (max-width: 720px) {
+    .form-panel { padding: 32px 24px; }
+    .field-row { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    .hero { padding: 48px 0 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand">Closing Day<span class="dot">.</span></div>
+    <a href="/" class="nav-back">← Back to home</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow">Request Access</div>
+    <h1>Join the platform <span class="accent">built for you.</span></h1>
+    <p>Closing Day is the homebuying productivity platform for residential mortgage and real estate professionals across the United States. Apply below to bring your business onto the platform.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="tab-switcher" role="tablist">
+    <button class="tab-btn active" data-tab="lender" role="tab">I'm a lender</button>
+    <button class="tab-btn" data-tab="realtor" role="tab">I'm a realtor</button>
+  </div>
+
+  <!-- LENDER FORM -->
+  <div class="form-panel" id="panel-lender">
+    <div class="form-intro">
+      <h2>Lender Application</h2>
+      <p>Subscribe to Closing Day and bring your realtor partners and homebuyers onto a single, branded platform. Reply to this form and our team will reach out within one business day.</p>
+    </div>
+
+    <form id="form-lender">
+      <div class="field-row">
+        <div class="field">
+          <label for="l-firstname">First Name</label>
+          <input type="text" id="l-firstname" name="firstName" required />
+        </div>
+        <div class="field">
+          <label for="l-lastname">Last Name</label>
+          <input type="text" id="l-lastname" name="lastName" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="l-email">Email</label>
+          <input type="email" id="l-email" name="email" required />
+        </div>
+        <div class="field">
+          <label for="l-phone">Phone</label>
+          <input type="tel" id="l-phone" name="phone" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="l-company">Company / Brokerage</label>
+          <input type="text" id="l-company" name="company" required />
+        </div>
+        <div class="field">
+          <label for="l-nmls">NMLS Number</label>
+          <input type="text" id="l-nmls" name="nmls" required />
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="l-state">Primary State of Operation</label>
+          <input type="text" id="l-state" name="state" placeholder="e.g. Oklahoma" required />
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="l-realtors">How many realtor partners would you onboard?</label>
+          <select id="l-realtors" name="realtorCount" required>
+            <option value="">Select an option</option>
+            <option value="1-5">1 to 5</option>
+            <option value="6-15">6 to 15</option>
+            <option value="16-30">16 to 30</option>
+            <option value="30+">30+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="l-notes">Anything else we should know?</label>
+          <textarea id="l-notes" name="notes" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Lender Application</button>
+    </form>
+
+    <div class="success-state" id="success-lender">
+      <div class="check">✓</div>
+      <h2>Application received</h2>
+      <p>Thank you for your interest in Closing Day. Our team will review your application and reach out within one business day to discuss next steps and pricing.</p>
+    </div>
+
+    <div class="form-footer">
+      Already have an account? <a href="/">Sign in</a>
+    </div>
+  </div>
+
+  <!-- REALTOR FORM -->
+  <div class="form-panel hidden" id="panel-realtor">
+    <div class="form-intro">
+      <h2>Realtor Application</h2>
+      <p>Realtors join Closing Day at no cost through a sponsoring lender. If you have a preferred mortgage lender, name them below. If you don't yet, our team can match you with a participating lender in your area.</p>
+    </div>
+
+    <form id="form-realtor">
+      <div class="field-row">
+        <div class="field">
+          <label for="r-firstname">First Name</label>
+          <input type="text" id="r-firstname" name="firstName" required />
+        </div>
+        <div class="field">
+          <label for="r-lastname">Last Name</label>
+          <input type="text" id="r-lastname" name="lastName" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="r-email">Email</label>
+          <input type="email" id="r-email" name="email" required />
+        </div>
+        <div class="field">
+          <label for="r-phone">Phone</label>
+          <input type="tel" id="r-phone" name="phone" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="r-brokerage">Brokerage</label>
+          <input type="text" id="r-brokerage" name="brokerage" required />
+        </div>
+        <div class="field">
+          <label for="r-license">License Number</label>
+          <input type="text" id="r-license" name="license" required />
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="r-state">Primary State of Operation</label>
+          <input type="text" id="r-state" name="state" placeholder="e.g. Oklahoma" required />
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="r-lender">Preferred Lender (if any)</label>
+          <input type="text" id="r-lender" name="preferredLender" placeholder="Leave blank if you'd like to be matched" />
+          <span class="hint">If you have a mortgage lender you already work with, enter their name. If not, leave blank and we'll match you with a participating lender in your area.</span>
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field">
+          <label for="r-notes">Anything else we should know?</label>
+          <textarea id="r-notes" name="notes" placeholder="Optional"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Realtor Application</button>
+    </form>
+
+    <div class="success-state" id="success-realtor">
+      <div class="check">✓</div>
+      <h2>Application received</h2>
+      <p>Thank you for your interest in Closing Day. Our team will review your application and reach out within one business day to confirm your sponsoring lender and get you set up.</p>
+    </div>
+
+    <div class="form-footer">
+      Already have an account? <a href="/">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<section class="info-section">
+  <div class="container">
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="step">01</div>
+        <h3>Apply</h3>
+        <p>Tell us about your business. Lenders subscribe to the platform; realtors join free through a sponsoring lender.</p>
+      </div>
+      <div class="info-card">
+        <div class="step">02</div>
+        <h3>Get configured</h3>
+        <p>Our team configures your account, applies your branding, and walks you through the platform.</p>
+      </div>
+      <div class="info-card">
+        <div class="step">03</div>
+        <h3>Invite buyers</h3>
+        <p>Once you're set up, you can invite your homebuyers into the app at no cost to them. Less chasing. More closing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>
+      © 2026 Closing Day · A Kinetic Management product · 
+      <a href="/privacy.html">Privacy</a> · 
+      <a href="/terms.html">Terms</a> · 
+      <a href="/support.html">Support</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = {
+    lender: document.getElementById('panel-lender'),
+    realtor: document.getElementById('panel-realtor'),
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      tabs.forEach((t) => t.classList.toggle('active', t === tab));
+      Object.entries(panels).forEach(([name, panel]) => {
+        panel.classList.toggle('hidden', name !== target);
+      });
+    });
+  });
+
+  // Form submission via mailto (no backend needed for now)
+  const submitForm = (formId, successId, kind) => {
+    const form = document.getElementById(formId);
+    const success = document.getElementById(successId);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const subject = encodeURIComponent(`Closing Day ${kind} Application — ${data.firstName} ${data.lastName}`);
+      const body = encodeURIComponent(
+        Object.entries(data)
+          .map(([k, v]) => `${k}: ${v || '(not provided)'}`)
+          .join('\n')
+      );
+      window.location.href = `mailto:craig@kinetic-mgmt.com?subject=${subject}&body=${body}`;
+      // Show success state immediately
+      form.style.display = 'none';
+      success.classList.add('visible');
+    });
+  };
+
+  submitForm('form-lender', 'success-lender', 'Lender');
+  submitForm('form-realtor', 'success-realtor', 'Realtor');
+</script>
+
+</body>
+</html>
