@@ -105,6 +105,16 @@ body{
   margin:32px auto;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
+
+.kinetic-credit{
+  text-align:center;font-size:10px;letter-spacing:2.2px;
+  color:var(--muted,#8B909E);font-weight:600;
+  padding:22px 16px calc(22px + env(safe-area-inset-bottom));
+  margin-top:24px;border-top:0.5px solid var(--border-soft,#1F232C);
+}
+.kinetic-credit .kinetic-star{
+  width:6px;height:6px;margin-left:4px;vertical-align:baseline;display:inline-block;
+}
 </style>
 </head>
 <body>
@@ -115,8 +125,8 @@ body{
 </div>
 
 <div class="card" id="card">
-  <h1 class="welcome">Welcome!</h1>
-  <p class="intro" id="intro">Set up your password to access your homebuying hub.</p>
+  <h1 class="welcome" id="welcomeHeading">Welcome!</h1>
+  <p class="intro" id="intro">Set up your password to access your account.</p>
 
   <div class="error" id="errorBox"></div>
   <div class="success" id="successBox"></div>
@@ -138,7 +148,7 @@ body{
   <p style="color:var(--muted);font-size:13px;">Verifying your invite...</p>
 </div>
 
-<div class="platform-credit">POWERED BY KINETIC MANAGEMENT</div>
+<div class="kinetic-credit">POWERED BY KINETIC MANAGEMENT<img class="kinetic-star" src="kinetic_star.png" alt=""></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="bob-auth.js"></script>
@@ -159,24 +169,60 @@ function showSuccess(msg) {
 
 // ════════════════════════════════════════════════════════
 // On page load:
-// Supabase recovery links land here with auth tokens in the URL hash.
-// supabase-js automatically picks them up and signs the user in.
-// We just wait for the session, then show the password form.
+// Supabase recovery / invite links land here with auth tokens in the
+// URL hash. supabase-js auto-detects them and signs the user in. We
+// then look up whether they're a realtor or a buyer so we can:
+//   - personalize the welcome
+//   - know where to send them after password is set
 // ════════════════════════════════════════════════════════
+let USER_ROLE = null;     // 'realtor' | 'buyer' | null
+let USER_FIRST_NAME = '';
+
 (async () => {
   try {
-    // Give supabase-js a moment to process the hash
+    // Give supabase-js a moment to process the hash fragment
     await new Promise(r => setTimeout(r, 300));
     const user = await BobAuth.currentUser();
     if (!user) {
-      showError('Invite link is invalid or expired. Ask your realtor to send a new one.');
+      showError('Invite link is invalid or expired. Ask the person who invited you for a new one.');
       E('submitBtn').disabled = true;
       return;
     }
-    // Personalize the welcome
-    const name = user.user_metadata?.name;
-    if (name) {
-      E('intro').textContent = `Hi ${name.split(' ')[0]}, set up your password to access your homebuying hub.`;
+
+    const sb = BobAuth.client();
+
+    // Realtor first — most invites we send are realtors.
+    const { data: realtor } = await sb
+      .from('realtors')
+      .select('name')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    if (realtor) {
+      USER_ROLE = 'realtor';
+      USER_FIRST_NAME = (realtor.name || '').split(' ')[0];
+      E('welcomeHeading').textContent = USER_FIRST_NAME ? `Welcome, ${USER_FIRST_NAME}!` : 'Welcome!';
+      E('intro').textContent = 'Create your password to start using your CRM. Your account info is already filled out — you just need a password to sign in next time.';
+      return;
+    }
+
+    // Otherwise check for buyer.
+    const { data: buyer } = await sb
+      .from('buyers')
+      .select('name')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+    if (buyer) {
+      USER_ROLE = 'buyer';
+      USER_FIRST_NAME = (buyer.name || '').split(' ')[0];
+      E('welcomeHeading').textContent = USER_FIRST_NAME ? `Welcome, ${USER_FIRST_NAME}!` : 'Welcome!';
+      E('intro').textContent = 'Create your password to access your homebuying hub. Your account is already set up — just pick a password and sign in.';
+      return;
+    }
+
+    // Authenticated but no profile row — fall back to a generic message.
+    const fallbackName = user.user_metadata?.full_name || user.user_metadata?.name;
+    if (fallbackName) {
+      E('intro').textContent = `Hi ${String(fallbackName).split(' ')[0]}, set up your password to continue.`;
     }
   } catch (e) {
     console.error('Init error:', e);
@@ -212,9 +258,21 @@ async function doSubmit() {
       showError(error.message || 'Could not set password.');
       return;
     }
-    showSuccess('All set! Taking you to your hub…');
+    // Route by role. Realtors → CRM, buyers → buyer hub. If the role
+    // is unknown (no profile row), fall back to the home router so the
+    // index.html smart-router can sort them out.
+    let destination = 'index.html';
+    let label = 'Taking you to your dashboard…';
+    if (USER_ROLE === 'realtor') {
+      destination = 'crm.html';
+      label = 'Password set! Taking you to your CRM…';
+    } else if (USER_ROLE === 'buyer') {
+      destination = 'buyerhub.html';
+      label = 'Password set! Taking you to your hub…';
+    }
+    showSuccess(label);
     setTimeout(() => {
-      window.location.replace('buyerhub.html');
+      window.location.replace(destination);
     }, 800);
   } catch (e) {
     showError(e.message || 'Could not set password.');
